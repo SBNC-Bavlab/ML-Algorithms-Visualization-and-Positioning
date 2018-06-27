@@ -14,17 +14,17 @@ feature_names = iris_df.columns[0:-1].values.tolist()
 
 # Create the main plot
 def create_figure(current_feature_name, bins):
-    p = figure(plot_width=600, plot_height=400)
-    p.vbar(x=)
-    # p = Histogram(iris_df, current_feature_name, title=current_feature_name, color='Species',
-    #               bins=bins, legend='top_right', width=600, height=400)
-    #
-    # # Set the x axis label
-    # p.xaxis.axis_label = current_feature_name
-    #
-    # # Set the y axis label
-    # p.yaxis.axis_label = 'Count'
-    return p
+    #p = figure(plot_width=600, plot_height=400)
+    #p.vbar(x = "asd")
+     p = Histogram(iris_df, current_feature_name, title=current_feature_name, color='Species',
+                   bins=bins, legend='top_right', width=600, height=400)
+    
+     # Set the x axis label
+     p.xaxis.axis_label = current_feature_name
+    
+     # Set the y axis label
+     p.yaxis.axis_label = 'Count'
+     return p
 
 
 # Index page
@@ -36,7 +36,7 @@ def index():
         current_feature_name = "Sepal Length"
 
     # Create the plot
-    plot = create_figure(current_feature_name, 10)
+    plot = create_figure(current_feature_name, 5)
 
     # Embed plot into HTML via Flask Render
     script, div = components(plot)
