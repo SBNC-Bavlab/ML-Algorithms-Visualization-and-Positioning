@@ -29,7 +29,6 @@ def create_figure(current_feature_name, bins):
 #    
 #     # Set the y axis label
 #     p.yaxis.axis_label = 'Count'
-    points = [(1,1), (2,2)]
     p = figure(plot_width=400, plot_height=400)
     
     # add a circle renderer with a size, color, and alpha
@@ -37,9 +36,8 @@ def create_figure(current_feature_name, bins):
     p.add_layout(Arrow(line_color="red", end=OpenHead(line_color="red", line_width=2),
                    x_start=2, y_start=2, x_end=1, y_end=1))
 
+
     return p
-
-
 # Index page
 @app.route('/')
 def index():

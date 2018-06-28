@@ -4,3 +4,4 @@ venv/
 ENV/
 #Custom
 .idea
+.DS_Store
