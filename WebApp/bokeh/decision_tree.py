@@ -14,8 +14,8 @@ def create_figure():
     source, width, depth, level_width = get_bokeh_data("gini")
 
     elements = pd.DataFrame.from_dict(source)
-    periods = [str(i) for i in range(0, width+2)]
-    groups = [str(x) for x in range(0, depth+10)]
+    periods = [str(i) for i in range(0, 2*width+1)]
+    groups = [str(x) for x in range(0, depth+2)]
 
     df = elements.copy()
 
@@ -37,11 +37,11 @@ def create_figure():
         ("Electronic configuration", "@{electronic configuration}"),
     ]
 
-    p = figure(title="Periodic Table (omitting LA and AC Series)", plot_width=1000, plot_height=1000,
+    p = figure(title="Periodic Table (omitting LA and AC Series)", plot_width=1000, plot_height=450,
                x_range=groups, y_range=list(periods),
                tools="hover", toolbar_location=None, tooltips=[])
 
-    p.rect("y", "x", 0.8, 0.8, source=df, fill_alpha=0.8, legend="attribute_type",
+    p.rect("y", "x", 0.95, 0.95, source=df, fill_alpha=0.8, legend="attribute_type",
            color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
 
     text_props = {"source": df, "text_align": "left", "text_baseline": "middle"}
@@ -61,7 +61,7 @@ def create_figure():
     # r.glyph.text_font_size = "5pt"
 
     p.outline_line_color = None
-    p.grid.grid_line_color = "black"
+    p.grid.grid_line_color = None
     p.axis.axis_line_color = None
     p.axis.major_tick_line_color = None
     p.axis.major_label_standoff = 0

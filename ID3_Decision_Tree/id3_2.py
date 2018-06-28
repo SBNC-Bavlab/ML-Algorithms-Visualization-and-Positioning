@@ -417,17 +417,17 @@ def treeDistribution(attributeListVar, instancesVar, methodology):
 			else:
 				q.put(child)
 
-	reviewQ = Queue()
-	reviewQ.put(rootNode)
-	while not reviewQ.empty():
-		
-		node = reviewQ.get()
-		for child in node.children:
-			reviewQ.put(child)
-
-		# optimize for "noInfo" nodes
-		if (len(node.data) == 0):
-			observeFromSiblings(node)
+	# reviewQ = Queue()
+	# reviewQ.put(rootNode)
+	# while not reviewQ.empty():
+	#
+	# 	node = reviewQ.get()
+	# 	for child in node.children:
+	# 		reviewQ.put(child)
+    #
+	# 	# optimize for "noInfo" nodes
+	# 	if (len(node.data) == 0):
+	# 		observeFromSiblings(node)
 
 
 	return rootNode
