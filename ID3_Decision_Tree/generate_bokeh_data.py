@@ -50,9 +50,13 @@ def generate_bokeh_data(source, root, depth, visited):
 
         source["x"].append(popped_node.depth)
         source["y"].append(width_index[popped_node.depth-1])
-        source["attribute_type"].append(popped_node.name)
-        source["stat_value"].append(popped_node.value)
 
+        if popped_node.name == "":
+            source["attribute_type"].append("classAttr")
+        else:
+            source["attribute_type"].append(popped_node.name)
+
+        source["stat_value"].append(popped_node.value)
         width_index[popped_node.depth - 1] += 1
 
         for child in popped_node.children:
