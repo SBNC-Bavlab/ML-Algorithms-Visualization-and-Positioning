@@ -11,7 +11,7 @@ from ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 # Create the main plot
 def create_figure():
     # method options: gini, gainRatio, informationGain
-    source, width, depth = get_bokeh_data("gini")
+    source, width, depth, level_width = get_bokeh_data("gini")
 
     elements = pd.DataFrame.from_dict(source)
     periods = [str(i) for i in range(0, width+2)]

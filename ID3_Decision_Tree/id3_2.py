@@ -8,7 +8,7 @@ import random
 class Node(object):
 	def __init__(self, parentName, name, data, children, remAttr, method):
 		self.parent = parentName
-		self.parentPointer = None
+		self.parentPointer = Node
 		self.name = name
 		self.data = data
 		self.children = children
@@ -417,7 +417,6 @@ def treeDistribution(attributeListVar, instancesVar, methodology):
 			else:
 				q.put(child)
 
-	# ULFET - optimization
 	reviewQ = Queue()
 	reviewQ.put(rootNode)
 	while not reviewQ.empty():
@@ -454,6 +453,7 @@ def makeAGuess(rootNodeVar, testInstanceVar):
 		node = node.children[featureIndex]
 	return decision
 
+
 def realWorldTest(rootNodeVar, instancesVar, methodName, setName):
 	valid = 0
 	invalid = 0
@@ -467,23 +467,9 @@ def realWorldTest(rootNodeVar, instancesVar, methodName, setName):
 	print(setName, methodName, valid, invalid, (valid)/float(valid+invalid))
 
 
-
 def generate_tree(method):
     newAttNameList = copy.deepcopy(attribNamesList)
     newAttNameList.remove("classAttr")
     rootNode = treeDistribution(newAttNameList, train, method)
 
     return rootNode
-
-#
-# realWorldTest(rootNode1, train, "gini", "train")
-# realWorldTest(rootNode1, test, "gini", "test")
-# print("")
-#
-# realWorldTest(rootNode2, train, "gainRatio", "train")
-# realWorldTest(rootNode2, test, "gainRatio", "test")
-# print("")
-#
-# realWorldTest(rootNode3, train, "informationGain", "train")
-# realWorldTest(rootNode3, test, "informationGain", "test")
-# print("")

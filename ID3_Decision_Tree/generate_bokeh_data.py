@@ -2,6 +2,9 @@ from ID3_Decision_Tree.id3_2 import generate_tree
 
 
 def get_depth(node, visited = {}):
+    if node.decision in ["unacc", "acc", "good", "vgood"]:
+        node.name = "classAttr"
+
     if not node.children:
         node.depth = 1
         visited[node] = False
@@ -20,6 +23,8 @@ def get_width(node, level):
     if level == 1:
         return 1
     elif level > 1:
+        if node.parentPointer:
+            node.depth = node.parentPointer.depth - 1
         return sum([get_width(child, level-1) for child in node.children])
 
 
@@ -73,4 +78,4 @@ def get_bokeh_data(method):
     source = { "x": [], "y": [], "attribute_type": [], "stat_value": []}
     generate_bokeh_data(source, root, depth, visited)
 
-    return source, depth, width
+    return source, depth, width, level_width
