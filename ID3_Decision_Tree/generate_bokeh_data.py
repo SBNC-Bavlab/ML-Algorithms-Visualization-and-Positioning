@@ -40,8 +40,7 @@ def get_max_width(node):
     return max_width, level_widths
 
 
-
-def generate_bokeh_data(source, root, depth, visited):
+def generate_bokeh_data(source, root, depth, width, visited, level_width):
     width_index = [1] * depth
 
     queue = []
@@ -53,8 +52,9 @@ def generate_bokeh_data(source, root, depth, visited):
 
         popped_node = queue.pop(0)
 
-        source["x"].append(popped_node.depth)
-        source["y"].append(width_index[popped_node.depth-1])
+        source["x"].append(2 * popped_node.depth)
+
+        source["y"].append(width_index[popped_node.depth-1] + (width / (level_width[depth - popped_node.depth]+1)))
 
         if popped_node.name == "":
             source["attribute_type"].append("classAttr")
@@ -62,7 +62,7 @@ def generate_bokeh_data(source, root, depth, visited):
             source["attribute_type"].append(popped_node.name)
 
         source["stat_value"].append(popped_node.value)
-        width_index[popped_node.depth - 1] += 1
+        width_index[popped_node.depth - 1] += (width / (level_width[depth - popped_node.depth]+1))
 
         for child in popped_node.children:
             if visited[child] == False:
@@ -76,6 +76,6 @@ def get_bokeh_data(method):
     depth = get_depth(root, visited)
     width, level_width = get_max_width(root)
     source = { "x": [], "y": [], "attribute_type": [], "stat_value": []}
-    generate_bokeh_data(source, root, depth, visited)
+    generate_bokeh_data(source, root, depth, width, visited, level_width)
 
     return source, depth, width, level_width
