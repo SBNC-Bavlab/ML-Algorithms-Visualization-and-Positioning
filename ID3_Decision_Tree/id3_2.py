@@ -468,15 +468,13 @@ def realWorldTest(rootNodeVar, instancesVar, methodName, setName):
 
 
 
-def generate_tree():
+def generate_tree(method):
     newAttNameList = copy.deepcopy(attribNamesList)
     newAttNameList.remove("classAttr")
-    rootNode_gini = treeDistribution(newAttNameList, train, "gini")
-    rootNode_gainratio = treeDistribution(newAttNameList, train, "gainRatio")
-    rootNode_informationgain = treeDistribution(newAttNameList, train, "informationGain")
+    rootNode = treeDistribution(newAttNameList, train, method)
 
-    return rootNode_gini, rootNode_gainratio, rootNode_gainratio
-generate_tree()
+    return rootNode
+
 #
 # realWorldTest(rootNode1, train, "gini", "train")
 # realWorldTest(rootNode1, test, "gini", "test")

@@ -61,13 +61,12 @@ def generate_bokeh_data(source, root, depth, visited):
                 visited[child] = True
 
 
-def get_root_nodes():
-    root_gini, root_gain_ratio, root_information_gain = generate_tree()
+def get_bokeh_data(method):
+    root = generate_tree(method)
     visited = {}
-    depth = get_depth(root_gini, visited)
-    width, level_width = get_max_width(root_gini)
+    depth = get_depth(root, visited)
+    width, level_width = get_max_width(root)
     source = { "x": [], "y": [], "attribute_type": [], "stat_value": []}
-    generate_bokeh_data(source, root_gini, depth, visited)
+    generate_bokeh_data(source, root, depth, visited)
 
-if __name__ == '__main__':
-    get_root_nodes()
+    return source, depth, width
