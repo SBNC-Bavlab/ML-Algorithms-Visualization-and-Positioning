@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 from WebApp.bokeh.decision_tree import create_figure
-
+from bokeh.embed import components
 app = Flask(__name__)
 
 
@@ -15,7 +15,7 @@ def index():
     # Embed plot into HTML via Flask Render
     script, div = components(plot)
     return render_template("index.html", script=script, div=div,
-                           feature_names=feature_names, current_feature_name=current_feature_name)
+                           feature_names=[], current_feature_name="")
 
 @app.route('/q', methods=['GET'])
 def shutdown():
