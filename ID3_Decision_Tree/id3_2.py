@@ -16,6 +16,7 @@ class Node(object):
 		self.decision = None
 		self.method = method
 		self.value = None
+		self.depth = 0
 
 from math import log
 data = pickle.load(open('car.pkl','rb'))
@@ -32,8 +33,8 @@ classAttr =  ["unacc", "acc", "good", "vgood"]
 
 attribNamesList = [
 	"buyingAttr",
-	"maintAttr",
-	"doorsAttr",
+	# "maintAttr",
+	# "doorsAttr",
 	"personsAttr",
 	"lug_bootAttr",
 	"safetyAttr",
@@ -42,35 +43,14 @@ attribNamesList = [
 
 attribDictionary = {
 	"buyingAttr": (0,buyingAttr),
-	"maintAttr": (1,maintAttr),
-	"doorsAttr": (2, doorsAttr),
+	# "maintAttr": (1,maintAttr),
+	# "doorsAttr": (2, doorsAttr),
 	"personsAttr": (3, personsAttr),
 	"lug_bootAttr": (4, lug_bootAttr),
 	"safetyAttr": (5, safetyAttr),
 	"classAttr": (6, classAttr)
 }
 
-
-# def listOfAttributes():
-# 	buyingAttr = ["vhigh", "high", "med", "low"]
-# 	maintAttr =  ["vhigh", "high", "med", "low"]
-# 	doorsAttr = ["2", "3", "4", "5", "more"]
-# 	personsAttr = ["2", "4", "more"]
-# 	lug_bootAttr =  ["small", "med", "big"]
-# 	safetyAttr =  ["low", "med", "high"]
-# 	classAttr =  ["unacc", "acc", "good", "vgood"]
-
-# 	attribList = [
-# 		buyingAttr,
-# 		maintAttr,
-# 		doorsAttr,
-# 		personsAttr,
-# 		lug_bootAttr,
-# 		safetyAttr,
-# 		classAttr
-# 	]
-
-# 	return attribList
 
 def entropy(distributionListVar, numberOfDifferentValuesVar):
 	numberOfInstances = 0.0
@@ -93,10 +73,12 @@ def entropy(distributionListVar, numberOfDifferentValuesVar):
 
 	return float(entropySum)
 
+
 def checkAttributeValuePairMatch(attribIndexVar, attribValueVar, instanceVar):
 	if instanceVar[attribIndexVar] == attribValueVar:
 		return True
 	return False
+
 
 def getNumberOfInstancesFromLocalDistributionList(localDistributionVar):
 	numberOfInstances = 0
@@ -107,6 +89,7 @@ def getNumberOfInstancesFromLocalDistributionList(localDistributionVar):
 			absoluteVal = value
 		numberOfInstances += absoluteVal
 	return numberOfInstances
+
 
 def classifyList(attributeNameVar, instancesVar):
 	attribute = attribDictionary[attributeNameVar]
@@ -123,6 +106,7 @@ def classifyList(attributeNameVar, instancesVar):
 		localDistribution.append(counter)
 
 	return localDistribution
+
 
 def getDistributionList(attributeNameVar, instancesVar):
 	# build a distribution holder
@@ -146,10 +130,12 @@ def getDistributionList(attributeNameVar, instancesVar):
 
 	return distribution
 
+
 def featureLength(attributeNameVar):
 	attribute = attribDictionary[attributeNameVar]
 	attributeIndex, attributeValues = attribute
 	return len(attributeValues)
+
 
 def information(attributeNameVar, instancesVar):
 	distributionList = getDistributionList(attributeNameVar, instancesVar)
@@ -169,7 +155,6 @@ def information(attributeNameVar, instancesVar):
 	return informationSum
 
 
-
 def informationGain(attributeNameVar, instancesVar):
 	distributionList = getDistributionList(attributeNameVar, instancesVar)
 	numberOfDifferentValues = featureLength(attributeNameVar)
@@ -186,6 +171,7 @@ def informationGain(attributeNameVar, instancesVar):
 	# print ("informa:", informationValue)
 	# print ("infgain:", informationGainValue)
 	return informationGainValue
+
 
 def logForIntrinsicInformation(proportionToAll, numberOfDifferentValues):
 	if proportionToAll == 0:
@@ -219,6 +205,7 @@ def gainRatio(attributeNameVar, instancesVar):
 	# print("intrinInf:", intrinsicInformationValue)
 	# print("gainRatio:", gainRatioValue)
 	return gainRatioValue
+
 
 def gini(distributionListVar):
 	numberOfInstances = getNumberOfInstancesFromLocalDistributionList(distributionListVar)
@@ -273,7 +260,8 @@ def chooseTheBest(attributeListVar, instancesVar, methodology):
 		value = max(valuesList)
 
 	return attributeListVar[index], value
-			
+
+
 def distributeByAttribute(attributeNameVar, instancesVar):
 	attribute = attribDictionary[attributeNameVar]
 	attributeIndex, attributeValues = attribute
@@ -290,6 +278,7 @@ def distributeByAttribute(attributeNameVar, instancesVar):
 		distribution.append(localDistribution)
 
 	return distribution
+
 
 def childGenerator(nodeItselfVar, methodology):
 	parentName = nodeItselfVar.name
@@ -357,6 +346,7 @@ def childGenerator(nodeItselfVar, methodology):
 	nodeItselfVar.children = children
 	return children
 
+
 def leafControl(nodeVar):
 	distributedList = classifyList("classAttr", nodeVar.data)
 	numbersGreaterThanZero = 0
@@ -368,6 +358,7 @@ def leafControl(nodeVar):
 		return True
 	else:
 		return False
+
 
 def determineDominantOne(nodeVar):
 	instances = nodeVar.data
@@ -386,6 +377,7 @@ def determineDominantOne(nodeVar):
 	dominantClassName = classAttr[dominantClassIndex]
 	nodeVar.decision = dominantClassName
 
+
 def observeFromSiblings(nodeVar):
 	siblings = nodeVar.parentPointer.children
 
@@ -399,6 +391,7 @@ def observeFromSiblings(nodeVar):
 	maxName = classAttr[maxIndex]
 	nodeVar.decision = maxName
 	# print(nodeVar.parent, siblingsDistributions)
+
 
 def treeDistribution(attributeListVar, instancesVar, methodology):
 	attribListCopy = copy.deepcopy(attributeListVar)
@@ -441,86 +434,6 @@ def treeDistribution(attributeListVar, instancesVar, methodology):
 	return rootNode
 
 
-
-# def drawFunction(rootNodeVar, fileName):
-
-# 	q = Queue()
-# 	v = Queue()
-# 	q.put(rootNodeVar)
-
-# 	text1 = \
-# 		"NextAttr = " + rootNodeVar.name + r"\n" +\
-# 		"#Instances = " + str(len(rootNodeVar.data)) + r"\n"
-
-
-# 	nodeView = pydot.Node( text1, shape="rectangle", label=text1)
-# 	v.put(nodeView)
-
-# 	graph = pydot.Dot(graph_type='graph')
-
-# 	level = 0
-# 	while not q.empty():
-# 		level += 1
-# 		parentNode = q.get()
-# 		parentView = v.get()
-# 		children = parentNode.children
-		
-# 		graph.add_node(parentView)
-# 		childIndex = 0
-
-# 		attribute = attribDictionary[parentNode.name]
-# 		attributeIndex, attributeValues = attribute
-
-# 		for childNode in children:
-# 			childParentAttr = attributeValues[childIndex]
-# 			printParentAttr = " " + parentNode.name + "=" + childParentAttr + " "
-# 			methodSuccess = " " + childNode.method + "=" + str(childNode.value) + " "
-
-# 			if len(childNode.data) == 0:
-# 				text1 = \
-# 					"#Instances = " + str(len(childNode.data)) + r"\n" +\
-# 					"Guess(assumed) = " + childNode.decision
-
-# 				text2 = \
-# 					"'" + printParentAttr + r"\n" + \
-# 					text1 +\
-# 					"Parent=" + str(level)
-# 				childView = pydot.Node(text2, shape="rectangle", style="filled", fillcolor="aquamarine", label=text1)
-# 			elif childNode.decision != None:
-# 				text1 = \
-# 					"Guess = " + childNode.decision + r"\n" + \
-# 					"#Instances = " + str(len(childNode.data)) + r"\n"
-# 				text2 =  \
-# 					printParentAttr + r"\n" +\
-# 					text1 + \
-# 					"Parent=" + str(level)
-# 				childView = pydot.Node(text2, style="filled", fillcolor="chartreuse", label=text1)
-# 			else:
-# 				text1 = \
-# 					"NextAttr = " + childNode.name + r"\n" +\
-# 					"#Instances = " + str(len(childNode.data)) + r"\n" +\
-# 					"Value = " + str(childNode.value)
-				
-# 				text2 = \
-# 					"'" + printParentAttr + r"\n" + \
-# 					text1 + \
-# 					"Parent=" + str(level)
-# 				childView = pydot.Node(text2, shape="rectangle", label=text1)
-			
-# 			graph.add_node(childView)
-# 			edgeLabel = printParentAttr
-# 			edge = pydot.Edge(parentView, childView, label=edgeLabel, arrowhead="normal")
-# 			graph.add_edge(edge)
-# 			childIndex +=1
-
-# 			if childNode.name == "":
-# 				continue
-# 			q.put(childNode)
-# 			v.put(childView)
-
-# 	graph.write_png(fileName)
-
-
 def makeAGuess(rootNodeVar, testInstanceVar):
 	flag = True
 	node = rootNodeVar
@@ -555,47 +468,24 @@ def realWorldTest(rootNodeVar, instancesVar, methodName, setName):
 
 
 
+def generate_tree():
+    newAttNameList = copy.deepcopy(attribNamesList)
+    newAttNameList.remove("classAttr")
+    rootNode_gini = treeDistribution(newAttNameList, train, "gini")
+    rootNode_gainratio = treeDistribution(newAttNameList, train, "gainRatio")
+    rootNode_informationgain = treeDistribution(newAttNameList, train, "informationGain")
 
-newAttNameList = copy.deepcopy(attribNamesList)
-newAttNameList.remove("classAttr")
-rootNode1 = treeDistribution(newAttNameList, train, "gini")
-rootNode2 = treeDistribution(newAttNameList, train, "gainRatio")
-rootNode3 = treeDistribution(newAttNameList, train, "informationGain")
-# drawFunction(rootNode1, "gini.png")
-# drawFunction(rootNode2, "gainRatio.png")
-# drawFunction(rootNode3, "informationGain.png")
-
-realWorldTest(rootNode1, train, "gini", "train")
-realWorldTest(rootNode1, test, "gini", "test")
-print("")
-
-realWorldTest(rootNode2, train, "gainRatio", "train")
-realWorldTest(rootNode2, test, "gainRatio", "test")
-print("")
-
-realWorldTest(rootNode3, train, "informationGain", "train")
-realWorldTest(rootNode3, test, "informationGain", "test")
-print("")
-
-
-# guess = makeAGuess(rootNode, ['low', 'med', '2', '4', 'small', 'med', 'acc'])
-# print (guess)
-# print(valid, invalid)
-
-# def findTestAccuracy(testSetVar):
-# iGList = []
-# gRList = []
-# gIList = []
-# for attribName in attribNamesList:
-# 	iG = informationGain(attribName, train)
-# 	gR = gainRatio(attribName, train)
-# 	gI = giniIndex(attribName, train)
-
-# 	iGList.append(iG)
-# 	gRList.append(gR)
-# 	gIList.append(gI)
-
-# print(attribNamesList)
-# print(iGList)
-# print(gRList)
-# print(gIList)
+    return rootNode_gini, rootNode_gainratio, rootNode_gainratio
+generate_tree()
+#
+# realWorldTest(rootNode1, train, "gini", "train")
+# realWorldTest(rootNode1, test, "gini", "test")
+# print("")
+#
+# realWorldTest(rootNode2, train, "gainRatio", "train")
+# realWorldTest(rootNode2, test, "gainRatio", "test")
+# print("")
+#
+# realWorldTest(rootNode3, train, "informationGain", "train")
+# realWorldTest(rootNode3, test, "informationGain", "test")
+# print("")
