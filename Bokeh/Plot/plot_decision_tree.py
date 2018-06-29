@@ -1,14 +1,11 @@
 import pandas as pd
 from bokeh.io import show
 from bokeh.plotting import figure
-from bokeh.embed import components
 
 from bokeh.transform import dodge, factor_cmap
-from bokeh.models import Arrow, OpenHead
-from bokeh.models.callbacks import CustomJS
 from bokeh.models.widgets import RadioButtonGroup, CheckboxButtonGroup
 from bokeh.layouts import column
-from generate_bokeh_data import get_bokeh_data
+from Bokeh.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 
 # Create the main plot
 def create_figure():
@@ -85,4 +82,4 @@ def create_figure():
     p.legend.orientation = "vertical"
     p.legend.location = "top_right"
     return column(method_type, attributes, p)
-#show(create_figure())
+show(create_figure())

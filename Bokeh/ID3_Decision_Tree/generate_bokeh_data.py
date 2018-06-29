@@ -1,4 +1,4 @@
-from ID3_Decision_Tree.id3_2 import generate_tree
+from Bokeh.ID3_Decision_Tree.id3_decision_tree import generate_tree
 
 
 def get_depth(node, visited = {}):
