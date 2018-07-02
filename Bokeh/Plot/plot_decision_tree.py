@@ -8,7 +8,7 @@ from bokeh.models import Arrow, VeeHead, ColumnDataSource, Range1d, LabelSet, Ti
 from bokeh.models.callbacks import CustomJS
 from bokeh.models.widgets import RadioButtonGroup, Button, CheckboxButtonGroup, Paragraph
 from bokeh.layouts import column, row
-from generate_bokeh_data import get_bokeh_data
+from Bokeh.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 
 cmap = {
         "buyingAttr": "#a6cee3",

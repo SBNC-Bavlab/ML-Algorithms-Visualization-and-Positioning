@@ -19,7 +19,7 @@ class Node(object):
 		self.depth = 0
 
 from math import log
-data = pickle.load(open('car2.pkl','rb'))
+data = pickle.load(open('../Bokeh/Data/car.pkl','rb'))
 train = data['train']
 test = data['test']
 
