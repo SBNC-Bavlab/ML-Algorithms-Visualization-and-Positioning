@@ -71,13 +71,15 @@ def generate_bokeh_data(source, root, depth, width, visited, level_width):
                 visited[child] = True
 
 
-def get_bokeh_data(method, activeAttrList = []):
+def get_bokeh_data(method, activeAttrList = [], setRootAttribute=""):
     print("inside get_bokeh_data", activeAttrList)
     setActiveAttrs(activeAttrList)
-    root, acc = generate_tree(method)
+    root, acc = generate_tree(method, setRootAttribute)
     visited = {}
     depth = get_depth(root, visited)
     width, level_width = get_max_width(root)
     source = { "x": [], "y": [], "attribute_type": [], "decision": [], "stat_value": []}
     generate_bokeh_data(source, root, depth, width, visited, level_width)
     return source, depth, width, level_width, acc
+
+# get_bokeh_data("gini", [ "buyingAttr", "personsAttr", "lug_bootAttr", "safetyAttr", "classAttr" ])

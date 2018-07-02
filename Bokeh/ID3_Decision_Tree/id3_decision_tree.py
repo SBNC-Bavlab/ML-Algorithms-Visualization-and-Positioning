@@ -401,16 +401,30 @@ def observeFromSiblings(nodeVar):
 	# print(nodeVar.parent, siblingsDistributions)
 
 
-def treeDistribution(attributeListVar, instancesVar, methodology):
+def treeDistribution(attributeListVar, instancesVar, methodology, setRootAttribute):
 	attribListCopy = copy.deepcopy(attributeListVar)
 	instancesCopy = copy.deepcopy(instancesVar)
 
-	# this is the root node
-	bestAttrName, successValue = chooseTheBest(attribListCopy, instancesCopy, methodology)
-	attribListCopy.remove(bestAttrName)
-	rootNode = Node("", bestAttrName, instancesCopy, [], attribListCopy, methodology)
-	rootNode.parentPointer = None
-	rootNode.value= successValue
+	if setRootAttribute == "":
+		# this is the root node
+		bestAttrName, successValue = chooseTheBest(attribListCopy, instancesCopy, methodology)
+		attribListCopy.remove(bestAttrName)
+		rootNode = Node("", bestAttrName, instancesCopy, [], attribListCopy, methodology)
+		rootNode.parentPointer = None
+		rootNode.value= successValue
+
+	else:
+		if methodology == "gini":
+			value = giniIndex(setRootAttribute, instancesVar)
+		elif methodology == "gainRatio":
+			value = gainRatio(setRootAttribute, instancesVar)
+		else:
+			value = informationGain(setRootAttribute, instancesVar)
+
+		attribListCopy.remove(setRootAttribute)
+		rootNode = Node("", setRootAttribute, instancesCopy, [], attribListCopy, methodology)
+		rootNode.parentPointer = None
+		rootNode.value = value
 
 	q = Queue()
 	q.put(rootNode)
@@ -425,17 +439,17 @@ def treeDistribution(attributeListVar, instancesVar, methodology):
 			else:
 				q.put(child)
 
-	# reviewQ = Queue()
-	# reviewQ.put(rootNode)
-	# while not reviewQ.empty():
-	#
-	# 	node = reviewQ.get()
-	# 	for child in node.children:
-	# 		reviewQ.put(child)
-    #
-	# 	# optimize for "noInfo" nodes
-	# 	if (len(node.data) == 0):
-	# 		observeFromSiblings(node)
+	reviewQ = Queue()
+	reviewQ.put(rootNode)
+	while not reviewQ.empty():
+
+		node = reviewQ.get()
+		for child in node.children:
+			reviewQ.put(child)
+
+		# optimize for "noInfo" nodes
+		if (len(node.data) == 0):
+			observeFromSiblings(node)
 
 
 	return rootNode
@@ -475,9 +489,9 @@ def realWorldTest(rootNodeVar, instancesVar, methodName, setName):
 	return (valid)/float(valid+invalid)
 
 
-def generate_tree(method):
+def generate_tree(method, setRootAttribute):
     newAttNameList = copy.deepcopy(attribNamesList)
     newAttNameList.remove("classAttr")
-    rootNode = treeDistribution(newAttNameList, train, method)
+    rootNode = treeDistribution(newAttNameList, train, method, setRootAttribute)
 
     return rootNode, realWorldTest(rootNode, test, "methodName?", "setName?")
