@@ -8,7 +8,7 @@ from bokeh.models import Arrow, VeeHead, ColumnDataSource, Range1d, LabelSet, Ti
 from bokeh.models.callbacks import CustomJS
 from bokeh.models.widgets import RadioButtonGroup, Button, CheckboxButtonGroup, Paragraph
 from bokeh.layouts import column, row
-from generate_bokeh_data import get_bokeh_data
+from Bokeh.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 
 cmap = {
         "buyingAttr": "#a6cee3",
@@ -38,11 +38,7 @@ radio_button_labels = ["gini", "gainRatio"]
 arrow_list = {"current": [], "previous": []}
 current_label= ["gainRatio"]
 previous_plot = []
-##All of the attribute index hard coded
-##enum for method i.e gini, gainRatio
-class Method(Enum):
-    GINI = 0
-    GAIN = 1
+selected_root = [""]
 
 # Create the main plot
 def create_figure():
@@ -50,7 +46,7 @@ def create_figure():
     #Implicitly two attributes is disabled for the beginning
     active_attributes_list = [attr for attr in cmap.keys() if attr != "doorsAttr" and attr != "maintAttr"]
     # method options: gini, gainRatio, informationGain
-    source, width, depth, level_width, acc = get_bokeh_data("gainRatio", active_attributes_list)
+    source, width, depth, level_width, acc = get_bokeh_data("gainRatio", active_attributes_list, selected_root[0])
 
     elements = pd.DataFrame.from_dict(source)
     
@@ -76,7 +72,13 @@ def create_figure():
                                              if attr != "doorsAttr" and attr != "maintAttr"])
     #button to apply changes   
     button = Button(label="Değişiklikleri Uygula", button_type="success")
-    
+
+    # any attribute type
+    root_type = RadioButtonGroup(width=600, labels= ['Hiçbiri'] + list(cmap.keys())[:-1], active = 0)
+
+    # button to apply changes
+    button = Button(label="Değişiklikleri Uygula", button_type="success")
+
     rect_width = 0.93
     rect_height = 0.93
     
@@ -87,16 +89,18 @@ def create_figure():
     p.add_layout(label)
     
     attr_info = Paragraph(text="""
-       Nitelikleri seçiniz:
+       Öz nicelikleri seçiniz:
     """, width = 70)
     method_info = Paragraph(text="""
        Metodu seçiniz:
     """, width = 65)
+    root_info = Paragraph(text="""
+           Kök öz niceliği seçiniz:
+        """, width=70)
     ##Add all components into main_frame variable
-    main_frame = column(row(attr_info, attributes, method_info, method_type, button), p)
+    main_frame = column(row(attr_info, attributes, method_info, method_type), row(root_info, root_type, button), p)
     #Called with respect to change in method_type
     def updateMethodType(new):
-            print(new)
             ##Method_type -> gini or Gain ratio
             method_type = radio_button_labels[new]
             current_label[0] = method_type
@@ -111,10 +115,20 @@ def create_figure():
         print(new)
         
     attributes.on_click(updateAttributes)
-    
-    def applyChanges():
+
+    def updateRoot(new):
+        ##Select root manually
+        if(new == 0):
+            selected_root[0] = ''
+        else:
+            method_type = list(cmap.keys())[new - 1]
+            selected_root[0] = method_type
+    root_type.on_click(updateRoot)
+
+
+    def  applyChanges():
         
-        data, width, depth, level_width, acc = get_bokeh_data(current_label[0], active_attributes_list)        
+        data, width, depth, level_width, acc = get_bokeh_data(current_label[0], active_attributes_list, selected_root[0])
         data = pd.DataFrame.from_dict(data)
         
         data['stat_value'] = [round(i, 3) for i in data['stat_value']] #decimal point rounded to 2
@@ -229,7 +243,6 @@ def draw_arrow(mode, source, p, width, level_width, rect_width, rect_height):
                     arrow_coordinates["x_avg"].append((x_start + x_end) / 2)
                     arrow_coordinates["y_avg"].append((y_start + y_end) / 2)
                     arrow_coordinates["label_name"].append(children_names[index])
-                    print(arrow_index, " was here1")
                     arrow_index += 1
                 x_offset += number_of_children
     arrow_data_source = ColumnDataSource(data=pd.DataFrame.from_dict(arrow_coordinates))
@@ -241,11 +254,12 @@ def draw_arrow(mode, source, p, width, level_width, rect_width, rect_height):
         return arrow_data_source, arrow, label
     else:
         p.add_layout(arrow) 
-        p.add_layout(label)    
+        p.add_layout(label)
+
 def animate_outline_color(plot, number, delay = 0.5):
      for i in range(number):
         plot.outline_line_color = "red"
-        sleep(0.5)
+        sleep(0.3)
         plot.outline_line_color = "white"
-        sleep(0.5)
+        sleep(0.3)
 #show(create_figure())

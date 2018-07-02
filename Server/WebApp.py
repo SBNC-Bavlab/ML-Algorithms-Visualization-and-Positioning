@@ -23,6 +23,7 @@ def modify_doc(doc):
     doc.add_root(plot)
 #    return render_template("index.html", script=script, div=div,
 #                           feature_names=[], current_feature_name=None)
+
 @app.route('/q', methods=['GET'])
 def shut():
     func = request.environ.get('werkzeug.server.shutdown')

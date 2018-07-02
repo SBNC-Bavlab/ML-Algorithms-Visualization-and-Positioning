@@ -1,4 +1,4 @@
-from id3_2 import generate_tree, setActiveAttrs
+from Bokeh.ID3_Decision_Tree.id3_decision_tree import generate_tree, setActiveAttrs
 
 
 def get_depth(node, visited = {}):
@@ -63,6 +63,7 @@ def generate_bokeh_data(source, root, depth, width, visited, level_width):
 
         source["stat_value"].append(popped_node.value)
         source["decision"].append(popped_node.decision)
+        source["instanceCount"].append(len(popped_node.data))
         width_index[popped_node.depth - 1] += (width / (level_width[depth - popped_node.depth]+1))
 
         for child in popped_node.children:
@@ -71,13 +72,15 @@ def generate_bokeh_data(source, root, depth, width, visited, level_width):
                 visited[child] = True
 
 
-def get_bokeh_data(method, activeAttrList = []):
+def get_bokeh_data(method, activeAttrList = [], setRootAttribute=""):
     print("inside get_bokeh_data", activeAttrList)
     setActiveAttrs(activeAttrList)
-    root, acc = generate_tree(method)
+    root, acc = generate_tree(method, setRootAttribute)
     visited = {}
     depth = get_depth(root, visited)
     width, level_width = get_max_width(root)
-    source = { "x": [], "y": [], "attribute_type": [], "decision": [], "stat_value": []}
+    source = { "x": [], "y": [], "attribute_type": [], "instanceCount": [], "decision": [], "stat_value": []}
     generate_bokeh_data(source, root, depth, width, visited, level_width)
     return source, depth, width, level_width, acc
+
+# get_bokeh_data("gini", [ "buyingAttr", "personsAttr", "lug_bootAttr", "safetyAttr", "classAttr" ])
