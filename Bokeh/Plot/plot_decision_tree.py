@@ -73,8 +73,11 @@ def create_figure():
     #button to apply changes   
     button = Button(label="Değişiklikleri Uygula", button_type="success")
 
-    # gini or informationGain or gainRatio
-    root_type = RadioButtonGroup(width=600, labels=list(cmap.keys())[:-1])
+    # any attribute type
+    root_type = RadioButtonGroup(width=600, labels= ['Hiçbiri'] + list(cmap.keys())[:-1], active = 0)
+
+    # button to apply changes
+    button = Button(label="Değişiklikleri Uygula", button_type="success")
 
     rect_width = 0.93
     rect_height = 0.93
@@ -114,9 +117,12 @@ def create_figure():
     attributes.on_click(updateAttributes)
 
     def updateRoot(new):
-        ##Method_type -> gini or Gain ratio
-        method_type = list(cmap.keys())[new]
-        selected_root[0] = method_type
+        ##Select root manually
+        if(new == 0):
+            selected_root[0] = ''
+        else:
+            method_type = list(cmap.keys())[new - 1]
+            selected_root[0] = method_type
     root_type.on_click(updateRoot)
 
 
@@ -253,7 +259,7 @@ def draw_arrow(mode, source, p, width, level_width, rect_width, rect_height):
 def animate_outline_color(plot, number, delay = 0.5):
      for i in range(number):
         plot.outline_line_color = "red"
-        sleep(0.5)
+        sleep(0.3)
         plot.outline_line_color = "white"
-        sleep(0.5)
+        sleep(0.3)
 #show(create_figure())

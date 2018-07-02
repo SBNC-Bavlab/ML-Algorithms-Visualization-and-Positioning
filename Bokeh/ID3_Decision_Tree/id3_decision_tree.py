@@ -19,9 +19,10 @@ class Node(object):
 		self.depth = 0
 
 from math import log
-data = pickle.load(open('../Bokeh/Data/car.pkl','rb'))
+data = pickle.load(open('../Bokeh/Data/car2.pkl','rb'))
 train = data['train']
 test = data['test']
+train = train + test
 
 buyingAttr = ["vhigh", "high", "med", "low"]
 maintAttr =  ["vhigh", "high", "med", "low"]
@@ -494,4 +495,4 @@ def generate_tree(method, setRootAttribute):
     newAttNameList.remove("classAttr")
     rootNode = treeDistribution(newAttNameList, train, method, setRootAttribute)
 
-    return rootNode, realWorldTest(rootNode, test, "methodName?", "setName?")
+    return rootNode, 0#realWorldTest(rootNode, test, "methodName?", "setName?")
