@@ -89,13 +89,13 @@ def create_figure():
     p.add_layout(label)
     
     attr_info = Paragraph(text="""
-       Nitelikleri seçiniz:
+       Öz nicelikleri seçiniz:
     """, width = 70)
     method_info = Paragraph(text="""
        Metodu seçiniz:
     """, width = 65)
     root_info = Paragraph(text="""
-           Kök niteliği seçiniz:
+           Kök öz niceliği seçiniz:
         """, width=70)
     ##Add all components into main_frame variable
     main_frame = column(row(attr_info, attributes, method_info, method_type), row(root_info, root_type, button), p)

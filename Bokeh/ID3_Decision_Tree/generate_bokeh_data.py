@@ -63,6 +63,7 @@ def generate_bokeh_data(source, root, depth, width, visited, level_width):
 
         source["stat_value"].append(popped_node.value)
         source["decision"].append(popped_node.decision)
+        source["instanceCount"].append(len(popped_node.data))
         width_index[popped_node.depth - 1] += (width / (level_width[depth - popped_node.depth]+1))
 
         for child in popped_node.children:
@@ -78,7 +79,7 @@ def get_bokeh_data(method, activeAttrList = [], setRootAttribute=""):
     visited = {}
     depth = get_depth(root, visited)
     width, level_width = get_max_width(root)
-    source = { "x": [], "y": [], "attribute_type": [], "decision": [], "stat_value": []}
+    source = { "x": [], "y": [], "attribute_type": [], "instanceCount": [], "decision": [], "stat_value": []}
     generate_bokeh_data(source, root, depth, width, visited, level_width)
     return source, depth, width, level_width, acc
 
