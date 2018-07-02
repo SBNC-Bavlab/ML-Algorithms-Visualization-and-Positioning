@@ -19,7 +19,7 @@ class Node(object):
 		self.depth = 0
 
 from math import log
-data = pickle.load(open('../Bokeh/Data/car.pkl','rb'))
+data = pickle.load(open('car2.pkl','rb'))
 train = data['train']
 test = data['test']
 
@@ -33,8 +33,8 @@ classAttr =  ["unacc", "acc", "good", "vgood"]
 
 attribNamesList = [
 	"buyingAttr",
-	# "maintAttr",
-	# "doorsAttr",
+	"maintAttr",
+	"doorsAttr",
 	"personsAttr",
 	"lug_bootAttr",
 	"safetyAttr",
@@ -43,14 +43,22 @@ attribNamesList = [
 
 attribDictionary = {
 	"buyingAttr": (0,buyingAttr),
-	# "maintAttr": (1,maintAttr),
-	# "doorsAttr": (2, doorsAttr),
+	"maintAttr": (1,maintAttr),
+	"doorsAttr": (2, doorsAttr),
 	"personsAttr": (3, personsAttr),
 	"lug_bootAttr": (4, lug_bootAttr),
 	"safetyAttr": (5, safetyAttr),
 	"classAttr": (6, classAttr)
 }
 
+def setActiveAttrs(activeAttrList):
+    print("here")
+    #clear the list
+    attribNamesList[:] = []
+    #fill again
+    for attr in activeAttrList:
+        attribNamesList.append(attr)
+    print(attribNamesList)
 
 def entropy(distributionListVar, numberOfDifferentValuesVar):
 	numberOfInstances = 0.0
@@ -464,7 +472,7 @@ def realWorldTest(rootNodeVar, instancesVar, methodName, setName):
 		else:
 			invalid += 1
 			# print (guess, ins[-1])
-	print(setName, methodName, valid, invalid, (valid)/float(valid+invalid))
+	return (valid)/float(valid+invalid)
 
 
 def generate_tree(method):
@@ -472,4 +480,4 @@ def generate_tree(method):
     newAttNameList.remove("classAttr")
     rootNode = treeDistribution(newAttNameList, train, method)
 
-    return rootNode
+    return rootNode, realWorldTest(rootNode, test, "methodName?", "setName?")

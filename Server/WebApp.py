@@ -1,10 +1,15 @@
 from flask import Flask, render_template, request
 
 from bokeh.embed import server_document
+from bokeh.layouts import column
+from bokeh.models import ColumnDataSource, Slider
+from bokeh.plotting import figure
 from bokeh.server.server import Server
+from bokeh.themes import Theme
 from tornado.ioloop import IOLoop
 
-from Bokeh.Plot.plot_decision_tree import create_figure
+from bokeh.sampledata.sea_surface_temperature import sea_surface_temperature
+from decision_tree import create_figure
 from bokeh.embed import components
 app = Flask(__name__)
 
@@ -12,13 +17,12 @@ app = Flask(__name__)
 def modify_doc(doc):
         # Create the plot
     plot = create_figure()
-
+    print("here234")
     # Embed plot into HTML via Flask Render
     script, div = components(plot)
     doc.add_root(plot)
 #    return render_template("index.html", script=script, div=div,
 #                           feature_names=[], current_feature_name=None)
-
 @app.route('/q', methods=['GET'])
 def shut():
     func = request.environ.get('werkzeug.server.shutdown')
