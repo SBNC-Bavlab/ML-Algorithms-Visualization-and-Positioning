@@ -12,18 +12,14 @@
     ul{
         list-style-type: none;
     }
-    td{
-        background-color: beige;
-    }
 
     #main_list{
-        background-color: lightgreen;
         margin-top: 5px;
         min-height: 100px;
     }
     #main_list li{
-        word-break: break-all;
         background-color: greenyellow;
+        text-align: left;
         border: 1px solid black;
         width: 350px;
         padding: 2px 2px 2px 2px;
@@ -53,21 +49,128 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
   <script>
-  var data = ["Bulutlu | Rüzgarlı | Mangal Yap!", "Karlı | Rüzgarsız | Mangal yapma!","Yağmurlu | Rüzgarsız | Mangal Yapma!", "Güneşli | Rüzgarsız | Mangal Yap!"]
+  var data = [['Yeşil', 3, 'Elma'], ['Kırmızı', 3, 'Elma'], ['Kırmızı', 1, 'Üzüm'], ['Kırmızı', 1, 'Üzüm'], ['Sarı', 3, 'Limon']]
   var dict = {}
+  var questions = {"Kırmızı mı?" : {attribute :"Kırmızı", type: 0},
+          "3'ten büyük mü?": {attribute : "3", type: 1},
+          "Sarı mı?": {attribute: "Sarı", type: 0}};
+
+  function calculateEntropy(data){
+      totalNumber = data.length
+      labelDict = {}
+      for (var i in data){
+        //get the last column which is the label
+          entry = data[i]
+        decision = entry[entry.length - 1]
+        if( decision in labelDict){
+            labelDict[decision]++;
+        } else {
+            labelDict[decision] = 1.0
+        }
+      }
+      entropy = 0.0
+      for(var key in labelDict){
+          prob = labelDict[key] / totalNumber
+          entropy -= prob * Math.log2(prob);
+      }
+      return entropy
+  }
   $( function() {
-    data.forEach((entry, i)=>{
-        var $newNode = $("<li>").attr("id", "entry_" + i).append(entry)
-        var obje = { textTokens : entry.split(" | ")}
+      var i = 0;
+    for (var question in questions){
+        var button = document.createElement("button")
+        var $button = $(button);
+        i++;
+        $button.attr("id", "" + i).css("margin-top", "10px").css("width", "200px").addClass("btn").addClass("btn-primary").addClass("btn-lg").html(question).appendTo("#question_list")
+        $button.click((function(question) {return function() {
+            var leftItems = $("#left li");
+            console.log(leftItems.length)
+            for(var i = 1; i < leftItems.length; i++){
+               var $item = $(leftItems[i]);
+               $("#main_list").append($("#" + $item.attr("id")))
+            }
+            var rightItems = $("#right li")
+            for(var i = 1; i < rightItems.length; i++){
+               var $item = $(rightItems[i]);
+               $("#main_list").append($("#" + $item.attr("id")))
+            }
+            var mainItems = $("#main_list li");
+            console.log(question)
+            for(var i = 1; i < mainItems.length; i++){
+                var $item = $(mainItems[i]);
+                var conditionAttribute = dict[$item.attr("id")]["attributeValues"][question["type"]];
+                if(conditionAttribute == question["attribute"]){
+                    $("#left").append($("#" + $item.attr("id")));
+                }else{
+                    $("#right").append($("#" + $item.attr("id")));
+                }
+            }
+            recalculateLeftRight()
+        };})(questions[question]));
+    }
+    //Generilize the data and create a dict
+    data.forEach((entry, i) => {
+        var obje = { attributeValues : entry}
+        var text = ""
+        var table = document.createElement("table")
+        var tr = table.insertRow()
+        var previous = null
+        for(var attribute in entry) {
+            text += entry[attribute] + "  "
+            cell = tr.insertCell()
+            if(previous != null) {
+                $(cell).css("padding-left", (90 - previous*7) + "px")//Hardcoded change
+            }
+            cell.innerHTML = entry[attribute]
+            previous = $.isNumeric(entry[attribute]) ? 1 : entry[attribute].length;
+        }
+
+        var $newNode = $("<li>").attr("id", "entry_" + i).append($(table))
         dict[$newNode.attr("id")] = obje
         $("#main_list").append($newNode);
     });
-
+    //General calculateEntropyById, excludes first item haaaaaaaaaaaaaa
+    function calculateEntropyById(id){
+        var leftData = []
+        var leftItems = $(id)
+        for(var i = 1; i < leftItems.length; i++){
+            var $item = $(leftItems[i])
+            tokens = dict[$item.attr("id")]["attributeValues"]
+            console.log(tokens)
+            leftData.push(tokens)
+        }
+        return calculateEntropy(leftData)
+    }
+    //recalculates entropy of the left and right divs
+    function recalculateLeftRight(){
+        //left
+        leftEntropy = calculateEntropyById("#left li") //excludes first item haaaaaaaaaaaaaa
+        //right
+        rightEntropy = calculateEntropyById("#right li")//excludes first item haaaaaaaaaaaaaa
+        $("#leftEntropy").html("Entropy: " + leftEntropy)
+        $("#rightEntropy").html("Entropy: " + rightEntropy)
+        console.log("Left: ", leftEntropy, "Right: ", rightEntropy)
+    }
+    //Calculate main entropy
+    mainData = []
+    var mainItems = $("#main_list li")
+    for(var i = 1; i < mainItems.length; i++){
+        var $item = $(mainItems[i])
+        tokens = dict[$item.attr("id")]["attributeValues"]
+        mainData.push(tokens)
+    }
+    mainEntropy = calculateEntropy(mainData)
+    $("#mainEntropy").html("Entropy: " + mainEntropy)
+    //Define method when sorting completed
     function onStopSorting(event, ui){
         var item = ui.item
-        $(item).css("background-color", "yellow");
+        var $main_list = $("#main_list")
+        console.log($main_list[0])
+        if($main_list[0].childElementCount == 0){
+            recalculateLeftRight()
+        }
     }
-    $('#main_list li').draggable({
+    $('#main_list li:not(:first-child)').draggable({
         cursor: 'move',
         connectToSortable: ".sortable",
         revert: 'invalid'
@@ -87,22 +190,50 @@
     $("#main_list, #left, #rigth").disableSelection();
 
     $("#calculate").click(()=>{
-        var leftItems = $("#left li")
-        for(var i = 1; i < leftItems.length; i++){
-            $(leftItems[i]).css("background-color", "red")
-            console.log(dict[$(leftItems[i]).attr("id")]["textTokens"])
-        }
 
+        var totalNumber = mainData.length//left
+        leftEntropy = calculateEntropyById("#left li") //excludes first item haaaaaaaaaaaaaa
+        leftSize = $("#left li").length - 1
+        //right
+        rightEntropy = calculateEntropyById("#right li")//excludes first item haaaaaaaaaaaaaa
+        rightSize = $("#right li").length - 1
+        var averageEntropy = (leftSize / totalNumber) * leftEntropy + (rightSize / totalNumber) * rightEntropy
+        $("#averageEntropy").html("Average Entropy: " + averageEntropy)
     });
   });
   </script>
 </head>
 <body>
-
-<div align = "center">
-    <ul id = "main_list" class = "sortable">
-    </ul>
+<div class = "row" align="center">
+    <div class ="col-sm-6">
+        <ul id = "main_list" class = "sortable" style = "padding-left: 0px">
+            <li id = "header" style="background-color: red;">
+                <table style="color: white;">
+                    <tbody>
+                    <tr>
+                        <td>Renk</td>
+                        <td style="padding-left: 55px;">Çap</td>
+                        <td style="padding-left: 83px;">Meyve</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </li>
+        </ul>
+    </div>
+    <div class = "col-sm-2">
+        <ul id = "question_list">
+        </ul>
+    </div>
+</div>
+<div class = "row" align="center">
+    <div  id = "mainEntropy" class = "col-sm-6"  style="margin-bottom: 15px;"> Entropy: -</div>
+    <div class = "col-sm-3">
+        <button id = "calculate" type="button" style="margin-bottom: 15px" class="btn btn-outline-primary">Hesapla</button>
+    </div>
+</div>
+<div class="row" style = "margin-left: 0px">
     <table border="3px">
+
         <tr>
             <td>
                 <ul id='left' class = "sortable">
@@ -116,7 +247,25 @@
             </td>
         </tr>
     </table>
-    <button id = "calculate" type="button" style="margin-top: 15px" class="btn btn-outline-primary">Hesapla</button>
+</div>
+<div class="row" style="margin-left: 160px">
+    <table>
+        <tr>
+            <td id = "leftEntropy" style="width: 300px; margin-left: 100px; padding: 2px">
+                Entropy: -
+            </td>
+            <td id = "rightEntropy" style="width: 300px; margin-left: 100px; padding-left: 132px">
+                Entropy: -
+            </td>
+        </tr>
+    </table>
+</div>
+<br>
+<br>
+<div class="row" align="center">
+    <div id = "averageEntropy" class = "col-sm-6">
+    Average Entropy: -
+    </div>
 </div>
 
 </body>
