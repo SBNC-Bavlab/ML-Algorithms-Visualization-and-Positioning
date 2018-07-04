@@ -16,7 +16,8 @@ class Node(object):
 		self.decision = None
 		self.method = method
 		self.value = None
-		self.depth = 0
+		self.width = 0
+		self.coord = (0,0)
 
 from math import log
 data = pickle.load(open('../Bokeh/Data/car2.pkl','rb'))
