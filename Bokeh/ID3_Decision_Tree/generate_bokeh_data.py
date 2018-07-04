@@ -2,7 +2,7 @@ from Bokeh.ID3_Decision_Tree.id3_decision_tree import generate_tree, setActiveAt
 
 
 def get_depth(node, visited = {}):
-    if node.decision in ["unacc", "acc", "good", "vgood"]:
+    if node.decision in ["unacc", "acc", "good", "vgood", "1", "2", "3"]:
         node.name = "classAttr"
 
     if not node.children:
@@ -56,6 +56,22 @@ def generate_bokeh_data(source, root, depth, width, visited, level_width):
 
         source["y"].append(width_index[popped_node.depth-1] + (width / (level_width[depth - popped_node.depth]+1)))
 
+        if popped_node.children != []:
+            source["nonLeafNodes_x"].append(2 * popped_node.depth)
+            source["nonLeafNodes_y"].append(width_index[popped_node.depth - 1] + (width / (level_width[depth - popped_node.depth] + 1)))
+            source["nonLeafNodes_stat"].append(popped_node.value)
+            source["nonLeafNodes_decision"].append(popped_node.value)
+            source["leafNodes_x"].append(None)
+            source["leafNodes_y"].append(None)
+        else:
+            source["nonLeafNodes_x"].append(None)
+            source["nonLeafNodes_y"].append(None)
+            source["nonLeafNodes_stat"].append(None)
+            source["nonLeafNodes_decision"].append(None)
+            source["leafNodes_x"].append(2 * popped_node.depth)
+            source["leafNodes_y"].append(width_index[popped_node.depth - 1] + (width / (level_width[depth - popped_node.depth] + 1)))
+
+
         if popped_node.name == "":
             source["attribute_type"].append("classAttr")
         else:
@@ -64,6 +80,8 @@ def generate_bokeh_data(source, root, depth, width, visited, level_width):
         source["stat_value"].append(popped_node.value)
         source["decision"].append(popped_node.decision)
         width_index[popped_node.depth - 1] += (width / (level_width[depth - popped_node.depth]+1))
+
+        source["instances"].append(len(popped_node.data))
 
         for child in popped_node.children:
             if visited[child] == False:
@@ -78,7 +96,7 @@ def get_bokeh_data(method, activeAttrList = [], setRootAttribute=""):
     visited = {}
     depth = get_depth(root, visited)
     width, level_width = get_max_width(root)
-    source = { "x": [], "y": [], "attribute_type": [], "decision": [], "stat_value": []}
+    source = { "x": [], "y": [], "attribute_type": [], "decision": [], "stat_value": [], "nonLeafNodes_x": [], "nonLeafNodes_y": [], "leafNodes_x": [], "leafNodes_y": [], "nonLeafNodes_stat": [], "instances": [], "nonLeafNodes_decision": []}
     generate_bokeh_data(source, root, depth, width, visited, level_width)
     return source, depth, width, level_width, acc
 
