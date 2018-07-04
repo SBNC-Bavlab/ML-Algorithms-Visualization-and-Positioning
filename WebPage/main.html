@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>İnteraktif Karar Ağacı</title>
+  <style>
+    @font-face {
+        font-family: "San Fransisco";
+        src: url(sf.otf) format("truetype");
+    }
+    ul{
+        list-style-type: none;
+    }
+    td{
+        vertical-align: top;
+    }
+
+    #main_list{
+        margin-top: 5px;
+        min-height: 200px;
+    }
+    #main_list li{
+        background-color: rgba(221,221,221,0.54);
+        text-align: left;
+        border: 1px solid black;
+        width: 350px;
+        padding: 2px 2px 2px 2px;
+        margin-top: 5px;
+    }
+
+    #left, #right{
+        min-width: 350px;
+        margin: 25px;
+        padding: 0px 0px 0px 0px
+    }
+    #left li:first-child, #right li:first-child{
+        background-color: orange;
+    }
+
+    #left li, #right li{
+        word-break: break-all;
+        background-color: lightgreen;
+        border: 1px solid black;
+        width: 350px;
+        margin: 5px;
+    }
+    .blur {
+        -webkit-filter: blur(5px); /* Chrome, Safari, Opera */
+        filter: blur(5px);
+    }
+    .row{
+        margin: 0px 0px 0px 0px;
+    }
+  </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+  <script>
+  var data = [['Yeşil', 3, 'Elma'], ['Kırmızı', 3, 'Elma'], ['Kırmızı', 1, 'Üzüm'], ['Kırmızı', 1, 'Üzüm'], ['Sarı', 3, 'Limon']]
+  var dict = {}
+  var questions = {"Kırmızı mı?" : {attribute :"Kırmızı", type: 0},
+          "3'ten büyük mü?": {attribute : "3", type: 1},
+          "Sarı mı?": {attribute: "Sarı", type: 0}};
+
+  function calculateEntropy(data){
+      totalNumber = data.length
+      labelDict = {}
+      for (var i in data){
+        //get the last column which is the label
+          entry = data[i]
+        decision = entry[entry.length - 1]
+        if( decision in labelDict){
+            labelDict[decision]++;
+        } else {
+            labelDict[decision] = 1.0
+        }
+      }
+      entropy = 0.0
+      for(var key in labelDict){
+          prob = labelDict[key] / totalNumber
+          entropy -= prob * Math.log2(prob);
+      }
+      return entropy
+  }
+  $( function() {
+    $('[data-toggle="tooltip"]').tooltip()
+    for (var question in questions){
+        var button = document.createElement("button")
+        var $button = $(button);
+        $button.attr("id", "" + i).css("margin-top", "10px").css("width", "200px").addClass("btn").addClass("btn-primary").addClass("btn-lg").html(question).appendTo("#question_list")
+        $button.click((function(question) {return function() {
+            resetLeftRight()
+            resetEntropyValues()
+            var mainItems = $("#main_list li");
+            console.log(question)
+            for(var i = 1; i < mainItems.length; i++){
+                var $item = $(mainItems[i]);
+                var conditionAttribute = dict[$item.attr("id")]["attributeValues"][question["type"]];
+                if(conditionAttribute == question["attribute"]){
+                    $("#left").append($("#" + $item.attr("id")));
+                }else{
+                    $("#right").append($("#" + $item.attr("id")));
+                }
+            }
+            recalculateLeftRight()
+        };})(questions[question]));
+    }
+    //Generilize the data and create a dict
+    data.forEach((entry, i) => {
+        var labelToImage = {"Elma" : {"Kırmızı" : "apple.png", "Yeşil": "green_apple.png"}, "Üzüm": "grapes.png", "Limon": "lemon.png"}
+        var obje = { attributeValues : entry}
+        var text = ""
+        var table = document.createElement("table")
+        var tr = table.insertRow()
+        var previous = null
+        for(var attribute in entry) {
+            text += entry[attribute] + "  "
+            cell = tr.insertCell()
+            if(previous != null) {
+                $(cell).css("padding-left", (90 - previous*7.5) + "px")//Hardcoded change
+            }
+            cell.innerHTML = entry[attribute]
+            previous = $.isNumeric(entry[attribute]) ? 1 : entry[attribute].length;
+        }
+        var cellImg = tr.insertCell()
+        var entryLabel = entry[entry.length - 1]
+        if(entryLabel != "Elma") {
+            cellImg.innerHTML = "<img src = 'icons/" + labelToImage[entryLabel] + "' width = '30'></img>"
+        } else {
+            cellImg.innerHTML = "<img src = 'icons/" + labelToImage[entryLabel][entry[0]] + "' width = '30'></img>"
+        }
+
+        var $newNode = $("<li>").attr("id", "entry_" + i).append($(table))
+        dict[$newNode.attr("id")] = obje
+        $("#main_list").append($newNode);
+    });
+    //General calculateEntropyById, excludes first item haaaaaaaaaaaaaa
+    function calculateEntropyById(id){
+        var leftData = []
+        var leftItems = $(id)
+        for(var i = 1; i < leftItems.length; i++){
+            var $item = $(leftItems[i])
+            tokens = dict[$item.attr("id")]["attributeValues"]
+            console.log(tokens)
+            leftData.push(tokens)
+        }
+        return calculateEntropy(leftData)
+    }
+    //reset left and right div to mainlist
+    function resetLeftRight(){
+        var leftItems = $("#left li");
+        for(var i = 1; i < leftItems.length; i++){
+           var $item = $(leftItems[i]);
+           $("#main_list").append($("#" + $item.attr("id")))
+        }
+        var rightItems = $("#right li")
+        for(var i = 1; i < rightItems.length; i++){
+           var $item = $(rightItems[i]);
+           $("#main_list").append($("#" + $item.attr("id")))
+        }
+    }
+    function resetEntropyValues(){
+        $("#leftEntropy, #rightEntropy").html("Entropi: -");
+        $("#averageEntropy").html("Ortalama Entropi: -")
+        $("#totalGain").html("Bu sorunun karmaşıklığı azaltma miktarı: -")
+    }
+    //recalculates entropy of the left and right divs
+    function recalculateLeftRight(){
+        //left
+        leftEntropy = calculateEntropyById("#left li") //excludes first item haaaaaaaaaaaaaa
+        //right
+        rightEntropy = calculateEntropyById("#right li")//excludes first item haaaaaaaaaaaaaa
+        $("#leftEntropy").html("Entropi: " + leftEntropy.toFixed(2))
+        $("#rightEntropy").html("Entropi: " + rightEntropy.toFixed(2))
+        console.log("Left: ", leftEntropy, "Right: ", rightEntropy)
+    }
+    //Calculate main entropy
+    mainData = []
+    var mainItems = $("#main_list li")
+    for(var i = 1; i < mainItems.length; i++){
+        var $item = $(mainItems[i])
+        tokens = dict[$item.attr("id")]["attributeValues"]
+        mainData.push(tokens)
+    }
+    mainEntropy = calculateEntropy(mainData)
+    $("#mainEntropy").html("Entropi: " + mainEntropy.toFixed(2))
+
+
+      //Define method when sorting completed
+    function onStopSorting(event, ui){
+        var item = ui.item
+        resetEntropyValues()
+        var $main_list = $("#main_list")
+        console.log($main_list)
+        if($main_list[0].childElementCount == 1){
+            recalculateLeftRight()
+        }
+    }
+    $('#main_list li:not(:first-child)').draggable({
+        cursor: 'move',
+        connectToSortable: ".sortable",
+        revert: 'invalid',
+    });
+    $('#left, #right').sortable({
+        stop: onStopSorting,
+        items: "#left li:not(:first-child), #right li:not(:first-child)",
+        dropOnEmpty: true
+
+    });
+
+    $('#right li:not(:first-child), #left li:not(:first-child)').draggable({
+        cursor: 'move',
+        connectToSortable: ".sortable",
+        revert: 'invalid'
+    });
+    $("#main_list, #left, #rigth").disableSelection();
+
+    $("#calculate").click(()=>{
+
+        if($("#main_list")[0].childElementCount == 1){
+            var totalNumber = mainData.length//left
+            leftEntropy = calculateEntropyById("#left li") //excludes first item haaaaaaaaaaaaaa
+            leftSize = $("#left li").length - 1
+            //right
+            rightEntropy = calculateEntropyById("#right li")//excludes first item haaaaaaaaaaaaaa
+            rightSize = $("#right li").length - 1
+            var averageEntropy = (leftSize / totalNumber) * leftEntropy + (rightSize / totalNumber) * rightEntropy
+            $("#averageEntropy").html("Ortalama Entropi: " + averageEntropy.toFixed(2))
+            var gain = mainEntropy - averageEntropy
+            $("#totalGain").html("Bu sorunun karmaşıklığı azaltma miktarı: " + gain.toFixed(2))
+        } else {
+            $("#error").html("Bütün elemanlar ayrılmadan entropi değerleri hesaplanamaz")
+            $("#error").slideDown().delay(5000).slideUp()
+        }
+    });
+    $("#reset").click(()=>{
+        resetLeftRight()
+        resetEntropyValues()
+    })
+    var i = 0;
+    var guide = {"a0": ["a1", "a2"], "b0": ["b1", "b2"], "c0": ["c1"], "d0" : ["d1","d2"], "e0": ["e1"], "f0": ["f1"]}
+    var keys = Object.keys(guide)
+    var i = 0;
+    var j = 0;
+    var previousI = -1;
+    var previousJ = -1;
+    $("#next").click(()=>{
+
+        if(previousI != -1) {
+            $("body div:not(." + keys[previousI] + ")").removeClass("blur")
+            $("." + guide[keys[previousI]][previousJ]).tooltip("hide")
+        }
+        $("div:not(." + keys[i] + ")").addClass("blur")
+        $("body ." + keys[i] + " ." + guide[keys[i]][j] ).removeClass("blur")
+        $("." + guide[keys[i]][j]).tooltip("show")
+        previousI = i;
+        previousJ = j;
+        if(j + 1 == guide[keys[i]].length){
+            i++;
+            j = 0;
+        }else {
+            j++;
+        }
+    })
+  });
+  </script>
+</head>
+<body>
+<div id ="error" class="alert alert-warning" style="display: none; position: fixed; z-index: 999; width: 50%; margin-left: 25%; text-align: center" role="alert">
+</div>
+<button id = "next" type="button" style="margin-bottom: 15px; display:none" class="btn btn-outline-primary">İlerle</button>
+<div class = "row a0" align="center" style="margin-left: 5%; margin-right: 0px">
+    <div class ="a1 col-sm-6" data-toggle="tooltip" data-placement="top" title="Tüm elementler bu listede var, onları hareket ettirebilirsiniz">
+        <ul id = "main_list" class = "sortable" style = "padding-left: 0px">
+            <li id = "header" style="background-color: red;">
+                <table style="color: white;">
+                    <tbody>
+                    <tr>
+                        <td>Renk</td>
+                        <td style="padding-left: 55px;">Çap</td>
+                        <td style="padding-left: 83px;">Meyve</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </li>
+        </ul>
+    </div>
+    <div class = "a2 col-sm-2" data-toggle="tooltip" data-placement="right" title="Bu listedeki sorulara göre verilerinizi otomatik ayırabilirsiniz">
+        <ul id = "question_list">
+        </ul>
+    </div>
+</div>
+<div class = "b0 row" align="center" style="margin-left: 4.5%; margin-right: 0px">
+    <div  id = "mainEntropy" class = "b1 col-sm-6"  style="margin-bottom: 15px;" data-toggle="tooltip" data-placement="top" title="Bu değer mevcut tüm verilerin düzensizlik miktarını gösterir">
+        <span>Entropi: -</span>
+    </div>
+    <div class = "b2 col-sm-3">
+        <button id = "reset" type="button" style="margin-bottom: 15px" class="btn btn-outline-danger">Resetle</button>
+        <button id = "calculate" type="button" style="margin-bottom: 15px" class="btn btn-outline-primary">Hesapla</button>
+
+    </div>
+</div>
+<div class="c0 row" style="margin-right: 0px">
+    <table class = "c1" border="3px" style = "min-height: 300px; margin-left: 30px" data-toggle="tooltip" data-placement="top" title="Yukardakı verileri soracağınız soruya göre bu iki kısma dağıtacaksınız">
+        <th style="text-align: center">Evet</th>
+        <th style="text-align: center; padding-top: 0px">Hayir</th>
+        <tr>
+            <td>
+                <ul id='left' class = "sortable">
+                    <li>Buraya sürükleyin</li>
+                </ul>
+            </td>
+            <td>
+                <ul id='right' class = "sortable">
+                    <li>Buraya sürükleyin</li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="row d0" style="margin-right: 0px">
+    <div id = "leftEntropy" style="width: 300px;" class="d1 col-sm-3" data-toggle="tooltip" data-placement="top" title="Bu değer sol tarafta bulunan verilerin düzensizlik miktarını gösterir">
+        Entropi: -
+    </div>
+    <div id = "rightEntropy" style="width: 300px;" class = "d2 col-sm-3" data-toggle="tooltip" data-placement="top" title="Bu değer sağ tarafta bulunan verilerin düzensizlik miktarını gösterir">
+
+        Entropi: -
+    </div>
+</div>
+<br>
+<div class="row e0" align="center" style="margin-right: 0px">
+    <div id = "averageEntropy" class = "e1 col-sm-6" data-toggle="tooltip" data-placement="top" title="Bu değer sağ ve sol tarafta bulunan verilerin ortalama düzensizlik miktarını gösterir">
+    Ortalama Entropi: -
+    </div>
+</div>
+<br>
+<div class="row f0" align="center" style="margin-right: 0px">
+    <div id = "totalGain" class = "f1 col-sm-6" data-toggle="tooltip" data-placement="top" title="Bu değer sorduğunuz sorunun karmaşıklığı azaltma miktarını gösterir">
+    Bu sorunun karmaşıklığı azaltma miktarı: -
+    </div>
+</div>
+<br>
+<div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+<div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+</body>
+</html>

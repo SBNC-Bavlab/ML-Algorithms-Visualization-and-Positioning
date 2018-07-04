@@ -4,9 +4,123 @@
 <head>
   <meta charset="utf-8">
   <title>İnteraktif Karar Ağacı: {{ framework }}</title>
-</head>
 
+  <style>
+    @font-face {
+        font-family: "San Fransisco";
+        src: url(sf.otf) format("truetype");
+    }
+    ul{
+        list-style-type: none;
+    }
+    td{
+        background-color: beige;
+    }
+
+    #main_list{
+        background-color: lightgreen;
+        margin-top: 5px;
+        min-height: 100px;
+    }
+    #main_list li{
+        word-break: break-all;
+        background-color: greenyellow;
+        border: 1px solid black;
+        width: 350px;
+        padding: 2px 2px 2px 2px;
+        margin-top: 5px;
+    }
+
+    #left, #right{
+        min-width: 350px;
+        margin: 25px;
+        padding: 0px 0px 0px 0px
+    }
+    #left li:first-child, #right li:first-child{
+        background-color: orange;
+    }
+
+    #left li, #right li{
+        word-break: break-all;
+        background-color: lightgreen;
+        border: 1px solid black;
+        width: 350px;
+        margin: 5px;
+    }
+  </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+  <script>
+  var data = ["Bulutlu | Rüzgarlı | Mangal Yap!", "Karlı | Rüzgarsız | Mangal yapma!","Yağmurlu | Rüzgarsız | Mangal Yapma!", "Güneşli | Rüzgarsız | Mangal Yap!"]
+  var dict = {}
+  $( function() {
+    $("#main").css("height",screen.height + "px")
+    data.forEach((entry, i)=>{
+        var $newNode = $("<li>").attr("id", "entry_" + i).append(entry)
+        var obje = { textTokens : entry.split(" | ")}
+        dict[$newNode.attr("id")] = obje
+        $("#main_list").append($newNode);
+    });
+
+    function onStopSorting(event, ui){
+        var item = ui.item
+        $(item).css("background-color", "yellow");
+    }
+    $('#main_list li').draggable({
+        cursor: 'move',
+        connectToSortable: ".sortable",
+        revert: 'invalid'
+    });
+    $('#left, #right').sortable({
+        stop: onStopSorting,
+        items: "#left li:not(:first-child), #right li:not(:first-child)",
+        dropOnEmpty: true
+
+    });
+
+    $('#right li:not(:first-child), #left li:not(:first-child)').draggable({
+        cursor: 'move',
+        connectToSortable: ".sortable",
+        revert: 'invalid'
+    });
+    $("#main_list, #left, #rigth").disableSelection();
+
+    $("#calculate").click(()=>{
+        var leftItems = $("#left li")
+        for(var i = 1; i < leftItems.length; i++){
+            $(leftItems[i]).css("background-color", "red")
+            console.log(dict[$(leftItems[i]).attr("id")]["textTokens"])
+        }
+
+    });
+  });
+  </script>
+</head>
 <body>
+
+<div id="main" align = "center">
+    <ul id = "main_list" class = "sortable">
+    </ul>
+    <table border="3px">
+        <tr>
+            <td>
+                <ul id='left' class = "sortable">
+                    <li>Buraya sürükleyin</li>
+                </ul>
+            </td>
+            <td>
+                <ul id='right' class = "sortable">
+                    <li>Buraya sürükleyin</li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+    <button id = "calculate" type="button" style="margin-top: 15px" class="btn btn-outline-primary">Hesapla</button>
+</div>
+
   {{ script|safe }}
 </body>
 </html>

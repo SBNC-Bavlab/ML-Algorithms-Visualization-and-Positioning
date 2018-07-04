@@ -2,8 +2,9 @@ from Bokeh.ID3_Decision_Tree.id3_decision_tree import generate_tree, setActiveAt
 import copy
 import math
 
-def get_depth(node, id_index, visited = {}):
-    if node.decision in ["unacc", "acc", "good", "vgood"]:
+
+def get_depth(node, visited = {}):
+    if node.decision in ["unacc", "acc", "good", "vgood", "1", "2", "3"]:
         node.name = "classAttr"
 
     if not node.children:
@@ -61,6 +62,22 @@ def generate_bokeh_data(source, root, depth, width, visited, level_width):
 
         source["y"].append(width_index[popped_node.depth-1] + (width / (level_width[depth - popped_node.depth]+1)))
 
+        if popped_node.children != []:
+            source["nonLeafNodes_x"].append(2 * popped_node.depth)
+            source["nonLeafNodes_y"].append(width_index[popped_node.depth - 1] + (width / (level_width[depth - popped_node.depth] + 1)))
+            source["nonLeafNodes_stat"].append(popped_node.value)
+            source["nonLeafNodes_decision"].append(popped_node.value)
+            source["leafNodes_x"].append(None)
+            source["leafNodes_y"].append(None)
+        else:
+            source["nonLeafNodes_x"].append(None)
+            source["nonLeafNodes_y"].append(None)
+            source["nonLeafNodes_stat"].append(None)
+            source["nonLeafNodes_decision"].append(None)
+            source["leafNodes_x"].append(2 * popped_node.depth)
+            source["leafNodes_y"].append(width_index[popped_node.depth - 1] + (width / (level_width[depth - popped_node.depth] + 1)))
+
+
         if popped_node.name == "":
             source["attribute_type"].append("classAttr")
         else:
@@ -70,6 +87,8 @@ def generate_bokeh_data(source, root, depth, width, visited, level_width):
         source["decision"].append(popped_node.decision)
         source["instanceCount"].append(len(popped_node.data))
         width_index[popped_node.depth - 1] += (width / (level_width[depth - popped_node.depth]+1))
+
+        source["instances"].append(len(popped_node.data))
 
         for child in popped_node.children:
             if visited[child] == False:
