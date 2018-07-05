@@ -204,8 +204,9 @@ def create_figure():
                 + ("\t\t\t\tTahmin Başarısı (%): " + str(acc_best * 100) if (acc_best) else "")
 
         best_root_plot.title.text = title
-
+        button.disabled = True
         animate_outline_color(best_root_plot, 4)
+        button.disabled = False
 
     button.on_click(applyChanges)
 
