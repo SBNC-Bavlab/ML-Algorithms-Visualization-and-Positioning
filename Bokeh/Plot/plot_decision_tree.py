@@ -179,7 +179,10 @@ def create_figure():
         # Datasource should be deep copied
         data_best_df = pd.DataFrame.from_dict(data_best)
         data_best_df['stat_value'] = [round(i, 3) for i in data_best_df['stat_value']]  # decimal point rounded to 2
-        data_best_df['nonLeafNodes_stat'] = [round(i, 3) for i in data_best_df['nonLeafNodes_stat']]
+        if not data_best_df['nonLeafNodes_stat'].dropna().empty:
+            data_best_df['nonLeafNodes_stat'] = [round(i, 3) for i in data_best_df['nonLeafNodes_stat']]
+        else:
+            data_best_df['nonLeafNodes_stat'] = [1]
         ##none entries replaced with "-"
         data_best_df['decision'] = [decision if decision else "-" for decision in data_best_df['decision']]
         data_best_df["decision"] = ["Sonuç: " + x for x in data_best_df["decision"]]
