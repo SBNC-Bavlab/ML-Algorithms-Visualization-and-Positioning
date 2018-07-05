@@ -35,9 +35,7 @@ TOOLTIPS = [
 radio_button_labels = ["gini", "gainRatio"]
 arrow_list = {"current": [], "previous": []}
 current_label = ["gini"]
-previous_plot = []
 selected_root = [""]
-
 
 # Create the main plot
 def create_figure():
@@ -100,8 +98,19 @@ def create_figure():
     root_info = Paragraph(text="""
            Kök niteliği seçiniz:
         """, width=70)
+
+    #### Best rooted plot is created here
+    best_root_plot_data = dataSource.data.copy()
+    best_root_plot_data_source = ColumnDataSource(data=best_root_plot_data)
+    best_root_plot = create_plot(rect_width, rect_height, groups, periods, best_root_plot_data_source, True, acc)
+
+    best_arrow_data_source, best_arrow, best_label = draw_arrow("current", best_root_plot_data_source.data,
+                                                    best_root_plot, width, level_width, rect_width, rect_height)
+    best_root_plot.add_layout(best_arrow)
+    best_root_plot.add_layout(best_label)
+
     ##Add all components into main_frame variable
-    main_frame = column(row(attr_info, attributes, method_info, method_type), row(root_info, root_type, button), p)
+    main_frame = column(row(attr_info, attributes, method_info, method_type), row(root_info, root_type, button), p, best_root_plot)
 
     # Called with respect to change in method_type
     def updateMethodType(new):
@@ -157,42 +166,55 @@ def create_figure():
         p.x_range.factors = groups
         p.y_range.factors = periods
 
-        title = "Karar Ağacı (Yeni)" \
+        title = "Karar Ağacı (Seçtiğiniz Kök Nitelikli Hali)" \
                 + ("\t\t\t\tTahmin Başarısı (%): " + str(acc * 100) if (acc) else "")
 
         p.title.text = title
+        ####-----------
+        ######Refresh best rooted plot
+        ####-----------
 
-        ##Below code means if the previous already laid out pop it and add new current as previous
-        ##This code is a precaution against the case that there is only one figure
-        if (isinstance(main_frame.children[-2], Figure)):
-            main_frame.children.pop()
-        main_frame.children.append(previous_plot[0])
-        # animate the entrance of previous tree
+        data_best, width_best, depth_best, level_width_best, acc_best = get_bokeh_data(current_label[0], active_attributes_list, "")
 
-        #        main_frame.children.pop()
-        # update previous
         # Datasource should be deep copied
-        deep_copied_data = dataSource.data.copy()
-        temp_dataSource = ColumnDataSource(data=deep_copied_data)
-        previous = create_plot(rect_width, rect_height, groups, periods, temp_dataSource, True, acc)
-        #        draw_arrow("current", dataSource.data, p, width, level_width, rect_width, rect_height)
-        animate_outline_color(previous_plot[0], 4)
-        previous_plot[0] = previous
-        draw_arrow("previous", temp_dataSource.data, previous, width, level_width, rect_width, rect_height)
+        data_best_df = pd.DataFrame.from_dict(data_best)
+        data_best_df['stat_value'] = [round(i, 3) for i in data_best_df['stat_value']]  # decimal point rounded to 2
+        if not data_best_df['nonLeafNodes_stat'].dropna().empty:
+            data_best_df['nonLeafNodes_stat'] = [round(i, 3) for i in data_best_df['nonLeafNodes_stat']]
+        else:
+            data_best_df['nonLeafNodes_stat'] = [1]
+        ##none entries replaced with "-"
+        data_best_df['decision'] = [decision if decision else "-" for decision in data_best_df['decision']]
+        data_best_df["decision"] = ["Sonuç: " + x for x in data_best_df["decision"]]
+
+        best_root_plot_data_source.data = ColumnDataSource(data=data_best_df).data
+
+        best_arrow_data, _, _ = draw_arrow("current", best_root_plot_data_source.data, best_root_plot,
+                                           width_best, level_width_best, rect_width, rect_height)
+        best_arrow_data_source.data = ColumnDataSource(data=best_arrow_data.data).data
+
+        ##X and y range calculated
+        periods_best = [str(i) for i in range(0, 2 * width_best + 1)]
+        groups_best = [str(x) for x in range(0, depth_best + 2)]
+        # update best rooted plot
+        best_root_plot.x_range.factors = groups_best
+        best_root_plot.y_range.factors = periods_best
+
+        title = "Karar Ağacı (Seçtiğiniz Kök Nitelikli Hali)" \
+                + ("\t\t\t\tTahmin Başarısı (%): " + str(acc_best * 100) if (acc_best) else "")
+
+        best_root_plot.title.text = title
+        button.disabled = True
+        animate_outline_color(best_root_plot, 4)
+        button.disabled = False
 
     button.on_click(applyChanges)
 
-    # Datasource should be deep copied
-    deep_copied_data = dataSource.data.copy()
-    temp_dataSource = ColumnDataSource(data=deep_copied_data)
-    previous = create_plot(rect_width, rect_height, groups, periods, temp_dataSource, True, acc)
-    draw_arrow("previous", temp_dataSource.data, previous, width, level_width, rect_width, rect_height)
-    previous_plot.append(previous)
     return main_frame
 
 
 def create_plot(rect_width, rect_height, groups, periods, dataSource, isPrevious=False, acc=None):
-    title = "Karar Ağacı " + ("(Eski)" if (isPrevious) else "(Yeni)")+ ("\t\t\t\tTahmin Başarısı (%): " + str(acc * 100) if (acc) else "")
+    title = "Karar Ağacı " + ("(Algoritmanın Seçtiği Kök Nitelikli Hali)" if (isPrevious) else "(Seçtiğiniz Kök Nitelikli Hali)")+ ("\t\t\t\tTahmin Başarısı (%): " + str(acc * 100) if (acc) else "")
     p = figure(title=title, plot_width=1400, plot_height=500, x_range=groups, y_range=list(periods), tools="hover", toolbar_location=None, tooltips=TOOLTIPS)
     p.rect("y", "leafNodes_x", rect_width, rect_height, source=dataSource, fill_alpha=0.8, legend="attribute_type", color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
     p.circle("nonLeafNodes_y", "nonLeafNodes_x", radius=0.09, source=dataSource, fill_alpha=0.8, legend="attribute_type", color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))

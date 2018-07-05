@@ -130,16 +130,30 @@ def set_coord(node_list, level_width):
     passed_node = 0
     max_width = 0
     for level in range(len(level_width)):
-
+        current_parent = None
         for i in range(passed_node, passed_node + level_width[level]):
+            if node_list[i].parentPointer:
+                if current_parent == None or current_parent != node_list[i].parentPointer:
+                    level_width_index = 0
+                    current_parent = node_list[i].parentPointer
 
-            node_list[i].coord = ((2 * node_list[i].depth),
-                                  (level_width_index + math.ceil(node_list[i].width / 2))
-                                  )
-            level_width_index += node_list[i].width
+                align_parent = node_list[i].parentPointer.coord[1] - (node_list[i].parentPointer.width/2-1)
+
+                node_list[i].coord = ((2 * node_list[i].depth),
+                                      math.ceil((2*level_width_index)  + align_parent + (node_list[i].width/2))
+                                      )
+
+                level_width_index += (node_list[i].width / 2)
+
+            else:
+                node_list[i].coord = ((2 * node_list[i].depth),
+                                      (level_width_index + (node_list[i].width / 2))
+                                      )
+                level_width_index += node_list[i].width
 
 
             # node_list[i].coord = (node_list[i].coord[0], node_list[i].coord[1]-1)
+
         if level_width_index > max_width:
             max_width = level_width_index
 
