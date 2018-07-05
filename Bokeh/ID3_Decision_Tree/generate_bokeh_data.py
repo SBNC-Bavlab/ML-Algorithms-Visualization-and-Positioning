@@ -3,7 +3,7 @@ import copy
 import math
 
 
-def get_depth(node, visited = {}):
+def get_depth(node, id_index, visited = {}):
     if node.decision in ["unacc", "acc", "good", "vgood", "1", "2", "3"]:
         node.name = "classAttr"
 
@@ -154,6 +154,21 @@ def fill_source(source, node_list):
 
         source["y"].append(node.coord[1])
 
+        if node.children != []:
+            source["nonLeafNodes_x"].append(node.coord[0])
+            source["nonLeafNodes_y"].append(node.coord[1])
+            source["nonLeafNodes_stat"].append(node.value)
+            source["nonLeafNodes_decision"].append(node.decision)
+            source["leafNodes_x"].append(None)
+            source["leafNodes_y"].append(None)
+        else:
+            source["nonLeafNodes_x"].append(None)
+            source["nonLeafNodes_y"].append(None)
+            source["nonLeafNodes_stat"].append(None)
+            source["nonLeafNodes_decision"].append(None)
+            source["leafNodes_x"].append(node.coord[0])
+            source["leafNodes_y"].append(node.coord[1])
+
         if node.name == "":
             source["attribute_type"].append("classAttr")
         else:
@@ -162,6 +177,7 @@ def fill_source(source, node_list):
         source["stat_value"].append(node.value)
         source["decision"].append(node.decision)
         source["instanceCount"].append(len(node.data))
+        source["instances"].append(len(node.data))
 
 
 def get_bokeh_data(method, activeAttrList = [], setRootAttribute=""):
@@ -173,14 +189,17 @@ def get_bokeh_data(method, activeAttrList = [], setRootAttribute=""):
     depth = get_depth(root, id_index, visited)
     width, level_width = get_max_width(root, depth)
 
-    source = { "x": [], "y": [], "attribute_type": [], "instanceCount": [], "decision": [], "stat_value": []}
+    source = { "nonLeafNodes_x": [], "nonLeafNodes_y": [], "nonLeafNodes_stat": [],
+               "nonLeafNodes_decision": [], "leafNodes_x": [], "leafNodes_y": [],
+               "attribute_type": [], "stat_value": [], "decision": [], "instanceCount": [],
+               "instances": [], "x": [], "y":[]}
 
-    node_list = generate_node_list(root, visited)
-    max_width = set_coord(node_list, level_width)
-    fill_source(source, node_list)
+    # node_list = generate_node_list(root, visited)
+    # width = set_coord(node_list, level_width)
+    # fill_source(source, node_list)
 
-    # generate_bokeh_data(source, root, depth, width, visited, level_width)
+    generate_bokeh_data(source, root, depth, width, visited, level_width)
 
-    return source, depth, max_width, level_width, acc
+    return source, depth, width, level_width, acc
 
-get_bokeh_data("gini", [ "buyingAttr", "personsAttr", "lug_bootAttr", "safetyAttr", "classAttr" ])
+# get_bokeh_data("gini", [ "buyingAttr", "personsAttr", "lug_bootAttr", "safetyAttr", "classAttr" ])

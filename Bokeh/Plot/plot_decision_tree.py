@@ -111,7 +111,6 @@ def create_figure():
         active_attributes_list[:] = []
         for i in new:
             active_attributes_list.append(list(cmap.keys())[i])
-        print(new)
 
     attributes.on_click(updateAttributes)
 
@@ -174,7 +173,6 @@ def create_figure():
         draw_arrow("previous", temp_dataSource.data, previous, width, level_width, rect_width, rect_height)
 
     button.on_click(applyChanges)
-    print(main_frame.children)
 
     # Datasource should be deep copied
     deep_copied_data = dataSource.data.copy()
