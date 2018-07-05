@@ -129,33 +129,51 @@ def set_coord(node_list, level_width):
     level_width_index = 0
     passed_node = 0
     max_width = 0
+    first_flag = 0
     for level in range(len(level_width)):
         current_parent = None
         for i in range(passed_node, passed_node + level_width[level]):
             if node_list[i].parentPointer:
-                if current_parent == None or current_parent != node_list[i].parentPointer:
+                if current_parent == None or current_parent != node_list[i].parentPointer:#first child of parent
                     level_width_index = 0
                     current_parent = node_list[i].parentPointer
+                    first_flag = 1
 
-                align_parent = node_list[i].parentPointer.coord[1] - (node_list[i].parentPointer.width/2-1)
+                if first_flag:#first child
+                    align_parent = node_list[i].parentPointer.coord[1] - (math.ceil(node_list[i].parentPointer.width / 2) - 1)
 
-                node_list[i].coord = ((2 * node_list[i].depth),
-                                      math.ceil((2*level_width_index)  + align_parent + (node_list[i].width/2))
-                                      )
+                    if node_list[i].name == "classAttr":
+                        node_list[i].coord = ((2 * node_list[i].depth),
+                                              math.ceil((2 * level_width_index) + align_parent)
+                                              )
+                    else:
+                        node_list[i].coord = ((2 * node_list[i].depth),
+                                              math.ceil(
+                                                  (2 * level_width_index) + align_parent + (node_list[i].width / 2))
+                                              )
 
-                level_width_index += (node_list[i].width / 2)
+                    level_width_index += (node_list[i].width / 2)
+                    first_flag = 0
+                else:
+                    align_parent = node_list[i].parentPointer.coord[1] - (node_list[i].parentPointer.width/2-1)
 
-            else:
+                    node_list[i].coord = ((2 * node_list[i].depth),
+                                          math.ceil((2*level_width_index)  + align_parent + (node_list[i].width/2))
+                                          )
+
+                    level_width_index += (node_list[i].width / 2)
+
+            else: # for root node
                 node_list[i].coord = ((2 * node_list[i].depth),
                                       (level_width_index + (node_list[i].width / 2))
                                       )
                 level_width_index += node_list[i].width
 
-
+            if node_list[i].coord[1] > max_width:
+                max_width = node_list[i].coord[1]
             # node_list[i].coord = (node_list[i].coord[0], node_list[i].coord[1]-1)
 
-        if level_width_index > max_width:
-            max_width = level_width_index
+
 
         passed_node += level_width[level]
         level_width_index = 0
@@ -208,11 +226,11 @@ def get_bokeh_data(method, activeAttrList = [], setRootAttribute=""):
                "attribute_type": [], "stat_value": [], "decision": [], "instanceCount": [],
                "instances": [], "x": [], "y":[]}
 
-    # node_list = generate_node_list(root, visited)
-    # width = set_coord(node_list, level_width)
-    # fill_source(source, node_list)
+    node_list = generate_node_list(root, visited)
+    width = set_coord(node_list, level_width)
+    fill_source(source, node_list)
 
-    generate_bokeh_data(source, root, depth, width, visited, level_width)
+    # generate_bokeh_data(source, root, depth, width, visited, level_width)
 
     return source, depth, width, level_width, acc
 
