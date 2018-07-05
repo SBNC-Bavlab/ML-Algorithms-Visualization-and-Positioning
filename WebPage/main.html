@@ -74,11 +74,12 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
   <script>
-  var data = [['Yeşil', 3, 'Elma'], ['Kırmızı', 3, 'Elma'], ['Kırmızı', 1, 'Üzüm'], ['Kırmızı', 1, 'Üzüm'], ['Sarı', 3, 'Limon']]
+  var data = [["Yeşil", 5, "Karpuz"],['Yeşil', 3, 'Elma'], ['Kırmızı', 3, 'Elma'], ['Kırmızı', 1, 'Üzüm'], ['Kırmızı', 1, 'Üzüm'], ['Sarı', 3, 'Limon']]
   var dict = {}
   var questions = {"Kırmızı mı?" : {attribute :"Kırmızı", type: 0},
-          "2'den büyük mü?": {attribute : "3", type: 1},
+          "2'den büyük mü?": {attribute : "2", type: 1},
           "Sarı mı?": {attribute: "Sarı", type: 0}};
+  var labelToImage = {"Karpuz" : "watermelon.png", "Elma" : {"Kırmızı" : "apple.png", "Yeşil": "green_apple.png"}, "Üzüm": "grapes.png", "Limon": "lemon.png"}
 
   function calculateEntropy(data){
       totalNumber = data.length
@@ -114,7 +115,7 @@
             for(var i = 1; i < mainItems.length; i++){
                 var $item = $(mainItems[i]);
                 var conditionAttribute = dict[$item.attr("id")]["attributeValues"][question["type"]];
-                if(conditionAttribute == question["attribute"]){
+                if(Number(conditionAttribute) > Number(question["attribute"])){
                     $("#left").append($("#" + $item.attr("id")));
                 }else{
                     $("#right").append($("#" + $item.attr("id")));
@@ -125,7 +126,6 @@
     }
     //Generilize the data and create a dict
     data.forEach((entry, i) => {
-        var labelToImage = {"Elma" : {"Kırmızı" : "apple.png", "Yeşil": "green_apple.png"}, "Üzüm": "grapes.png", "Limon": "lemon.png"}
         var obje = { attributeValues : entry}
         var text = ""
         var table = document.createElement("table")

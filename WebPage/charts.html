@@ -41,6 +41,12 @@
                             canvas.id = "myChart" + i;
                             canvas.classList.add("col-sm-2")
                             canvas.style.width = "600px"
+                            if(i != Object.keys(features).length - 1) {
+                                    canvas.style.borderLeft = "1px solid black"
+                            }else{
+                                canvas.style.borderLeft = "1px solid black"
+                                canvas.style.borderRight = "1px solid black"
+                            }
                             canvas.style.height = "175px"
                             chartAreaDiv.appendChild(canvas)
                             var key = Object.keys(features)[i]
@@ -67,13 +73,19 @@
                             textDiv.innerHTML = labelDict[i + 1]
                             textDiv.style.marginTop = "3%"
                             div.appendChild(textDiv)
-                            for(var j = 0; j < 4; j++){
+                            for(var j = 0; j < Object.keys(features).length; j++){
                                 var canvas = document.createElement('canvas');
                                 canvas.id = "myLabelChart" + i + "" + j;
                                 canvas.classList.add("col-sm-2")
                                 div.appendChild(canvas)
                                 canvas.style.width = "600px"
                                 canvas.style.height = "175px"
+                                if(j != Object.keys(features).length - 1) {
+                                    canvas.style.borderLeft = "1px solid black"
+                                }else{
+                                    canvas.style.borderLeft = "1px solid black"
+                                    canvas.style.borderRight = "1px solid black"
+                                }
                                 var key = Object.keys(features)[j]
                                 drawGraph(Object.values(calculateFrequence(tempArray, j)), features[key], key, "myLabelChart" + i + "" + j)
                             }
