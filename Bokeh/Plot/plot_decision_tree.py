@@ -25,7 +25,7 @@ attr_to_children = {"ageAttr": ["1", "2", "3"],
                     }
 TOOLTIPS = [
     ("Nitelik Adı", "@attribute_type"),
-    ("Metod Değeri", "@{stat_value}"),
+    ("Metod Değeri", "@{nonLeafNodes_stat}"),
     ("Örnek Sayısı", "@{instances}")
     #        ("Type", "@metal"),
     #        ("CPK color", "$color[hex, swatch]:CPK"),
@@ -58,7 +58,7 @@ def create_figure():
     else:
         df['nonLeafNodes_stat'] = [1]
     df['decision'] = [decision if decision else "-" for decision in df['decision']]
-    df["nonLeafNodes_stat"] = ["Değer: " + str(x) for x in df["nonLeafNodes_stat"]]
+    df["nonLeafNodes_stat"] = ["" + str(x) for x in df["nonLeafNodes_stat"]]
     df["decision"] = ["" + x for x in df["decision"]]
     #    df['stat_value'] = [value if value != nan else "-" for value in df['stat_value']]
     #    print(df.last())
