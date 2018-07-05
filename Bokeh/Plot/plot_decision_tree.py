@@ -151,7 +151,7 @@ def create_figure():
             data['nonLeafNodes_stat'] = [1]
         ##none entries replaced with "-"
         data['decision'] = [decision if decision else "-" for decision in data['decision']]
-        data["decision"] = ["Sonuç: " + x for x in data["decision"]]
+        data["decision"] = ["" + x for x in data["decision"]]
 
         dataSource.data = ColumnDataSource(data=data).data
 
@@ -167,7 +167,7 @@ def create_figure():
         p.y_range.factors = periods
 
         title = "Karar Ağacı (Seçtiğiniz Kök Nitelikli Hali)" \
-                + ("\t\t\t\tTahmin Başarısı (%): " + str(acc * 100) if (acc) else "")
+                + ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc * 100, 1)) if (acc) else "")
 
         p.title.text = title
         ####-----------
@@ -185,7 +185,7 @@ def create_figure():
             data_best_df['nonLeafNodes_stat'] = [1]
         ##none entries replaced with "-"
         data_best_df['decision'] = [decision if decision else "-" for decision in data_best_df['decision']]
-        data_best_df["decision"] = ["Sonuç: " + x for x in data_best_df["decision"]]
+        data_best_df["decision"] = ["" + x for x in data_best_df["decision"]]
 
         best_root_plot_data_source.data = ColumnDataSource(data=data_best_df).data
 
@@ -201,7 +201,7 @@ def create_figure():
         best_root_plot.y_range.factors = periods_best
 
         title = "Karar Ağacı (Seçtiğiniz Kök Nitelikli Hali)" \
-                + ("\t\t\t\tTahmin Başarısı (%): " + str(acc_best * 100) if (acc_best) else "")
+                + ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc * 100, 1)) if (acc_best) else "")
 
         best_root_plot.title.text = title
         button.disabled = True
@@ -214,7 +214,7 @@ def create_figure():
 
 
 def create_plot(rect_width, rect_height, groups, periods, dataSource, isPrevious=False, acc=None):
-    title = "Karar Ağacı " + ("(Algoritmanın Seçtiği Kök Nitelikli Hali)" if (isPrevious) else "(Seçtiğiniz Kök Nitelikli Hali)")+ ("\t\t\t\tTahmin Başarısı (%): " + str(acc * 100) if (acc) else "")
+    title = "Karar Ağacı " + ("(Algoritmanın Seçtiği Kök Nitelikli Hali)" if (isPrevious) else "(Seçtiğiniz Kök Nitelikli Hali)")+ ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc * 100, 1)) if (acc) else "")
     p = figure(title=title, plot_width=1400, plot_height=500, x_range=groups, y_range=list(periods), tools="hover", toolbar_location=None, tooltips=TOOLTIPS)
     p.rect("y", "leafNodes_x", rect_width, rect_height, source=dataSource, fill_alpha=0.8, legend="attribute_type", color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
     p.circle("nonLeafNodes_y", "nonLeafNodes_x", radius=0.09, source=dataSource, fill_alpha=0.8, legend="attribute_type", color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
