@@ -20,6 +20,17 @@
         margin-top: 5px;
         min-height: 200px;
     }
+
+    #sorular{
+        width: 200px;
+        color: white;
+        background-color: #3564f2;
+        padding-bottom: 5px;
+        margin-top: 4px;
+        height: 55px;
+        font-size: 18px;
+    }
+
     #main_list li{
         background-color: rgba(221,221,221,0.54);
         text-align: left;
@@ -234,7 +245,7 @@
             var gain = mainEntropy - averageEntropy
             $("#totalGain").html("Bu sorunun karmaşıklığı azaltma miktarı: " + gain.toFixed(2))
         } else {
-            $("#error").html("Bütün elemanlar ayrılmadan entropi değerleri hesaplanamaz")
+            $("#error").html("Bütün elemanlar paylaştırılmadan karmaşıklığın azalma miktarı hesaplanamaz")
             $("#error").slideDown().delay(5000).slideUp()
         }
     });
@@ -281,8 +292,8 @@
                 <table style="color: white;">
                     <tbody>
                     <tr>
-                        <td>Renk</td>
-                        <td style="padding-left: 55px;">Çap</td>
+                        <td>Rengi</td>
+                        <td style="padding-left: 55px;">Çapı</td>
                         <td style="padding-left: 83px;">Meyve</td>
                     </tr>
                     </tbody>
@@ -292,6 +303,9 @@
     </div>
     <div class = "a2 col-sm-2" data-toggle="tooltip" data-placement="right" title="Bu listedeki sorulara göre verilerinizi otomatik ayırabilirsiniz">
         <ul id = "question_list">
+            <li id = "sorular">
+                <p>Ayırmak için sorulabilicek bazı sorular</p>
+            </li>
         </ul>
     </div>
 </div>

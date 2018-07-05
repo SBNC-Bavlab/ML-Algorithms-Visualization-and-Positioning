@@ -16,49 +16,54 @@ class Node(object):
 		self.decision = None
 		self.method = method
 		self.value = None
-		self.depth = 0
+		self.width = 0
+		self.coord = (0,0)
 
 from math import log
-data = pickle.load(open('../Bokeh/Data/car2.pkl','rb'))
-train = data['train']
-test = data['test']
+# data = pickle.load(open('../Bokeh/Data/car2.pkl','rb'))
+# train = data['train']
+# test = data['test']
 
-buyingAttr = ["vhigh", "high", "med", "low"]
-maintAttr =  ["vhigh", "high", "med", "low"]
-doorsAttr = ["2", "3", "4", "5more"]
-personsAttr = ["2", "4", "more"]
-lug_bootAttr =  ["small", "med", "big"]
-safetyAttr =  ["low", "med", "high"]
-classAttr =  ["unacc", "acc", "good", "vgood"]
+ageAttr = ["1", "2", "3"]
+spectacleAttr =  ["1", "2"]
+astigmaticAttr = ["1", "2"]
+tearAttr = ["1", "2"]
+classAttr = ["1", "2", "3"]
 
-attribNamesList = [
-	"buyingAttr",
-	"maintAttr",
-	"doorsAttr",
-	"personsAttr",
-	"lug_bootAttr",
-	"safetyAttr",
+attrNamesList = [
+	"ageAttr",
+	"spectacleAttr",
+	"astigmaticAttr",
+	"tearAttr",
 	"classAttr"
 ]
 
-attribDictionary = {
-	"buyingAttr": (0,buyingAttr),
-	"maintAttr": (1,maintAttr),
-	"doorsAttr": (2, doorsAttr),
-	"personsAttr": (3, personsAttr),
-	"lug_bootAttr": (4, lug_bootAttr),
-	"safetyAttr": (5, safetyAttr),
-	"classAttr": (6, classAttr)
+attrDictionary = {
+	"ageAttr": (0,ageAttr),
+	"spectacleAttr": (1,spectacleAttr),
+	"astigmaticAttr": (2, astigmaticAttr),
+	"tearAttr": (3, tearAttr),
+	"classAttr": (4, classAttr)
 }
 
+
+data2 = []
+
+for line in open('../Bokeh/Data/lens.txt'):
+	tmp = line.split("  ")
+	tmp[-1] = tmp[-1].strip()
+	data2.append(tmp)
+
+
+test=data2
+train = data2
+
 def setActiveAttrs(activeAttrList):
-    print("here")
     #clear the list
-    attribNamesList[:] = []
+    attrNamesList[:] = []
     #fill again
     for attr in activeAttrList:
-        attribNamesList.append(attr)
-    print(attribNamesList)
+        attrNamesList.append(attr)
 
 def entropy(distributionListVar, numberOfDifferentValuesVar):
 	numberOfInstances = 0.0
@@ -100,7 +105,7 @@ def getNumberOfInstancesFromLocalDistributionList(localDistributionVar):
 
 
 def classifyList(attributeNameVar, instancesVar):
-	attribute = attribDictionary[attributeNameVar]
+	attribute = attrDictionary[attributeNameVar]
 	attributeIndex, attributeValues = attribute
 	numberOfAttributeValues = len(attributeValues)
 	localDistribution = []
@@ -118,7 +123,7 @@ def classifyList(attributeNameVar, instancesVar):
 
 def getDistributionList(attributeNameVar, instancesVar):
 	# build a distribution holder
-	attribute = attribDictionary[attributeNameVar]
+	attribute = attrDictionary[attributeNameVar]
 	attributeIndex, attributeValues = attribute
 	numberOfAttributeValues = len(attributeValues)
 	distribution = []
@@ -140,7 +145,7 @@ def getDistributionList(attributeNameVar, instancesVar):
 
 
 def featureLength(attributeNameVar):
-	attribute = attribDictionary[attributeNameVar]
+	attribute = attrDictionary[attributeNameVar]
 	attributeIndex, attributeValues = attribute
 	return len(attributeValues)
 
@@ -271,7 +276,7 @@ def chooseTheBest(attributeListVar, instancesVar, methodology):
 
 
 def distributeByAttribute(attributeNameVar, instancesVar):
-	attribute = attribDictionary[attributeNameVar]
+	attribute = attrDictionary[attributeNameVar]
 	attributeIndex, attributeValues = attribute
 	distribution = []
 
@@ -466,7 +471,7 @@ def makeAGuess(rootNodeVar, testInstanceVar):
 		if node.decision == None and node.name == "":
 			decision = "?"
 			break
-		attribute = attribDictionary[node.name]
+		attribute = attrDictionary[node.name]
 		attributeIndex, attributeValues = attribute
 
 		featureValue = testInstanceVar[attributeIndex]
@@ -490,7 +495,7 @@ def realWorldTest(rootNodeVar, instancesVar, methodName, setName):
 
 
 def generate_tree(method, setRootAttribute):
-    newAttNameList = copy.deepcopy(attribNamesList)
+    newAttNameList = copy.deepcopy(attrNamesList)
     newAttNameList.remove("classAttr")
     rootNode = treeDistribution(newAttNameList, train, method, setRootAttribute)
 
