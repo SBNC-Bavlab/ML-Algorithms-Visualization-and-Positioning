@@ -26,7 +26,7 @@ attr_to_children = {"ageAttr": ["1", "2", "3"],
 TOOLTIPS = [
     ("Nitelik Adı", "@attribute_type"),
     ("Metod Değeri", "@{stat_value}"),
-    ("Karar", "@{decision}")
+    ("Örnek Sayısı", "@{instances}")
     #        ("Type", "@metal"),
     #        ("CPK color", "$color[hex, swatch]:CPK"),
     #        ("Electronic configuration", "@{electronic configuration}"),
@@ -61,7 +61,7 @@ def create_figure():
         df['nonLeafNodes_stat'] = [1]
     df['decision'] = [decision if decision else "-" for decision in df['decision']]
     df["nonLeafNodes_stat"] = ["Değer: " + str(x) for x in df["nonLeafNodes_stat"]]
-    df["decision"] = ["Sonuç: " + x for x in df["decision"]]
+    df["decision"] = ["" + x for x in df["decision"]]
     #    df['stat_value'] = [value if value != nan else "-" for value in df['stat_value']]
     #    print(df.last())
     dataSource = ColumnDataSource(data=df)
@@ -81,8 +81,8 @@ def create_figure():
     # button to apply changes
     button = Button(label="Değişiklikleri Uygula", button_type="success")
 
-    rect_width = 0.93
-    rect_height = 0.93
+    rect_width = 0.5
+    rect_height = 0.7
 
     p = create_plot(rect_width, rect_height, groups, periods, dataSource, False, acc)
 
@@ -194,8 +194,8 @@ def create_figure():
 def create_plot(rect_width, rect_height, groups, periods, dataSource, isPrevious=False, acc=None):
     title = "Karar Ağacı " + ("(Eski)" if (isPrevious) else "(Yeni)")+ ("\t\t\t\tTahmin Başarısı (%): " + str(acc * 100) if (acc) else "")
     p = figure(title=title, plot_width=1400, plot_height=500, x_range=groups, y_range=list(periods), tools="hover", toolbar_location=None, tooltips=TOOLTIPS)
-    p.rect("y", "x", rect_width, rect_height, source=dataSource, fill_alpha=0.8, legend="attribute_type", color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
-
+    p.rect("y", "leafNodes_x", rect_width, rect_height, source=dataSource, fill_alpha=0.8, legend="attribute_type", color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
+    p.circle("nonLeafNodes_y", "nonLeafNodes_x", radius=0.09, source=dataSource, fill_alpha=0.8, legend="attribute_type", color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
     #####Drawing on the rectangles####
     text_props = {"source": dataSource, "text_align": "center", "text_baseline": "middle"}
 
@@ -203,21 +203,22 @@ def create_plot(rect_width, rect_height, groups, periods, dataSource, isPrevious
     # r.glyph.text_font_size = "7pt"
 
 
-    r = p.text(x="nonLeafNodes_y", y=dodge("nonLeafNodes_x", 0, range=p.x_range), text="nonLeafNodes_stat",
-               **text_props)
-    r.glyph.text_font_size = "7pt"
-
-    r = p.text(x="y", y=dodge("x", 0.3, range=p.x_range), text="attribute_type", **text_props)
-    r.glyph.text_font_style = "bold"
-    r.glyph.text_font_size = "8pt"
-
-
+    #r = p.text(x="nonLeafNodes_y", y=dodge("nonLeafNodes_x", 0, range=p.x_range), text="nonLeafNodes_stat",
+    #           **text_props)
+    #r.glyph.text_font_size = "7pt"
+    #
+    # r = p.text(x="y", y=dodge("x", 0.3, range=p.x_range), text="attribute_type", **text_props)
+    # r.glyph.text_font_style = "bold"
+    # r.glyph.text_font_size = "8pt"
+    #
+    #
     r = p.text(x="leafNodes_y", y="leafNodes_x", text="decision", **text_props)
     r.glyph.text_font_size = "8pt"
-
-    r = p.text(x="y", y=dodge("x", -0.3, range=p.x_range), text="instances", **text_props)
-    r.glyph.text_font_size = "8pt"
     #
+    # r = p.text(x="y", y=dodge("x", -0.3, range=p.x_range), text="instances", **text_props)
+    # r.glyph.text_font_size = "8pt"
+
+
     # r = p.text(x=x, y=dodge("y", -0.2, range=p.y_range), text="atomic mass", **text_props)
     # r.glyph.text_font_size = "5pt"
     ##Final settings##
@@ -263,7 +264,7 @@ def draw_arrow(mode, source, p, width, level_width, rect_width, rect_height):
     arrow_instance_min = min((int(x) for x in arrow_coordinates["instances"]), default=2)
     arrow_instance_max = max((int(x) for x in arrow_coordinates["instances"]), default=1)
 
-    arrow_coordinates["instances"] = [5 + 5 * (int(x) - arrow_instance_min) / (arrow_instance_max - arrow_instance_min + 1)
+    arrow_coordinates["instances"] = [2+ 10 * (int(x) - arrow_instance_min) / (arrow_instance_max - arrow_instance_min + 1)
                                       for x in arrow_coordinates["instances"]]
     arrow_data_source = ColumnDataSource(data=pd.DataFrame.from_dict(arrow_coordinates))
     arrow = Arrow(line_width="instances", end=OpenHead(size=0, line_width=0.5), line_color="darkgray", line_cap="round",
