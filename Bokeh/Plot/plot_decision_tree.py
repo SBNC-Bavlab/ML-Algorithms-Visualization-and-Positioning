@@ -57,6 +57,8 @@ def create_figure():
     df['stat_value'] = [round(i, 3) for i in df['stat_value']]
     df['nonLeafNodes_stat'] = [round(i, 3) for i in df['nonLeafNodes_stat']]
     df['decision'] = [decision if decision else "-" for decision in df['decision']]
+    df["nonLeafNodes_stat"] = ["Değer: " + str(x) for x in df["nonLeafNodes_stat"]]
+    df["decision"] = ["Sonuç: " + x for x in df["decision"]]
     #    df['stat_value'] = [value if value != nan else "-" for value in df['stat_value']]
     #    print(df.last())
     dataSource = ColumnDataSource(data=df)
@@ -194,7 +196,6 @@ def create_plot(rect_width, rect_height, groups, periods, dataSource, isPrevious
     # r = p.text(x="y", y=dodge("x", -0.3, range=p.x_range), text="stat_value", **text_props)
     # r.glyph.text_font_size = "7pt"
 
-    dataSource.data["nonLeafNodes_stat"] = ["Değer: " + str(x) for x in dataSource.data["nonLeafNodes_stat"]]
 
     r = p.text(x="nonLeafNodes_y", y=dodge("nonLeafNodes_x", 0, range=p.x_range), text="nonLeafNodes_stat",
                **text_props)
@@ -204,7 +205,6 @@ def create_plot(rect_width, rect_height, groups, periods, dataSource, isPrevious
     r.glyph.text_font_style = "bold"
     r.glyph.text_font_size = "8pt"
 
-    dataSource.data["decision"] = ["Sonuç: " + x for x in dataSource.data["decision"]]
 
     r = p.text(x="leafNodes_y", y="leafNodes_x", text="decision", **text_props)
     r.glyph.text_font_size = "8pt"
@@ -250,14 +250,14 @@ def draw_arrow(mode, source, p, width, level_width, rect_width, rect_height):
                     arrow_coordinates["x_avg"].append((x_start + x_end) / 2)
                     arrow_coordinates["y_avg"].append((y_start + y_end) / 2)
                     arrow_coordinates["label_name"].append(children_names[index])
-                    arrow_coordinates["instances"].append(source["instances"][offset + j])
+                    arrow_coordinates["instances"].append(source["instances"][index + sum(level_width[: i + 1])])
                     arrow_index += 1
                 x_offset += number_of_children
 
     arrow_instance_min = min(int(x) for x in arrow_coordinates["instances"])
     arrow_instance_max = max(int(x) for x in arrow_coordinates["instances"])
 
-    arrow_coordinates["instances"] = [5 + 5 * (int(x) - arrow_instance_min) / (arrow_instance_max - arrow_instance_min)
+    arrow_coordinates["instances"] = [5 + 5 * (int(x) - arrow_instance_min) / (arrow_instance_max - arrow_instance_min + 1)
                                       for x in arrow_coordinates["instances"]]
     arrow_data_source = ColumnDataSource(data=pd.DataFrame.from_dict(arrow_coordinates))
     arrow = Arrow(line_width="instances", end=OpenHead(size=0, line_width=0.5), line_color="darkgray", line_cap="round",
