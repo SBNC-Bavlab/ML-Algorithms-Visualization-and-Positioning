@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
     <script>
         var features = {"Yaş": ["Genç", "Orta", "Yaşlı"], "Göz Bozukluğu" : ["Miyop", "Hipermetrop"], "Astigmat" : ["Yok", "Var"], "Göz yaşı üretimi" : ["Az", "Normal"]}
-        var labelDict = {1 : "Sert Lens", 2: "Yumuşak Lens", 3: "Lens takamaz"}
+        var labelDict = {1 : "Sert Lens Kullananlar", 2: "Yumuşak Lens Kullananlar", 3: "Lens Kullanamayanlar"}
         function readTextFileAndPlot(file)
         {
             var rawFile = new XMLHttpRequest();
@@ -78,8 +78,6 @@
                                 drawGraph(Object.values(calculateFrequence(tempArray, j)), features[key], key, "myLabelChart" + i + "" + j)
                             }
                         }
-
-
                     }
                 }
             }
