@@ -55,7 +55,10 @@ def create_figure():
     df = elements.copy()
     # decimal point rounded to 2
     df['stat_value'] = [round(i, 3) for i in df['stat_value']]
-    df['nonLeafNodes_stat'] = [round(i, 3) for i in df['nonLeafNodes_stat']]
+    if not df['nonLeafNodes_stat'].dropna().empty:
+        df['nonLeafNodes_stat'] = [round(i, 3) for i in df['nonLeafNodes_stat']]
+    else:
+        df['nonLeafNodes_stat'] = [1]
     df['decision'] = [decision if decision else "-" for decision in df['decision']]
     df["nonLeafNodes_stat"] = ["Değer: " + str(x) for x in df["nonLeafNodes_stat"]]
     df["decision"] = ["Sonuç: " + x for x in df["decision"]]
@@ -133,7 +136,10 @@ def create_figure():
         data = pd.DataFrame.from_dict(data)
 
         data['stat_value'] = [round(i, 3) for i in data['stat_value']]  # decimal point rounded to 2
-        data['nonLeafNodes_stat'] = [round(i, 3) for i in data['nonLeafNodes_stat']]
+        if not data['nonLeafNodes_stat'].dropna().empty:
+            data['nonLeafNodes_stat'] = [round(i, 3) for i in data['nonLeafNodes_stat']]
+        else:
+            data['nonLeafNodes_stat'] = [1]
         ##none entries replaced with "-"
         data['decision'] = [decision if decision else "-" for decision in data['decision']]
         data["decision"] = ["Sonuç: " + x for x in data["decision"]]
@@ -254,8 +260,8 @@ def draw_arrow(mode, source, p, width, level_width, rect_width, rect_height):
                     arrow_index += 1
                 x_offset += number_of_children
 
-    arrow_instance_min = min(int(x) for x in arrow_coordinates["instances"])
-    arrow_instance_max = max(int(x) for x in arrow_coordinates["instances"])
+    arrow_instance_min = min((int(x) for x in arrow_coordinates["instances"]), default=2)
+    arrow_instance_max = max((int(x) for x in arrow_coordinates["instances"]), default=1)
 
     arrow_coordinates["instances"] = [5 + 5 * (int(x) - arrow_instance_min) / (arrow_instance_max - arrow_instance_min + 1)
                                       for x in arrow_coordinates["instances"]]
