@@ -33,6 +33,7 @@ TOOLTIPS = [
 ]
 # labels for method type radio buttons
 radio_button_labels = ["gini", "gainRatio"]
+tree_mode_labels = ["simple", "detailed"]
 arrow_list = {"current": [], "previous": []}
 current_label = ["gini"]
 selected_root = [""]
@@ -52,9 +53,9 @@ def create_figure():
 
     df = elements.copy()
     # decimal point rounded to 2
-    df['stat_value'] = [round(i, 3) for i in df['stat_value']]
+    #df['stat_value'] = [round(i, 3) for i in df['stat_value']]
     if not df['nonLeafNodes_stat'].dropna().empty:
-        df['nonLeafNodes_stat'] = [round(i, 3) for i in df['nonLeafNodes_stat']]
+        df['nonLeafNodes_stat'] = [round(i, 5) for i in df['nonLeafNodes_stat']]
     else:
         df['nonLeafNodes_stat'] = [1]
     df['decision'] = [decision if decision else "-" for decision in df['decision']]
@@ -76,15 +77,18 @@ def create_figure():
     # any attribute type
     root_type = RadioButtonGroup(width=600, labels=['Hiçbiri'] + list(cmap.keys())[:-1], active=0)
 
+    tree_mode = RadioButtonGroup(width=600, labels=tree_mode_labels, active=0)
+
     # button to apply changes
     button = Button(label="Değişiklikleri Uygula", button_type="success")
 
-    rect_width = 0.5
-    rect_height = 0.7
+    rect_width = 0.6
+    rect_height = 0.8
+    circle_radius = 0.2
 
-    p = create_plot(rect_width, rect_height, groups, periods, dataSource, False, acc)
+    p = create_plot(circle_radius, rect_width, rect_height, groups, periods, dataSource, False, acc)
 
-    arrow_data_source, arrow, label = draw_arrow("current", dataSource.data, p, width, level_width, rect_width,
+    arrow_data_source, arrow, label = draw_arrow("current", dataSource.data, p, width, level_width, circle_radius,
                                                  rect_height)
     p.add_layout(arrow)
     p.add_layout(label)
@@ -102,15 +106,16 @@ def create_figure():
     #### Best rooted plot is created here
     best_root_plot_data = dataSource.data.copy()
     best_root_plot_data_source = ColumnDataSource(data=best_root_plot_data)
-    best_root_plot = create_plot(rect_width, rect_height, groups, periods, best_root_plot_data_source, True, acc)
+    best_root_plot = create_plot(circle_radius, rect_width, rect_height, groups, periods, best_root_plot_data_source, True, acc)
 
     best_arrow_data_source, best_arrow, best_label = draw_arrow("current", best_root_plot_data_source.data,
-                                                    best_root_plot, width, level_width, rect_width, rect_height)
+                                                    best_root_plot, width, level_width, circle_radius, rect_height)
     best_root_plot.add_layout(best_arrow)
     best_root_plot.add_layout(best_label)
 
+
     ##Add all components into main_frame variable
-    main_frame = column(row(attr_info, attributes, method_info, method_type), row(root_info, root_type, button), p, best_root_plot)
+    main_frame = column(row(attr_info, attributes, method_info, method_type), row(root_info, root_type, button), row(tree_mode), p, best_root_plot)
 
     # Called with respect to change in method_type
     def updateMethodType(new):
@@ -128,6 +133,26 @@ def create_figure():
 
     attributes.on_click(updateAttributes)
 
+    def toggleMode(new):
+        if(new):
+            circles = p.select(name="circles")
+            circles.visible=False
+            rectangles = p.select(name="rectangles")
+            rectangles.visible=True
+
+            p.select(name="detailed_text").visible=True
+            p.select(name="decision_text").visible=False
+        else:
+            circles = p.select(name="circles")
+            circles.visible=True
+            rectangles = p.select(name="rectangles")
+            rectangles.visible=False
+
+            p.select(name="detailed_text").visible=False
+            p.select(name="decision_text").visible=True
+
+    tree_mode.on_click(toggleMode)
+
     def updateRoot(new):
         ##Select root manually
         if (new == 0):
@@ -142,11 +167,12 @@ def create_figure():
 
         data, width, depth, level_width, acc = get_bokeh_data(current_label[0], active_attributes_list,
                                                               selected_root[0])
+
         data = pd.DataFrame.from_dict(data)
 
-        data['stat_value'] = [round(i, 3) for i in data['stat_value']]  # decimal point rounded to 2
+        #data['stat_value'] = [round(i, 3) for i in data['stat_value']]  # decimal point rounded to 2
         if not data['nonLeafNodes_stat'].dropna().empty:
-            data['nonLeafNodes_stat'] = [round(i, 3) for i in data['nonLeafNodes_stat']]
+            data['nonLeafNodes_stat'] = [round(i, 5) for i in data['nonLeafNodes_stat']]
         else:
             data['nonLeafNodes_stat'] = [1]
         ##none entries replaced with "-"
@@ -155,7 +181,7 @@ def create_figure():
 
         dataSource.data = ColumnDataSource(data=data).data
 
-        arrow_data, _, _ = draw_arrow("current", dataSource.data, p, width, level_width, rect_width, rect_height)
+        arrow_data, _, _ = draw_arrow("current", dataSource.data, p, width, level_width, circle_radius, rect_height)
         arrow_data_source.data = ColumnDataSource(data=arrow_data.data).data
 
         ##X and y range calculated
@@ -178,9 +204,9 @@ def create_figure():
 
         # Datasource should be deep copied
         data_best_df = pd.DataFrame.from_dict(data_best)
-        data_best_df['stat_value'] = [round(i, 3) for i in data_best_df['stat_value']]  # decimal point rounded to 2
+        #data_best_df['stat_value'] = [round(i, 3) for i in data_best_df['stat_value']]  # decimal point rounded to 2
         if not data_best_df['nonLeafNodes_stat'].dropna().empty:
-            data_best_df['nonLeafNodes_stat'] = [round(i, 3) for i in data_best_df['nonLeafNodes_stat']]
+            data_best_df['nonLeafNodes_stat'] = [round(i, 5) for i in data_best_df['nonLeafNodes_stat']]
         else:
             data_best_df['nonLeafNodes_stat'] = [1]
         ##none entries replaced with "-"
@@ -190,7 +216,7 @@ def create_figure():
         best_root_plot_data_source.data = ColumnDataSource(data=data_best_df).data
 
         best_arrow_data, _, _ = draw_arrow("current", best_root_plot_data_source.data, best_root_plot,
-                                           width_best, level_width_best, rect_width, rect_height)
+                                           width_best, level_width_best, circle_radius, rect_height)
         best_arrow_data_source.data = ColumnDataSource(data=best_arrow_data.data).data
 
         ##X and y range calculated
@@ -213,33 +239,42 @@ def create_figure():
     return main_frame
 
 
-def create_plot(rect_width, rect_height, groups, periods, dataSource, isPrevious=False, acc=None):
+def create_plot(circle_radius, rect_width, rect_height, groups, periods, dataSource, isPrevious=False, acc=None, mode="simple"):
     title = "Karar Ağacı " + ("(Algoritmanın Seçtiği Kök Nitelikli Hali)" if (isPrevious) else "(Seçtiğiniz Kök Nitelikli Hali)")+ ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc * 100, 1)) if (acc) else "")
     p = figure(title=title, plot_width=1400, plot_height=500, x_range=groups, y_range=list(periods), tools="hover", toolbar_location=None, tooltips=TOOLTIPS)
-    p.rect("y", "leafNodes_x", rect_width, rect_height, source=dataSource, fill_alpha=0.8, legend="attribute_type", color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
-    p.circle("nonLeafNodes_y", "nonLeafNodes_x", radius=0.09, source=dataSource, fill_alpha=0.8, legend="attribute_type", color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
+    p.circle("y", "x", radius=circle_radius, source=dataSource, name="circles", fill_alpha=0.5, legend="attribute_type", color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
+    p.rect("y", "x", rect_width, rect_height, source=dataSource, name="rectangles", fill_alpha=0.5, legend="attribute_type",
+           color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
+    rectangles = p.select(name="rectangles")
+    rectangles.visible = False
+
     #####Drawing on the rectangles####
     text_props = {"source": dataSource, "text_align": "center", "text_baseline": "middle"}
 
-    # r = p.text(x="y", y=dodge("x", -0.3, range=p.x_range), text="stat_value", **text_props)
-    # r.glyph.text_font_size = "7pt"
-
-
-    #r = p.text(x="nonLeafNodes_y", y=dodge("nonLeafNodes_x", 0, range=p.x_range), text="nonLeafNodes_stat",
-    #           **text_props)
-    #r.glyph.text_font_size = "7pt"
+    r = p.text(x="nonLeafNodes_y", y=dodge("nonLeafNodes_x", 0, range=p.x_range),
+               name="detailed_text",
+               text="nonLeafNodes_stat",
+               **text_props)
+    r.glyph.text_font_size = "7pt"
     #
-    # r = p.text(x="y", y=dodge("x", 0.3, range=p.x_range), text="attribute_type", **text_props)
-    # r.glyph.text_font_style = "bold"
-    # r.glyph.text_font_size = "8pt"
-    #
-    #
-    r = p.text(x="leafNodes_y", y="leafNodes_x", text="decision", **text_props)
+    r = p.text(x="y", y=dodge("x", 0.3, range=p.x_range), name="detailed_text", text="attribute_type", **text_props)
+    r.glyph.text_font_style = "bold"
     r.glyph.text_font_size = "8pt"
     #
-    # r = p.text(x="y", y=dodge("x", -0.3, range=p.x_range), text="instances", **text_props)
-    # r.glyph.text_font_size = "8pt"
+    #
+    #
+    r = p.text(x="y", y=dodge("x", -0.3, range=p.x_range), name="detailed_text", text="instances", **text_props)
+    r.glyph.text_font_size = "8pt"
+    r = p.text(x="leafNodes_y", y="leafNodes_x", name="detailed_text", text="decision", **text_props)
+    r.glyph.text_font_size = "8pt"
 
+    p.select(name="detailed_text").visible = False
+
+    #r = p.text(x="y", y=dodge("x", -0.3, range=p.x_range), text="stat_value", **text_props)
+    #r.glyph.text_font_size = "7pt"
+
+    r = p.text(x=dodge("leafNodes_y", -0.4), text_color="orange", y="leafNodes_x", name="decision_text", text="decision", **text_props)
+    r.glyph.text_font_size = "13pt"
 
     # r = p.text(x=x, y=dodge("y", -0.2, range=p.y_range), text="atomic mass", **text_props)
     # r.glyph.text_font_size = "5pt"
@@ -254,7 +289,7 @@ def create_plot(rect_width, rect_height, groups, periods, dataSource, isPrevious
     return p
 
 
-def draw_arrow(mode, source, p, width, level_width, rect_width, rect_height):
+def draw_arrow(mode, source, p, width, level_width, circle_radius, rect_height):
     ##mode is 'current' or 'previous'
     arrow_index = 0  # index for arrow_list array
     arrow_coordinates = {"x_start": [], "x_end": [], "y_start": [], "y_end": [], "x_avg": [], "y_avg": [],
@@ -268,14 +303,14 @@ def draw_arrow(mode, source, p, width, level_width, rect_width, rect_height):
                 number_of_children = len(children_names)
                 for index in range(number_of_children):
                     x_start = source["y"][offset + j]
-                    y_start = source["x"][offset + j] - rect_height / 2
+                    y_start = source["x"][offset + j] - circle_radius / 2 - 2*circle_radius
                     x_end = source["y"][x_offset + index + sum(level_width[: i + 1])]
-                    y_end = source["x"][index + sum(level_width[: i + 1])] + rect_height / 2
-                    #                    if(True or arrow_index >= len(arrow_list[mode])):
+                    y_end = source["x"][index + sum(level_width[: i + 1])] + circle_radius / 2 + 2*circle_radius
+                    #if(True or arrow_index >= len(arrow_list[mode])):
                     arrow_coordinates["x_start"].append(x_start)
                     arrow_coordinates["x_end"].append(x_end)
-                    arrow_coordinates["y_start"].append(y_start - 0.06)
-                    arrow_coordinates["y_end"].append(y_end + 0.06)
+                    arrow_coordinates["y_start"].append(y_start)
+                    arrow_coordinates["y_end"].append(y_end)
                     arrow_coordinates["x_avg"].append((x_start + x_end) / 2)
                     arrow_coordinates["y_avg"].append((y_start + y_end) / 2)
                     arrow_coordinates["label_name"].append(children_names[index])
@@ -289,10 +324,10 @@ def draw_arrow(mode, source, p, width, level_width, rect_width, rect_height):
     arrow_coordinates["instances"] = [2+ 10 * (int(x) - arrow_instance_min) / (arrow_instance_max - arrow_instance_min + 1)
                                       for x in arrow_coordinates["instances"]]
     arrow_data_source = ColumnDataSource(data=pd.DataFrame.from_dict(arrow_coordinates))
-    arrow = Arrow(line_width="instances", end=OpenHead(size=0, line_width=0.5), line_color="darkgray", line_cap="round",
+    arrow = Arrow(line_width="instances", end=OpenHead(size=0, line_width=0.5), line_alpha=1, line_color="darkgray", line_cap="round",
                   x_start="x_start", y_start="y_start", x_end="x_end", y_end="y_end", source=arrow_data_source)
-    label = LabelSet(x="x_avg", y="y_avg", text="label_name",
-                     text_font_size="7pt", source=arrow_data_source)
+    label = LabelSet(x=dodge("x_avg", -0.0), y=dodge("y_avg", 0.0), text="label_name",
+                     text_font_size="18pt", text_color="gray", source=arrow_data_source)
     if (mode == "current"):
         return arrow_data_source, arrow, label
     else:
