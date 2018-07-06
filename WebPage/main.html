@@ -127,11 +127,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.2/bootstrap-slider.min.js"></script>
   <link rel = "stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.2/css/bootstrap-slider.min.css">
   <script>
-  var data = [["Yeşil", 3, "Karpuz"], ["Yeşil", 3, "Karpuz"], ["Yeşil", 5, "Karpuz"],
+  var data = [["Yeşil", 3, "Karpuz"], ["Yeşil", 6, "Karpuz"], ["Yeşil", 7, "Karpuz"], ["Yeşil", 3, "Karpuz"], ["Yeşil", 5, "Karpuz"],
             ["Yeşil", 5, "Karpuz"], ["Yeşil", 5, "Karpuz"], ["Yeşil", 5, "Karpuz"],
-            ['Sarı', 5, 'Kavun'], ['Sarı', 5, 'Kavun'], ['Sarı', 2, 'Kavun'],
+            ['Sarı', 5, 'Kavun'], ['Sarı', 2, 'Kavun'], ['Sarı', 4, 'Kavun'], ['Sarı', 5, 'Kavun'], ['Sarı', 2, 'Kavun'],
             ['Sarı', 3, 'Kavun'], ['Sarı', 3, "Kavun"]] //['Kırmızı', 1, 'Üzüm'], ['Kırmızı', 1, 'Üzüm'], ['Sarı', 3, 'Limon']]
-  var test_data = [["Yeşil", 5, "Karpuz"], ["Yeşil", 4, "Karpuz"], ["Yeşil", 3, "Karpuz"], ["Sarı", 3, "Kavun"], ["Sarı", 4, "Kavun"], ["Sarı", 5, "Kavun"]]
+  var test_data = [["Yeşil", 5, "Karpuz"], ["Yeşil", 1, "Kavun"], ["Yeşil", 6, "Karpuz"], ["Yeşil", 6, "Karpuz"], ["Yeşil", 4, "Karpuz"], ["Yeşil", 3, "Karpuz"], ["Sarı", 3, "Kavun"], ["Sarı", 4, "Kavun"], ["Sarı", 5, "Kavun"]]
   let indexOfNumericValue = 1
   var dict = {}
   var questions = {"1'den büyük mü?" : {attribute :"1", type: 1},
@@ -161,7 +161,26 @@ var criticalValue = 0
     $("#overlay_text").html(tutorial[tutorialIndex])
     tutorialIndex++;
     $('#splitter').bootstrapSlider()
-
+    function calculateAccuracyOfList(){
+        var valid = 0;
+        var invalid = 0;
+        var testItems = $("#test_list > div");
+        for(var i = 0; i < testItems.length; i++){
+           var $item = $(testItems[i]);
+           var color = $item.css("backgroundColor")
+           var label = dict[$item.attr("id")]["attributeValues"][2]
+           if(color == "rgb(255, 255, 0)" && label == "Karpuz"){
+                invalid++;
+           }else if (color == "rgb(255, 255, 0)" && label == "Kavun"){
+                valid++;
+           }else if (color == "rgb(0, 128, 0)" && label == "Karpuz"){
+                valid++;
+           }else if (color == "rgb(0, 128, 0)" && label == "Kavun"){
+                invalid++;
+           }
+        }
+        return [valid, invalid, (100 * valid / (valid + invalid)).toFixed(1)]
+    }
     $("#overlay_button").click(()=>{
         if(tutorialIndex == 5){
             bringForthIndex++;
@@ -181,7 +200,6 @@ var criticalValue = 0
                 text += entry[indexOfNumericValue] + "  "
                 cell = tr.insertCell()
                 cell.innerHTML = entry[indexOfNumericValue]
-
 
                 var $newNode = $("<div>").attr("id", "test_" + i).addClass("col-sm-1 c1").append($(table))
                 dict[$newNode.attr("id")] = obje
@@ -205,8 +223,12 @@ var criticalValue = 0
             for(var i = 0; i < testItems.length; i++){
                 var $item = $(testItems[i])
                 var $tr = $($item).find("table > tbody > tr")
-                $tr.append("<td> " + "<img src = 'icons/" + labelToImage[dict[$item.attr("id")]["attributeValues"][2]] + "' width = '60'></img>" + "</td>")
+                var label = dict[$item.attr("id")]["attributeValues"][2]
+                $tr.append("<td> " + "<img src = 'icons/" + labelToImage[label] + "' width = '60'></img>" + "</td>")
             }
+            var accuracyEntries = calculateAccuracyOfList()
+            tutorial[9] = "Gerçek değerler bu şekildeydi. Modeliniz " + accuracyEntries[0] + " tanesini doğru, " + accuracyEntries[1] + " tanesini yanlış bildi. " +
+                "Başarı oranınız %" + accuracyEntries[2]
         }
 
         if( tutorialIndex < tutorial.length) {
@@ -228,6 +250,22 @@ var criticalValue = 0
             $(guide[0]).css("z-index", 999)
             tutorial[6] = "Eğer kritik noktanızı " + criticalValue + " olarak belirlerseniz artık modeliniz çapı " + criticalValue +
                 "'" + turkishRuleDict[criticalValue] + "n büyük herşeyi karpuz kabul edecek"
+        } else{
+            var testItems = $("#test_list > div");
+            for(var i = 0; i < testItems.length; i++){
+                var $item = $(testItems[i]);
+                var conditionAttribute = dict[$item.attr("id")]["attributeValues"][indexOfNumericValue];//1 is because quiestion is numeric
+                if(Number(conditionAttribute) > Number(criticalValue)){
+                    $item.css("background-color", "green");
+                }else{
+                    $item.css("background-color", "yellow");
+                }
+            }
+            var accuracyEntries = calculateAccuracyOfList()
+            console.log(accuracyEntries)
+            $("#accuracy").css("opacity", "1")
+            $("#accuracy").html("Modeliniz " + accuracyEntries[0] + " tanesini doğru, " + accuracyEntries[1] + " tanesini yanlış bildi. " +
+                "Başarı oranınız %" + accuracyEntries[2])
         }
         $(".tooltip.tooltip-main").css("opacity", "0.7")
         var mainItems = $("#main_list > div");
@@ -280,12 +318,17 @@ var criticalValue = 0
 <div id ="error" class="alert alert-warning" style="display: none; position: fixed; z-index: 999; width: 50%; margin-left: 25%; text-align: center" role="alert">
 </div>
 <button id = "next" type="button" style="margin-bottom: 15px; display:none" class="btn btn-outline-primary">İlerle</button>
-<div id = "main_list" class = "row a0" align="center" style="margin-left: 5%; margin-right: 0px">
+<div id = "main_list" class = "row a0" style="margin-left: 5%; margin-right: 0px">
 </div>
-
+<br><br>
+Test verisi:
 <div id="test_list" class = "row c0" style="margin-left: 5%; margin-right: 0px">
 </div>
 <br><br>
+<div id="accuracy" style="opacity: 0;">
+
+</div>
+<br><br><br>
 <div class = "b0 col-sm-2">
         <input style = "opacity: 1;" id="splitter" ata-slider-id='splitterSlider' type="text" data-slider-min="1" data-slider-max="5" data-slider-step="1" data-slider-value="1"/>
 </div>
