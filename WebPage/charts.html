@@ -11,6 +11,14 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
     <style>
+        @font-face {
+            font-family: "San Fransisco";
+            src: url(sf.otf) format("truetype");
+        }
+        @font-face {
+            font-family: "San Fransisco Bold";
+            src: url(sf_bold.otf) format("truetype");
+        }
         #overlay {
             position: fixed;
             display: block;
@@ -38,13 +46,17 @@
             top: 80%;
             right: 30%;
         }
-        .blur {
-            -webkit-filter: blur(5px); /* Chrome, Safari, Opera */
-            filter: blur(5px);
+        .blur{
+            -webkit-filter: blur(8px); /* Chrome, Safari, Opera */
+            filter: blur(8px);
         }
     </style>
 
     <script>
+        var descriptions = ["Verimizden Astigmat olan insanların sadece sert lens kullanabildiklerini; olmayanların ise yalnızca yumuşak lens kullanabildiklerini çıkarabilriiz.",
+                            "Bu verimizde ise yaş arttıkça lens takmaya müsaade etme oranının azaldığını göürüyoruz",
+                            "Bu kısım gösteriyor ki; göz bozukluğu hipermetrop olanlar daha çok yumuşak lens kullanabiliyorken, miyop olanlar sert lense yönlendiriliyor.",
+                            "Hadi şimdi de siz keşfedin grafikleri"]
         var features = {"Yaş": ["Genç", "Orta", "Yaşlı"], "Göz Bozukluğu" : ["Miyop", "Hipermetrop"], "Astigmat" : ["Yok", "Var"], "Göz yaşı üretimi" : ["Az", "Normal"]}
         var labelDict = {1 : "Sert Lens Kullananlar", 2: "Yumuşak Lens Kullananlar", 3: "Lens Kullanamayanlar"}
         function readTextFileAndPlot(file)
@@ -104,6 +116,7 @@
 
                             var textDiv = document.createElement("div")
                             textDiv.classList.add("col-sm-1")
+                            textDiv.id = "label" + i;
                             textDiv.innerHTML = labelDict[i + 1]
                             textDiv.style.marginTop = "3%"
                             div.appendChild(textDiv)
@@ -205,11 +218,45 @@
         $( function() {
             readTextFileAndPlot("lens.txt")
         });
+        function blurChartsExcept(exceptions){
+
+        }
+        var descIndex = 0
         function afterGraphCompleted(){
-            console.log("finished")
             $("#header0, #myChart0, #myLabelChart00, #myLabelChart10, #myLabelChart20").addClass("blur")
             $("#header1, #myChart1, #myLabelChart01, #myLabelChart11, #myLabelChart21").addClass("blur")
+            $("#myLabelChart22").addClass("blur")
+            $("#label2").addClass("blur")
             $("#header3, #myChart3, #myLabelChart03, #myLabelChart13, #myLabelChart23").addClass("blur")
+            $("#infoText").html(descriptions[0])
+            descIndex++;
+            $("#next").click(()=>{
+                $("*").removeClass("blur")
+                $("#infoText").html(descriptions[descIndex])
+                if(descIndex == 1){
+                    $("#header1, #myChart1, #myLabelChart01, #myLabelChart11, #myLabelChart21").addClass("blur")
+                    $("#header2, #myChart2, #myLabelChart02, #myLabelChart12, #myLabelChart22").addClass("blur")
+                    $("#header3, #myChart3, #myLabelChart03, #myLabelChart13, #myLabelChart23").addClass("blur")
+                    $("#text_overlay").css("left", "35%")
+                }else if(descIndex == 2){
+                    $("#header0, #myChart0, #myLabelChart00, #myLabelChart10, #myLabelChart20").addClass("blur")
+                    $("#myLabelChart21").addClass("blur")
+                    $("#header2, #myChart2, #myLabelChart02, #myLabelChart12, #myLabelChart22").addClass("blur")
+                    $("#label2").addClass("blur")
+                    $("#header3, #myChart3, #myLabelChart03, #myLabelChart13, #myLabelChart23").addClass("blur")
+                    $("#text_overlay").css("left", "45%")
+                } else if(descIndex == 3){
+                    $("#header0, #myChart0, #myLabelChart00, #myLabelChart10, #myLabelChart20").addClass("blur")
+                    $("#header1, #myChart1, #myLabelChart01, #myLabelChart11, #myLabelChart21").addClass("blur")
+                    $("#header2, #myChart2, #myLabelChart02, #myLabelChart12, #myLabelChart22").addClass("blur")
+                    $("#header3, #myChart3, #myLabelChart03, #myLabelChart13, #myLabelChart23").addClass("blur")
+                    $("#next").html("Olur")
+                    $("#text_overlay").css("left", "35%")
+                } else if(descIndex == 4){
+                    $("#text_overlay").css("display", "none")
+                }
+                descIndex++;
+            });
         }
     </script>
 </head>
@@ -221,6 +268,10 @@
         <div id = "header3" class = "col-sm-2">Göz yaşı üretimi</div>`
     </div>
     <div id = "chartArea" class = "row" style="margin-left: 0px; margin-right: 0px">
+    </div>
+    <div id = "text_overlay" style="position: absolute; top: 30%; left: 11%; width: 30%; z-index: 999; ">
+        <div id="infoText" style="font-family: 'San Fransisco Bold'; font-size: 30px"></div>
+        <button id="next" style="position: absolute; margin-top: 2%; right: 0px" class="btn btn-outline-success">Devam</button>
     </div>
 
 </body>
