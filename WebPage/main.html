@@ -131,7 +131,7 @@
             ["Yeşil", 5, "Karpuz"], ["Yeşil", 5, "Karpuz"], ["Yeşil", 5, "Karpuz"],
             ['Sarı', 5, 'Kavun'], ['Sarı', 2, 'Kavun'], ['Sarı', 4, 'Kavun'], ['Sarı', 5, 'Kavun'], ['Sarı', 2, 'Kavun'],
             ['Sarı', 3, 'Kavun'], ['Sarı', 3, "Kavun"]] //['Kırmızı', 1, 'Üzüm'], ['Kırmızı', 1, 'Üzüm'], ['Sarı', 3, 'Limon']]
-  var test_data = [["Yeşil", 5, "Karpuz"], ["Yeşil", 1, "Kavun"], ["Yeşil", 6, "Karpuz"], ["Yeşil", 6, "Karpuz"], ["Yeşil", 4, "Karpuz"], ["Yeşil", 3, "Karpuz"], ["Sarı", 3, "Kavun"], ["Sarı", 4, "Kavun"], ["Sarı", 5, "Kavun"]]
+  var test_data = [["Yeşil", 5, "Karpuz"], ["Yeşil", 5, "Karpuz"], ["Yeşil", 1, "Kavun"], ["Yeşil", 6, "Karpuz"], ["Yeşil", 6, "Karpuz"], ["Yeşil", 4, "Karpuz"], ["Yeşil", 3, "Karpuz"], ["Sarı", 3, "Kavun"], ["Sarı", 4, "Kavun"], ["Sarı", 5, "Kavun"]]
   let indexOfNumericValue = 1
   var dict = {}
   var questions = {"1'den büyük mü?" : {attribute :"1", type: 1},
@@ -190,6 +190,7 @@ var criticalValue = 0
             $("#splitter").bootstrapSlider("disable")
         }
         else if(tutorialIndex == 7){
+            $("#main_list").css("display", "none")
             test_data.forEach((entry, i)=>{
                 var obje = { attributeValues : entry}
                 var text = ""
@@ -205,6 +206,7 @@ var criticalValue = 0
                 dict[$newNode.attr("id")] = obje
                 $("#test_list").append($newNode);
             });
+            $(guide[2]).css("z-index", "999")
         } else if(tutorialIndex == 8){
             $(guide[2]).css("z-index", "999")
             $(guide[0]).css("z-index", "-999")
@@ -320,8 +322,7 @@ var criticalValue = 0
 <button id = "next" type="button" style="margin-bottom: 15px; display:none" class="btn btn-outline-primary">İlerle</button>
 <div id = "main_list" class = "row a0" style="margin-left: 5%; margin-right: 0px">
 </div>
-<br><br>
-Test verisi:
+
 <div id="test_list" class = "row c0" style="margin-left: 5%; margin-right: 0px">
 </div>
 <br><br>
