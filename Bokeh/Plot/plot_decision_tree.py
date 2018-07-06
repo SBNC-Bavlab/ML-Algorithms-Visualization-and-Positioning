@@ -55,7 +55,7 @@ def create_figure():
     # decimal point rounded to 2
     #df['stat_value'] = [round(i, 3) for i in df['stat_value']]
     if not df['nonLeafNodes_stat'].dropna().empty:
-        df['nonLeafNodes_stat'] = [round(i, 5) for i in df['nonLeafNodes_stat']]
+        df['nonLeafNodes_stat'] = [round(i, 3) for i in df['nonLeafNodes_stat']]
     else:
         df['nonLeafNodes_stat'] = [1]
     df['decision'] = [decision if decision else "-" for decision in df['decision']]
@@ -82,8 +82,8 @@ def create_figure():
     # button to apply changes
     button = Button(label="Değişiklikleri Uygula", button_type="success")
 
-    rect_width = 0.6
-    rect_height = 0.8
+    rect_width = 0.7
+    rect_height = 0.9
     circle_radius = 0.2
 
     p = create_plot(circle_radius, rect_width, rect_height, groups, periods, dataSource, False, acc)
@@ -172,7 +172,7 @@ def create_figure():
 
         #data['stat_value'] = [round(i, 3) for i in data['stat_value']]  # decimal point rounded to 2
         if not data['nonLeafNodes_stat'].dropna().empty:
-            data['nonLeafNodes_stat'] = [round(i, 5) for i in data['nonLeafNodes_stat']]
+            data['nonLeafNodes_stat'] = [round(i, 3) for i in data['nonLeafNodes_stat']]
         else:
             data['nonLeafNodes_stat'] = [1]
         ##none entries replaced with "-"
@@ -206,7 +206,7 @@ def create_figure():
         data_best_df = pd.DataFrame.from_dict(data_best)
         #data_best_df['stat_value'] = [round(i, 3) for i in data_best_df['stat_value']]  # decimal point rounded to 2
         if not data_best_df['nonLeafNodes_stat'].dropna().empty:
-            data_best_df['nonLeafNodes_stat'] = [round(i, 5) for i in data_best_df['nonLeafNodes_stat']]
+            data_best_df['nonLeafNodes_stat'] = [round(i, 3) for i in data_best_df['nonLeafNodes_stat']]
         else:
             data_best_df['nonLeafNodes_stat'] = [1]
         ##none entries replaced with "-"
@@ -321,7 +321,7 @@ def draw_arrow(mode, source, p, width, level_width, circle_radius, rect_height):
     arrow_instance_min = min((int(x) for x in arrow_coordinates["instances"]), default=2)
     arrow_instance_max = max((int(x) for x in arrow_coordinates["instances"]), default=1)
 
-    arrow_coordinates["instances"] = [2+ 10 * (int(x) - arrow_instance_min) / (arrow_instance_max - arrow_instance_min + 1)
+    arrow_coordinates["instances"] = [3+ 10 * (int(x) - arrow_instance_min) / (arrow_instance_max - arrow_instance_min + 1)
                                       for x in arrow_coordinates["instances"]]
     arrow_data_source = ColumnDataSource(data=pd.DataFrame.from_dict(arrow_coordinates))
     arrow = Arrow(line_width="instances", end=OpenHead(size=0, line_width=0.5), line_alpha=1, line_color="darkgray", line_cap="round",
