@@ -226,7 +226,7 @@ def create_figure():
         best_root_plot.x_range.factors = groups_best
         best_root_plot.y_range.factors = periods_best
 
-        title = "Karar Ağacı (Seçtiğiniz Kök Nitelikli Hali)" \
+        title = "Karar Ağacı (Algoritmanın Seçtiği Kök Nitelikli Hali)" \
                 + ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc * 100, 1)) if (acc_best) else "")
 
         best_root_plot.title.text = title
