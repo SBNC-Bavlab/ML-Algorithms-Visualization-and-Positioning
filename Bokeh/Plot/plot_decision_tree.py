@@ -18,6 +18,12 @@ cmap = {
     "tearAttr": "yellow",
     "classAttr": "#e08d49"
 }
+attr_to_turkish = {
+    "ageAttr": "Yaş",
+    "spectacleAttr": "Göz Bozukluğu",
+    "astigmaticAttr": "Astigmat",
+    "tearAttr": "Göz Yaşı Üretimi",
+    "classAttr": "Sonuç"}
 attr_to_children = {"ageAttr": ["1", "2", "3"],
                     "spectacleAttr": ["1", "2"],
                     "astigmaticAttr": ["1", "2"],
@@ -41,9 +47,9 @@ selected_root = [""]
 # Create the main plot
 def create_figure():
     # Implicitly two attributes is disabled for the beginning
-    active_attributes_list = [attr for attr in cmap.keys() if attr != "doorsAttr" and attr != "maintAttr"]
+    active_attributes_list = [attr for attr in cmap.keys() if attr != "classAttr"]
     # method options: gini, gainRatio, informationGain
-    source, width, depth, level_width, acc = get_bokeh_data("gini", active_attributes_list, selected_root[0])
+    source, width, depth, level_width, acc = get_bokeh_data("gini", active_attributes_list + ["classAttr"], selected_root[0])
 
     elements = pd.DataFrame.from_dict(source)
 
@@ -62,6 +68,7 @@ def create_figure():
     df['decision'] = [decision if decision else "-" for decision in df['decision']]
     df["nonLeafNodes_stat"] = ["" + str(x) for x in df["nonLeafNodes_stat"]]
     df["decision"] = ["" + x for x in df["decision"]]
+    df['attribute_type_tr'] = [attr_to_turkish[attr] for attr in df['attribute_type']]
     #    df['stat_value'] = [value if value != nan else "-" for value in df['stat_value']]
     #    print(df.last())
     dataSource = ColumnDataSource(data=df)
@@ -69,14 +76,14 @@ def create_figure():
     # gini or informationGain or gainRatio
     method_type = RadioButtonGroup(width=160, labels=radio_button_labels, active=1)
     # attributes like buyingAttr, personsAttr, ...
-    attributes = CheckboxButtonGroup(width=600, labels=list(cmap.keys()),
+    attributes = CheckboxButtonGroup(width=600, labels= [attr_to_turkish[attr] for attr in list(cmap.keys()) if attr != "classAttr"],
                                      active=[i for i, attr in enumerate(list(cmap.keys()))
-                                             if attr != "doorsAttr" and attr != "maintAttr"])
+                                             if attr != "classAttr"])
     # button to apply changes
     button = Button(label="Değişiklikleri Uygula", button_type="success")
 
     # any attribute type
-    root_type = RadioButtonGroup(width=600, labels=['Hiçbiri'] + list(cmap.keys())[:-1], active=0)
+    root_type = RadioButtonGroup(width=600, labels=['Hiçbiri'] + [attr_to_turkish[attr] for attr in list(cmap.keys())[:-1]], active=0)
 
     tree_mode = RadioButtonGroup(width=600, labels=tree_mode_labels, active=0)
 
@@ -131,8 +138,7 @@ def create_figure():
     def updateAttributes(new):
         active_attributes_list[:] = []
         for i in new:
-            active_attributes_list.append(list(cmap.keys())[i])
-
+                active_attributes_list.append(list(cmap.keys())[i])
     attributes.on_click(updateAttributes)
 
     def toggleMode(new):
@@ -184,7 +190,7 @@ def create_figure():
 
     def applyChanges():
 
-        data, width, depth, level_width, acc = get_bokeh_data(current_label[0], active_attributes_list,
+        data, width, depth, level_width, acc = get_bokeh_data(current_label[0], active_attributes_list + ["classAttr"],
                                                               selected_root[0])
 
         data = pd.DataFrame.from_dict(data)
@@ -197,6 +203,7 @@ def create_figure():
         ##none entries replaced with "-"
         data['decision'] = [decision if decision else "-" for decision in data['decision']]
         data["decision"] = ["" + x for x in data["decision"]]
+        data['attribute_type_tr'] = [attr_to_turkish[attr] for attr in data['attribute_type']]
 
         dataSource.data = ColumnDataSource(data=data).data
 
@@ -220,7 +227,7 @@ def create_figure():
         ######Refresh best rooted plot
         ####-----------
 
-        data_best, width_best, depth_best, level_width_best, acc_best = get_bokeh_data(current_label[0], active_attributes_list, "")
+        data_best, width_best, depth_best, level_width_best, acc_best = get_bokeh_data(current_label[0], active_attributes_list + ["classAttr"], "")
 
         # Datasource should be deep copied
         data_best_df = pd.DataFrame.from_dict(data_best)
@@ -232,6 +239,7 @@ def create_figure():
         ##none entries replaced with "-"
         data_best_df['decision'] = [decision if decision else "-" for decision in data_best_df['decision']]
         data_best_df["decision"] = ["" + x for x in data_best_df["decision"]]
+        data_best_df['attribute_type_tr'] = [attr_to_turkish[attr] for attr in data_best_df['attribute_type']]
 
         best_root_plot_data_source.data = ColumnDataSource(data=data_best_df).data
 
@@ -248,12 +256,12 @@ def create_figure():
         best_root_plot.y_range.factors = periods_best
 
         title = "Karar Ağacı (Algoritmanın Seçtiği Kök Nitelikli Hali)" \
-                + ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc * 100, 1)) if (acc_best) else "")
+                + ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc_best  * 100, 1)) if (acc_best) else "")
 
         best_root_plot.title.text = title
         button.disabled = True
         tree_mode.disabled = True
-        animate_outline_color(best_root_plot, 4)
+        animate_outline_color(best_root_plot, 2)
         button.disabled = False
         tree_mode.disabled = False
 
@@ -265,8 +273,8 @@ def create_figure():
 def create_plot(circle_radius, rect_width, rect_height, groups, periods, dataSource, isPrevious=False, acc=None):
     title = "Karar Ağacı " + ("(Algoritmanın Seçtiği Kök Nitelikli Hali)" if (isPrevious) else "(Seçtiğiniz Kök Nitelikli Hali)")+ ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc * 100, 1)) if (acc) else "")
     p = figure(title=title, plot_width=650, plot_height=650, x_range=groups, y_range=list(periods), tools="hover", toolbar_location=None, tooltips=TOOLTIPS)
-    p.circle("y", "x", radius=circle_radius, source=dataSource, name="circles", fill_alpha=0.5, legend="attribute_type", color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
-    p.rect("y", "x", rect_width, rect_height, source=dataSource, name="rectangles", fill_alpha=0.5, legend="attribute_type",
+    p.circle("y", "x", radius=circle_radius, source=dataSource, name="circles", fill_alpha=0.5, legend="attribute_type_tr", color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
+    p.rect("y", "x", rect_width, rect_height, source=dataSource, name="rectangles", fill_alpha=0.5, legend="attribute_type_tr",
            color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
     rectangles = p.select(name="rectangles")
     rectangles.visible = False
@@ -280,7 +288,7 @@ def create_plot(circle_radius, rect_width, rect_height, groups, periods, dataSou
                **text_props)
     r.glyph.text_font_size = "7pt"
     #
-    r = p.text(x="y", y=dodge("x", 0.3, range=p.x_range), name="detailed_text", text="attribute_type", **text_props)
+    r = p.text(x="y", y=dodge("x", 0.3, range=p.x_range), name="detailed_text", text="attribute_type_tr", **text_props)
     r.glyph.text_font_style = "bold"
     r.glyph.text_font_size = "8pt"
     #
