@@ -18,6 +18,12 @@ cmap = {
     "tearAttr": "yellow",
     "classAttr": "#e08d49"
 }
+attr_to_turkish = {
+    "ageAttr": "Yaş",
+    "spectacleAttr": "Göz Bozukluğu",
+    "astigmaticAttr": "Astigmat",
+    "tearAttr": "Göz Yaşı Üretimi",
+    "classAttr": "Sonuç"}
 attr_to_children = {"ageAttr": ["1", "2", "3"],
                     "spectacleAttr": ["1", "2"],
                     "astigmaticAttr": ["1", "2"],
@@ -41,10 +47,10 @@ selected_root = [""]
 # Create the main plot
 def create_figure():
     # Implicitly two attributes is disabled for the beginning
-    active_attributes_list = [attr for attr in cmap.keys() if attr != "doorsAttr" and attr != "maintAttr"]
+    active_attributes_list = [attr for attr in cmap.keys() if attr != "classAttr"]
     # method options: gini, gainRatio, informationGain
-    source, width, depth, level_width, acc = get_bokeh_data("gini", active_attributes_list, selected_root[0])
-
+    source, width, depth, level_width, acc = get_bokeh_data("gini", active_attributes_list + ["classAttr"],
+                                                            selected_root[0])
     elements = pd.DataFrame.from_dict(source)
 
     ##X and y range calculated
@@ -62,6 +68,7 @@ def create_figure():
     df['decision'] = [decision if decision else "-" for decision in df['decision']]
     df["nonLeafNodes_stat"] = ["" + str(x) for x in df["nonLeafNodes_stat"]]
     df["decision"] = ["" + x for x in df["decision"]]
+    df['attribute_type_tr'] = [attr_to_turkish[attr] for attr in df['attribute_type']]
     #    df['stat_value'] = [value if value != nan else "-" for value in df['stat_value']]
     #    print(df.last())
     dataSource = ColumnDataSource(data=df)
@@ -69,14 +76,16 @@ def create_figure():
     # gini or informationGain or gainRatio
     method_type = RadioButtonGroup(width=160, labels=radio_button_labels, active=1)
     # attributes like buyingAttr, personsAttr, ...
-    attributes = CheckboxButtonGroup(width=600, labels=list(cmap.keys()),
+    attributes = CheckboxButtonGroup(width=600, labels=[attr_to_turkish[attr] for attr in list(cmap.keys()) if attr != "classAttr"],
                                      active=[i for i, attr in enumerate(list(cmap.keys()))
-                                             if attr != "doorsAttr" and attr != "maintAttr"])
+                                             if attr != "classAttr"])
     # button to apply changes
     button = Button(label="Değişiklikleri Uygula", button_type="success")
 
     # any attribute type
-    root_type = RadioButtonGroup(width=600, labels=['Hiçbiri'] + list(cmap.keys())[:-1], active=0)
+    root_type = RadioButtonGroup(width=600,
+                                 labels=['Hiçbiri'] + [attr_to_turkish[attr] for attr in list(cmap.keys())[:-1]],
+                                 active=0)
 
     tree_mode = RadioButtonGroup(width=600, labels=tree_mode_labels, active=0)
 
@@ -87,13 +96,9 @@ def create_figure():
     rect_height = 0.9
     circle_radius = 0.2
 
-    p = create_plot(circle_radius, rect_width, rect_height, groups, periods, dataSource, False, acc)
+    p, arrow_data_source = create_plot(circle_radius, rect_width, rect_height, width, level_width, groups, periods, dataSource, False, acc)
     p.axis.visible=False
 
-    arrow_data_source, arrow, label = draw_arrow("current", dataSource.data, p, width, level_width, circle_radius,
-                                                 rect_height)
-    p.add_layout(arrow)
-    p.add_layout(label)
 
     attr_info = Paragraph(text="""
        Nitelikleri seçiniz:
@@ -108,12 +113,12 @@ def create_figure():
     #### Best rooted plot is created here
     best_root_plot_data = dataSource.data.copy()
     best_root_plot_data_source = ColumnDataSource(data=best_root_plot_data)
-    best_root_plot = create_plot(circle_radius, rect_width, rect_height, groups, periods, best_root_plot_data_source, True, acc)
+    best_root_plot, best_arrow_data_source = create_plot(circle_radius, rect_width, rect_height, width, level_width, groups, periods, best_root_plot_data_source, True, acc)
     best_root_plot.axis.visible=False
-    best_arrow_data_source, best_arrow, best_label = draw_arrow("current", best_root_plot_data_source.data,
-                                                    best_root_plot, width, level_width, circle_radius, rect_height)
-    best_root_plot.add_layout(best_arrow)
-    best_root_plot.add_layout(best_label)
+    #best_arrow_data_source, best_arrow, best_label = draw_arrow(best_root_plot_data_source.data,
+    #                                                best_root_plot, width, level_width, circle_radius, rect_height)
+    #best_root_plot.add_layout(best_arrow)
+    #best_root_plot.add_layout(best_label)
 
 
     ##Add all components into main_frame variable
@@ -184,7 +189,7 @@ def create_figure():
 
     def applyChanges():
 
-        data, width, depth, level_width, acc = get_bokeh_data(current_label[0], active_attributes_list,
+        data, width, depth, level_width, acc = get_bokeh_data(current_label[0], active_attributes_list  + ["classAttr"],
                                                               selected_root[0])
 
         data = pd.DataFrame.from_dict(data)
@@ -197,10 +202,10 @@ def create_figure():
         ##none entries replaced with "-"
         data['decision'] = [decision if decision else "-" for decision in data['decision']]
         data["decision"] = ["" + x for x in data["decision"]]
-
+        data['attribute_type_tr'] = [attr_to_turkish[attr] for attr in data['attribute_type']]
         dataSource.data = ColumnDataSource(data=data).data
 
-        arrow_data, _, _ = draw_arrow("current", dataSource.data, p, width, level_width, circle_radius, rect_height)
+        arrow_data, _, _ = draw_arrow(dataSource.data, p, width, level_width, circle_radius, rect_height, "get_data")
         arrow_data_source.data = ColumnDataSource(data=arrow_data.data).data
 
         ##X and y range calculated
@@ -220,7 +225,7 @@ def create_figure():
         ######Refresh best rooted plot
         ####-----------
 
-        data_best, width_best, depth_best, level_width_best, acc_best = get_bokeh_data(current_label[0], active_attributes_list, "")
+        data_best, width_best, depth_best, level_width_best, acc_best = get_bokeh_data(current_label[0], active_attributes_list + ["classAttr"], "")
 
         # Datasource should be deep copied
         data_best_df = pd.DataFrame.from_dict(data_best)
@@ -232,11 +237,11 @@ def create_figure():
         ##none entries replaced with "-"
         data_best_df['decision'] = [decision if decision else "-" for decision in data_best_df['decision']]
         data_best_df["decision"] = ["" + x for x in data_best_df["decision"]]
-
+        data_best_df['attribute_type_tr'] = [attr_to_turkish[attr] for attr in data_best_df['attribute_type']]
         best_root_plot_data_source.data = ColumnDataSource(data=data_best_df).data
 
-        best_arrow_data, _, _ = draw_arrow("current", best_root_plot_data_source.data, best_root_plot,
-                                           width_best, level_width_best, circle_radius, rect_height)
+        best_arrow_data, _, _ = draw_arrow(best_root_plot_data_source.data, best_root_plot,
+                                           width_best, level_width_best, circle_radius, rect_height, "get_data")
         best_arrow_data_source.data = ColumnDataSource(data=best_arrow_data.data).data
 
         ##X and y range calculated
@@ -247,13 +252,13 @@ def create_figure():
         best_root_plot.x_range.factors = groups_best
         best_root_plot.y_range.factors = periods_best
 
-        title = "Karar Ağacı (Seçtiğiniz Kök Nitelikli Hali)" \
-                + ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc * 100, 1)) if (acc_best) else "")
+        title = "Karar Ağacı (Algoritmanın Seçtiği Kök Nitelikli Hali)" \
+                + ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc_best * 100, 1)) if (acc_best) else "")
 
         best_root_plot.title.text = title
         button.disabled = True
         tree_mode.disabled = True
-        animate_outline_color(best_root_plot, 4)
+        animate_outline_color(best_root_plot, 2)
         button.disabled = False
         tree_mode.disabled = False
 
@@ -262,7 +267,7 @@ def create_figure():
     return main_frame
 
 
-def create_plot(circle_radius, rect_width, rect_height, groups, periods, dataSource, isPrevious=False, acc=None):
+def create_plot(circle_radius, rect_width, rect_height, width, level_width, groups, periods, dataSource, isPrevious=False, acc=None):
     title = "Karar Ağacı " + ("(Algoritmanın Seçtiği Kök Nitelikli Hali)" if (isPrevious) else "(Seçtiğiniz Kök Nitelikli Hali)")+ ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc * 100, 1)) if (acc) else "")
     p = figure(title=title, plot_width=650, plot_height=650, x_range=groups, y_range=list(periods), tools="hover", toolbar_location=None, tooltips=TOOLTIPS)
     arrow_data_source, arrow, label = draw_arrow(dataSource.data, p, width, level_width, circle_radius,
@@ -283,7 +288,7 @@ def create_plot(circle_radius, rect_width, rect_height, groups, periods, dataSou
                **text_props)
     r.glyph.text_font_size = "7pt"
     #
-    r = p.text(x="y", y=dodge("x", 0.3, range=p.x_range), name="detailed_text", text="attribute_type", **text_props)
+    r = p.text(x="y", y=dodge("x", 0.3, range=p.x_range), name="detailed_text", text="attribute_type_tr", **text_props)
     r.glyph.text_font_style = "bold"
     r.glyph.text_font_size = "8pt"
     #
@@ -312,14 +317,14 @@ def create_plot(circle_radius, rect_width, rect_height, groups, periods, dataSou
     p.axis.major_label_standoff = 0
     p.legend.orientation = "vertical"
     p.legend.location = "top_right"
-    return p
+    return p, arrow_data_source
 
 
-def draw_arrow(mode, source, p, width, level_width, circle_radius, rect_height):
+def draw_arrow(source, p, width, level_width, circle_radius, rect_height, mode="draw"):
     ##mode is 'current' or 'previous'
     arrow_index = 0  # index for arrow_list array
     arrow_coordinates = {"x_start": [], "x_end": [], "y_start": [], "y_end": [], "x_avg": [], "y_avg": [],
-                         "label_name": [], "instances": []}
+                         "label_name": [], "instances": [], "xs": [], "ys": []}
     for i in range(width):
         x_offset = 0
         for j in range(level_width[i]):
@@ -353,19 +358,24 @@ def draw_arrow(mode, source, p, width, level_width, circle_radius, rect_height):
     arrow_instance_min = min((int(x) for x in arrow_coordinates["instances"]), default=2)
     arrow_instance_max = max((int(x) for x in arrow_coordinates["instances"]), default=1)
 
+    arrow_coordinates["xs"] = [[x_start] for x_start in arrow_coordinates["x_start"]]
+    for i in range(len(arrow_coordinates["x_end"])):
+        arrow_coordinates["xs"][i]+=[arrow_coordinates["x_end"][i]]
+    arrow_coordinates["ys"] = [[y_start] for y_start in arrow_coordinates["y_start"]]
+    for i in range(len(arrow_coordinates["y_end"])):
+        arrow_coordinates["ys"][i]+=[arrow_coordinates["y_end"][i]]
+
     arrow_coordinates["instances"] = [1 + 7 * (int(x) - arrow_instance_min) / (arrow_instance_max - arrow_instance_min + 1)
                                       for x in arrow_coordinates["instances"]]
     arrow_data_source = ColumnDataSource(data=pd.DataFrame.from_dict(arrow_coordinates))
-    arrow = Arrow(line_width="instances", end=OpenHead(size=0, line_width=0.5), line_alpha=1, line_color="darkgray",
-                  x_start="x_start", y_start="y_start", x_end="x_end", y_end="y_end", source=arrow_data_source)
+    if mode=="draw":
+        arrow = p.multi_line(line_width="instances", line_alpha=1, line_color="darkgray",
+                      xs = "xs", ys="ys", source=arrow_data_source)
+    else:
+        arrow = []
     label = LabelSet(x=dodge("x_avg", -0.0), y=dodge("y_avg", 0.0), text="label_name",
                      text_font_size="18pt", text_color="gray", source=arrow_data_source)
-    if (mode == "current"):
-        return arrow_data_source, arrow, label
-    else:
-        p.add_layout(arrow)
-        p.add_layout(label)
-
+    return arrow_data_source, arrow, label
 
 def animate_outline_color(plot, number, delay=0.5):
     for i in range(number):
