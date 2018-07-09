@@ -7,9 +7,8 @@ from bokeh.models import Arrow, OpenHead, VeeHead, ColumnDataSource, Range1d, La
 from bokeh.models.callbacks import CustomJS
 from bokeh.models.widgets import RadioButtonGroup, Button, CheckboxButtonGroup, Paragraph
 from bokeh.layouts import column, row
-from math import atan
 from Bokeh.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
-from math import sqrt, pi
+from math import sqrt, pi, atan, cos, sin
 
 cmap = {
     "ageAttr": "#a6cee3",
@@ -363,16 +362,16 @@ def draw_arrow(source, p, width, level_width, circle_radius, rect_height, mode="
                     x_end = source["y"][x_offset + index + sum(level_width[: i + 1])] + distanceBetweenX*circle_radius/distanceBetweenNodes
                     y_start = source["x"][offset + j] - distanceBetweenY*circle_radius/distanceBetweenNodes
                     y_end = source["x"][index + sum(level_width[: i + 1])] + distanceBetweenY*circle_radius/distanceBetweenNodes
-
-
+                    angle = atan((y_end - y_start) / (x_end - x_start))
+                    text_length = len(children_names[index])
                     #if(True or arrow_index >= len(arrow_list[mode])):
                     arrow_coordinates["x_start"].append(x_start)
                     arrow_coordinates["x_end"].append(x_end)
                     arrow_coordinates["y_start"].append(y_start)
                     arrow_coordinates["y_end"].append(y_end)
-                    arrow_coordinates["x_avg"].append((x_start + x_end) / 2)
-                    arrow_coordinates["angle"].append(atan((y_end - y_start) / (x_end - x_start)))
-                    arrow_coordinates["y_avg"].append((y_start + y_end) / 2)
+                    arrow_coordinates["x_avg"].append((x_start + x_end) / 2 - text_length * cos(angle) / 2 * 0.65)
+                    arrow_coordinates["angle"].append(angle)
+                    arrow_coordinates["y_avg"].append((y_start + y_end) / 2 - text_length * sin(angle) / 2 * 0.65)
                     arrow_coordinates["label_name"].append(children_names[index])
                     arrow_coordinates["label_name_tr"].append(label_to_tr[source['attribute_type'][offset + j]][children_names[index]])
                     arrow_coordinates["instances"].append(source["instances"][index + sum(level_width[: i + 1])])
