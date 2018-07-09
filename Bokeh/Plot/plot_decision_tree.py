@@ -3,7 +3,7 @@ from bokeh.io import show
 from bokeh.plotting import figure, Figure
 from time import sleep
 from bokeh.transform import dodge, factor_cmap
-from bokeh.models import Arrow, OpenHead, VeeHead, ColumnDataSource, Range1d, LabelSet, Title
+from bokeh.models import Arrow, OpenHead, VeeHead, ColumnDataSource, Range1d, LabelSet, Title, HoverTool
 from bokeh.models.callbacks import CustomJS
 from bokeh.models.widgets import RadioButtonGroup, Button, CheckboxButtonGroup, Paragraph, Dropdown
 from bokeh.layouts import column, row
@@ -285,6 +285,7 @@ def create_plot(circle_radius, rect_width, rect_height, width, level_width, grou
     p.circle("y", "x", radius=circle_radius, source=dataSource, name="circles", fill_alpha=0.5, legend="attribute_type_tr", color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
     p.rect("y", "x", rect_width, rect_height, source=dataSource, name="rectangles", legend="attribute_type_tr",
            color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
+
     rectangles = p.select(name="rectangles")
     rectangles.visible = False
 
