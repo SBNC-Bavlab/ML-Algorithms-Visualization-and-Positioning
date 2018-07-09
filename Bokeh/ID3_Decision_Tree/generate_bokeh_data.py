@@ -132,6 +132,8 @@ def set_coord(node_list, level_width):
     first_flag = 0
     for level in range(len(level_width)):
         current_parent = None
+        row_padding = 0
+        last_index = -1
         for i in range(passed_node, passed_node + level_width[level]):
             if node_list[i].parentPointer:
                 if current_parent == None or current_parent != node_list[i].parentPointer:#first child of parent
@@ -144,13 +146,26 @@ def set_coord(node_list, level_width):
 
                     if node_list[i].name == "classAttr":
                         node_list[i].coord = ((2 * node_list[i].depth),
-                                              math.ceil((2 * level_width_index) + align_parent)
+                                              math.ceil((2 * level_width_index) + align_parent + row_padding)
                                               )
+                        if last_index != node_list[i].coord[1]:
+                            last_index = node_list[i].coord[1]
+                        else :
+                            node_list[i].coord = (node_list[i].coord[0], node_list[i].coord[1]+1)
+                            last_index = node_list[i].coord[1]
+                            row_padding += 1
                     else:
                         node_list[i].coord = ((2 * node_list[i].depth),
                                               math.ceil(
-                                                  (2 * level_width_index) + align_parent + (node_list[i].width / 2))
+                                                  (2 * level_width_index) + align_parent + \
+                                                  math.ceil(node_list[i].width / 2) + row_padding)
                                               )
+                        if last_index != node_list[i].coord[1]:
+                            last_index = node_list[i].coord[1]
+                        else :
+                            node_list[i].coord = (node_list[i].coord[0], node_list[i].coord[1]+1)
+                            last_index = node_list[i].coord[1]
+                            row_padding += 1
 
                     level_width_index += (node_list[i].width / 2)
                     first_flag = 0
@@ -158,8 +173,14 @@ def set_coord(node_list, level_width):
                     align_parent = node_list[i].parentPointer.coord[1] - (node_list[i].parentPointer.width/2-1)
 
                     node_list[i].coord = ((2 * node_list[i].depth),
-                                          math.ceil((2*level_width_index)  + align_parent + (node_list[i].width/2))
+                                          math.ceil((2*level_width_index)  + align_parent + (node_list[i].width/2) + row_padding)
                                           )
+                    if last_index != node_list[i].coord[1]:
+                        last_index = node_list[i].coord[1]
+                    else:
+                        node_list[i].coord = (node_list[i].coord[0], node_list[i].coord[1] + 1)
+                        last_index = node_list[i].coord[1]
+                        row_padding += 1
 
                     level_width_index += (node_list[i].width / 2)
 
