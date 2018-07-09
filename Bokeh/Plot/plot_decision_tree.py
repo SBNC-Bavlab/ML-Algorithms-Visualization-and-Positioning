@@ -1,13 +1,13 @@
 import pandas as pd
 from bokeh.io import show
 from bokeh.plotting import figure, Figure
-from enum import Enum
 from time import sleep
 from bokeh.transform import dodge, factor_cmap
 from bokeh.models import Arrow, OpenHead, VeeHead, ColumnDataSource, Range1d, LabelSet, Title
 from bokeh.models.callbacks import CustomJS
 from bokeh.models.widgets import RadioButtonGroup, Button, CheckboxButtonGroup, Paragraph
 from bokeh.layouts import column, row
+from math import atan
 from Bokeh.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 from math import sqrt
 
@@ -281,7 +281,6 @@ def create_figure():
         best_root_plot.title.text = title
         button.disabled = True
         tree_mode.disabled = True
-        animate_outline_color(best_root_plot, 2)
         button.disabled = False
         tree_mode.disabled = False
 
@@ -347,7 +346,7 @@ def draw_arrow(source, p, width, level_width, circle_radius, rect_height, mode="
     ##mode is 'current' or 'previous'
     arrow_index = 0  # index for arrow_list array
     arrow_coordinates = {"x_start": [], "x_end": [], "y_start": [], "y_end": [], "x_avg": [], "y_avg": [],
-                         "label_name": [], "instances": [], "xs": [], "ys": [], "label_name_tr": []}
+                         "label_name": [], "instances": [], "angle": [], "xs": [], "ys": [], "label_name_tr": []}
     for i in range(width):
         x_offset = 0
         for j in range(level_width[i]):
@@ -372,6 +371,7 @@ def draw_arrow(source, p, width, level_width, circle_radius, rect_height, mode="
                     arrow_coordinates["y_start"].append(y_start)
                     arrow_coordinates["y_end"].append(y_end)
                     arrow_coordinates["x_avg"].append((x_start + x_end) / 2)
+                    arrow_coordinates["angle"].append(atan((y_end - y_start) / (x_end - x_start)))
                     arrow_coordinates["y_avg"].append((y_start + y_end) / 2)
                     arrow_coordinates["label_name"].append(children_names[index])
                     arrow_coordinates["label_name_tr"].append(label_to_tr[source['attribute_type'][offset + j]][children_names[index]])
@@ -397,8 +397,8 @@ def draw_arrow(source, p, width, level_width, circle_radius, rect_height, mode="
                       xs = "xs", ys="ys", source=arrow_data_source)
     else:
         arrow = []
-    label = LabelSet(x=dodge("x_avg", -0.0), y=dodge("y_avg", 0.0), text="label_name_tr",
-                     text_font_size="18pt", text_color="gray", source=arrow_data_source)
+    label = LabelSet(x=dodge("x_avg", 0.0), angle = "angle", y=dodge("y_avg", 0.0), text="label_name_tr",
+                     text_font_size="10pt", text_color="gray", source=arrow_data_source)
     return arrow_data_source, arrow, label
 
 def animate_outline_color(plot, number, delay=0.5):
