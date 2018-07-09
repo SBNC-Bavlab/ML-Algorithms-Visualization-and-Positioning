@@ -1,4 +1,4 @@
-choice = ["lens"]
+choice = ["cars"]
 
 def getChoice():
     return choice[0]
