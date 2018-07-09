@@ -2,7 +2,7 @@ import pickle
 import copy
 from queue import Queue
 import random
-
+from Bokeh.Plot.getChoice import getChoice
 
 class Node(object):
 	def __init__(self, parentName, name, data, children, remAttr, method):
@@ -19,15 +19,28 @@ class Node(object):
 		self.coord = (0,0)
 
 from math import log
-# data = pickle.load(open('../Bokeh/Data/car2.pkl','rb'))
-# train = data['train']
-# test = data['test']
+data = pickle.load(open('../Bokeh/Data/car.pkl','rb'))
+data_car = data['train']
+test_car = data['test']
 
 ageAttr = ["1", "2", "3"]
 spectacleAttr =  ["1", "2"]
 astigmaticAttr = ["1", "2"]
 tearAttr = ["1", "2"]
-classAttr = ["1", "2", "3"]
+
+
+choice = getChoice()
+
+buyingAttr = ["vhigh", "high", "med", "low"]
+maintAttr = ["vhigh", "high", "med", "low"]
+doorsAttr =  ["2", "3", "4", "5more"]
+personsAttr = ["2", "4", "more"]
+lug_bootAttr = ["small", "med", "big"]
+safetyAttr = ["low", "med", "high"]
+if choice == "cars":
+    classAttr = ["unacc", "acc", "good", "vgood"]
+else:
+    classAttr = ["1", "2", "3"]
 
 attrNamesList = [
 	"ageAttr",
@@ -35,6 +48,14 @@ attrNamesList = [
 	"astigmaticAttr",
 	"tearAttr",
 	"classAttr"
+] if choice == "lens" else [
+    "buyingAttr",
+    "maintAttr",
+    "doorsAttr",
+    "personsAttr",
+    "lug_bootAttr",
+    "safetyAttr",
+    "classAttr"
 ]
 
 attrDictionary = {
@@ -43,19 +64,27 @@ attrDictionary = {
 	"astigmaticAttr": (2, astigmaticAttr),
 	"tearAttr": (3, tearAttr),
 	"classAttr": (4, classAttr)
+} if choice == "lens" else {
+    "buyingAttr": (0, buyingAttr),
+    "maintAttr": (1, maintAttr),
+    "doorsAttr": (2, doorsAttr),
+    "personsAttr": (3, personsAttr),
+    "lug_bootAttr": (4, lug_bootAttr),
+    "safetyAttr": (5, safetyAttr),
+    "classAttr:": (6, classAttr)
 }
 
 
-data2 = []
+data_lens = []
 
 for line in open('../Bokeh/Data/lens.txt'):
 	tmp = line.split("  ")
 	tmp[-1] = tmp[-1].strip()
-	data2.append(tmp)
+	data_lens.append(tmp)
 
 
-test = data2
-train = data2
+test = data_lens if choice == "lens" else test_car
+train = data_lens if choice == "lens" else data_car
 
 def setActiveAttrs(activeAttrList):
     #clear the list

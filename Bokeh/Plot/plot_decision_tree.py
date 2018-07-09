@@ -5,37 +5,16 @@ from time import sleep
 from bokeh.transform import dodge, factor_cmap
 from bokeh.models import Arrow, OpenHead, VeeHead, ColumnDataSource, Range1d, LabelSet, Title
 from bokeh.models.callbacks import CustomJS
-from bokeh.models.widgets import RadioButtonGroup, Button, CheckboxButtonGroup, Paragraph
+from bokeh.models.widgets import RadioButtonGroup, Button, CheckboxButtonGroup, Paragraph, Dropdown
 from bokeh.layouts import column, row
 from Bokeh.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 from math import sqrt, pi, atan, cos, sin
+from Bokeh.Plot.dictionaries import getDictionaries
+from Bokeh.Plot.getChoice import getChoice, setChoice
 
-cmap = {
-    "ageAttr": "#a6cee3",
-    "spectacleAttr": "#1f78b4",
-    "astigmaticAttr": "#d93b43",
-    "tearAttr": "yellow",
-    "classAttr": "#e08d49"
-}
-label_to_tr = {
-    "ageAttr": {"1": "Genç", "2": "Orta", "3": "Yaşlı"},
-    "spectacleAttr": {"1": "Miyop", "2": "Hipermetrop"},
-    "astigmaticAttr": {"1": "Yok", "2": "Var"},
-    "tearAttr": {"1": "Az", "2": "Normal"},
-    "classAttr": {'-': "Yok", "1": "Sert Lens", "2": "Yumuşak Lens", "3": "Lens Takamaz"}
-}
-attr_to_turkish = {
-    "ageAttr": "Yaş",
-    "spectacleAttr": "Göz Bozukluğu",
-    "astigmaticAttr": "Astigmat",
-    "tearAttr": "Göz Yaşı Üretimi",
-    "classAttr": "Sonuç"}
-attr_to_children = {"ageAttr": ["1", "2", "3"],
-                    "spectacleAttr": ["1", "2"],
-                    "astigmaticAttr": ["1", "2"],
-                    "tearAttr": ["1", "2"],
-                    "classAttr": ["1", "2", "3"]
-                    }
+
+cmap, label_to_tr, attr_to_turkish, attr_to_children = getDictionaries(getChoice())
+
 TOOLTIPS = [
     ("Metod Değeri", "@{nonLeafNodes_stat}"),
     ("Örnek Sayısı", "@{instances}")
@@ -49,6 +28,7 @@ tree_mode_labels = ["Basit", "Detaylı"]
 arrow_list = {"current": [], "previous": []}
 current_label = ["gini"]
 selected_root = [""]
+
 
 # Create the main plot
 def create_figure():
@@ -96,7 +76,8 @@ def create_figure():
                                  active=0)
 
     tree_mode = RadioButtonGroup(width=200, labels=tree_mode_labels, active=0)
-
+    menu = [("Lens Verileri", "item_1"), ("Araba Verileri", "item_2")]
+    dropdown = Dropdown(label="Veri Kümesini Seç", button_type="warning", menu=menu)
     # button to apply changes
     button = Button(label="Değişiklikleri Uygula", button_type="success")
 
@@ -133,7 +114,7 @@ def create_figure():
 
 
     ##Add all components into main_frame variable
-    main_frame = column(row(attr_info, attributes, method_info, method_type, button), row(root_info, root_type, tree_mode_info, tree_mode), row(p, best_root_plot))
+    main_frame = column(row(attr_info, attributes, method_info, method_type, button), row(root_info, root_type, tree_mode_info, tree_mode, dropdown), row(p, best_root_plot))
 
     # Called with respect to change in method_type
     def updateMethodType(new):
@@ -206,6 +187,13 @@ def create_figure():
             button.disabled = False;
 
     root_type.on_click(updateRoot)
+
+    def changeDataset(new):
+        if dropdown.value == "item_1":
+             setChoice("lens")
+        else:
+            setChoice("cars")
+    dropdown.on_click(changeDataset)
 
     def applyChanges():
 

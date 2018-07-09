@@ -224,12 +224,13 @@ def get_bokeh_data(method, activeAttrList = [], setRootAttribute=""):
     source = { "nonLeafNodes_x": [], "nonLeafNodes_y": [], "nonLeafNodes_stat": [],
                "nonLeafNodes_decision": [], "leafNodes_x": [], "leafNodes_y": [],
                "attribute_type": [], "stat_value": [], "decision": [], "instanceCount": [],
-               "instances": [], "x": [], "y":[]}
+               "instances": [], "x": [], "y":[], "treeMode": []}
 
     node_list = generate_node_list(root, visited)
     width = set_coord(node_list, level_width)
     fill_source(source, node_list)
-
+    source["treeMode"] = [None]*len(source["x"])
+    source["treeMode"][0] = "normal"
     # generate_bokeh_data(source, root, depth, width, visited, level_width)
 
     return source, depth, width, level_width, acc
