@@ -270,6 +270,13 @@
     });
     $("#main_list, #left, #rigth").disableSelection();
     $("#calculate").click(()=>{
+        var leftList = $("#left li")
+        for(var i = 0; i < leftList.length; i++){
+            var $item = $(leftList[i])
+
+        }
+
+
         if($("#main_list")[0].childElementCount == 1){
             var totalNumber = mainData.length//left
             leftEntropy = calculateEntropyById("#left li") //excludes first item haaaaaaaaaaaaaa
