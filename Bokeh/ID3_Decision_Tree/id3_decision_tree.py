@@ -54,7 +54,7 @@ for line in open('../Bokeh/Data/lens.txt'):
 	data2.append(tmp)
 
 
-test=data2
+test = data2
 train = data2
 
 def setActiveAttrs(activeAttrList):
