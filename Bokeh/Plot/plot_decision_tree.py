@@ -9,7 +9,7 @@ from bokeh.models.callbacks import CustomJS
 from bokeh.models.widgets import RadioButtonGroup, Button, CheckboxButtonGroup, Paragraph
 from bokeh.layouts import column, row
 from Bokeh.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
-from math import sqrt
+from math import sqrt, pi
 
 cmap = {
     "ageAttr": "#a6cee3",
@@ -327,7 +327,7 @@ def create_plot(circle_radius, rect_width, rect_height, width, level_width, grou
     #r = p.text(x="y", y=dodge("x", -0.3, range=p.x_range), text="stat_value", **text_props)
     #r.glyph.text_font_size = "7pt"
 
-    r = p.text(x=dodge("leafNodes_y", -0.4), text_color="orange", y="leafNodes_x", name="decision_text", text="decision_tr", **text_props)
+    r = p.text(x=dodge("leafNodes_y", -0.1), text_color="orange", y=dodge("leafNodes_x", -0.4), name="decision_text", angle=-(pi)/4, text="decision_tr", **text_props)
     r.glyph.text_font_size = "8pt"
 
     # r = p.text(x=x, y=dodge("y", -0.2, range=p.y_range), text="atomic mass", **text_props)
