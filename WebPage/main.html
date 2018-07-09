@@ -147,7 +147,8 @@
       "Eğer kritik noktanızı 1 olarak belirlerseniz modeliniz çapı 1'den büyük herşeyi karpuz kabul etmiş oluyorsunuz.",
       "Hadi şimdi Mustafa'nın tezgahını kullanarak oluşturduğunuz model yardımıyla Ahmet'in tezgahında bulunan ve sadece çapı bilinen meyvelerin ne olduğunu tahmin etmeye çalışalım.",
       "Modeliniz bu şekilde tahmnin etti",
-      "Ancak gerçek değerler bu şekildeydi"]
+      "Ancak gerçek değerler bu şekildeydi",
+      "Yeni Model Kur butonuna tıklayarak yeni bir model kurup, test edip; en yüksek başarı oranını yakalamaya çalışabilirsiniz"]
 var guide = [".a0 .a1", ".b0 .slider", ".c0 .c1"]
 var criticalValue = 0
   $( function() {
@@ -235,6 +236,8 @@ var criticalValue = 0
             var accuracyEntries = calculateAccuracyOfList()
             tutorial[9] = "Gerçek değerler bu şekildeydi. Modeliniz " + accuracyEntries[0] + " tanesini doğru, " + accuracyEntries[1] + " tanesini yanlış bildi. " +
                 "Başarı oranınız %" + accuracyEntries[2]
+        } else if (tutorialIndex == 10){
+            $("#restart").css("display", "block")
         }
 
         if( tutorialIndex < tutorial.length) {
@@ -244,7 +247,6 @@ var criticalValue = 0
             $("#overlay").css("display","none")
             $("#splitter").bootstrapSlider("disable")
             isTutorial = false
-            $("#restart").css("display", "block")
         }
         tutorialIndex++;
     });
@@ -277,20 +279,15 @@ var criticalValue = 0
     //Generalize the data and create a dict
     data.forEach((entry, i) => {
         var obje = { attributeValues : entry}
-        var text = ""
         var table = document.createElement("table")
         var tr = table.insertRow()
-        var previous = null
-        for(var attribute in entry) {
-            if(attribute != 0 && attribute != 2) { //color and name of the fruit is omitted
-                text += entry[attribute] + "  "
-                cell = tr.insertCell()
-                if (previous != null) {
-                }
-                cell.innerHTML = entry[attribute]
-                previous = $.isNumeric(entry[attribute]) ? 1 : entry[attribute].length;
-            }
-        }
+        tr.style.verticalAlign = "middle"
+
+        cell = tr.insertCell()
+        cell.style.fontSize = "25px"
+        cell.style.verticalAlign = "middle"
+        cell.innerHTML = entry[1]
+
         var cellImg = tr.insertCell()
         var entryLabel = entry[entry.length - 1]
         if(entryLabel != "Elma") {

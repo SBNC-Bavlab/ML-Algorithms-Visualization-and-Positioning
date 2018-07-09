@@ -18,6 +18,13 @@ cmap = {
     "tearAttr": "yellow",
     "classAttr": "#e08d49"
 }
+label_to_tr = {
+    "ageAttr": {"1": "Genç", "2": "Orta", "3": "Yaşlı"},
+    "spectacleAttr": {"1": "Miyop", "2": "Hipermetrop"},
+    "astigmaticAttr": {"1": "Yok", "2": "Var"},
+    "tearAttr": {"1": "Az", "2": "Normal"},
+    "classAttr": {'-': "Yok", "1": "Sert Lens", "2": "Yumuşak Lens", "3": "Lens Takamaz"}
+}
 attr_to_turkish = {
     "ageAttr": "Yaş",
     "spectacleAttr": "Göz Bozukluğu",
@@ -39,7 +46,7 @@ TOOLTIPS = [
 ]
 # labels for method type radio buttons
 radio_button_labels = ["gini", "gainRatio"]
-tree_mode_labels = ["simple", "detailed"]
+tree_mode_labels = ["Basit", "Detaylı"]
 arrow_list = {"current": [], "previous": []}
 current_label = ["gini"]
 selected_root = [""]
@@ -68,9 +75,11 @@ def create_figure():
     df['decision'] = [decision if decision else "-" for decision in df['decision']]
     df["nonLeafNodes_stat"] = ["" + str(x) for x in df["nonLeafNodes_stat"]]
     df["decision"] = ["" + x for x in df["decision"]]
+    df["decision_tr"] = [label_to_tr["classAttr"]["" + x]for x in df["decision"]]
     df['attribute_type_tr'] = [attr_to_turkish[attr] for attr in df['attribute_type']]
     #    df['stat_value'] = [value if value != nan else "-" for value in df['stat_value']]
     #    print(df.last())
+    print(df)
     dataSource = ColumnDataSource(data=df)
 
     # gini or informationGain or gainRatio
@@ -138,7 +147,11 @@ def create_figure():
     def updateAttributes(new):
         active_attributes_list[:] = []
         for i in new:
-                active_attributes_list.append(list(cmap.keys())[i])
+            active_attributes_list.append(list(cmap.keys())[i])
+        if (selected_root[0] not in active_attributes_list):
+            button.disabled = True
+        else:
+            button.disabled = False
     attributes.on_click(updateAttributes)
 
     def toggleMode(new):
@@ -180,11 +193,17 @@ def create_figure():
 
     def updateRoot(new):
         ##Select root manually
+        method_type = list(cmap.keys())[new - 1]
         if (new == 0):
             selected_root[0] = ''
-        else:
-            method_type = list(cmap.keys())[new - 1]
+            button.disabled = False;
+        elif (method_type not in active_attributes_list):
             selected_root[0] = method_type
+            button.disabled = True;
+            print("Bu attribute zaten kapali")
+        else:
+            selected_root[0] = method_type
+            button.disabled = False;
 
     root_type.on_click(updateRoot)
 
@@ -203,6 +222,7 @@ def create_figure():
         ##none entries replaced with "-"
         data['decision'] = [decision if decision else "-" for decision in data['decision']]
         data["decision"] = ["" + x for x in data["decision"]]
+        data["decision_tr"] = [label_to_tr["classAttr"]["" + x] for x in data["decision"]]
         data['attribute_type_tr'] = [attr_to_turkish[attr] for attr in data['attribute_type']]
 
         dataSource.data = ColumnDataSource(data=data).data
@@ -239,6 +259,7 @@ def create_figure():
         ##none entries replaced with "-"
         data_best_df['decision'] = [decision if decision else "-" for decision in data_best_df['decision']]
         data_best_df["decision"] = ["" + x for x in data_best_df["decision"]]
+        data_best_df["decision_tr"] = [label_to_tr["classAttr"]["" + x] for x in data_best_df["decision"]]
         data_best_df['attribute_type_tr'] = [attr_to_turkish[attr] for attr in data_best_df['attribute_type']]
 
         best_root_plot_data_source.data = ColumnDataSource(data=data_best_df).data
@@ -296,7 +317,7 @@ def create_plot(circle_radius, rect_width, rect_height, groups, periods, dataSou
     #
     r = p.text(x="y", y=dodge("x", -0.3, range=p.x_range), name="detailed_text", text="instances", **text_props)
     r.glyph.text_font_size = "8pt"
-    r = p.text(x="leafNodes_y", y="leafNodes_x", name="detailed_text", text="decision", **text_props)
+    r = p.text(x="leafNodes_y", y="leafNodes_x", name="detailed_text", text="decision_tr", **text_props)
     r.glyph.text_font_size = "8pt"
 
     p.select(name="detailed_text").visible = False
@@ -304,8 +325,8 @@ def create_plot(circle_radius, rect_width, rect_height, groups, periods, dataSou
     #r = p.text(x="y", y=dodge("x", -0.3, range=p.x_range), text="stat_value", **text_props)
     #r.glyph.text_font_size = "7pt"
 
-    r = p.text(x=dodge("leafNodes_y", -0.4), text_color="orange", y="leafNodes_x", name="decision_text", text="decision", **text_props)
-    r.glyph.text_font_size = "18pt"
+    r = p.text(x=dodge("leafNodes_y", -0.4), text_color="orange", y="leafNodes_x", name="decision_text", text="decision_tr", **text_props)
+    r.glyph.text_font_size = "8pt"
 
     # r = p.text(x=x, y=dodge("y", -0.2, range=p.y_range), text="atomic mass", **text_props)
     # r.glyph.text_font_size = "5pt"
@@ -324,7 +345,7 @@ def draw_arrow(mode, source, p, width, level_width, circle_radius, rect_height):
     ##mode is 'current' or 'previous'
     arrow_index = 0  # index for arrow_list array
     arrow_coordinates = {"x_start": [], "x_end": [], "y_start": [], "y_end": [], "x_avg": [], "y_avg": [],
-                         "label_name": [], "instances": []}
+                         "label_name": [], "instances": [], "label_name_tr": []}
     for i in range(width):
         x_offset = 0
         for j in range(level_width[i]):
@@ -351,6 +372,7 @@ def draw_arrow(mode, source, p, width, level_width, circle_radius, rect_height):
                     arrow_coordinates["x_avg"].append((x_start + x_end) / 2)
                     arrow_coordinates["y_avg"].append((y_start + y_end) / 2)
                     arrow_coordinates["label_name"].append(children_names[index])
+                    arrow_coordinates["label_name_tr"].append(label_to_tr[source['attribute_type'][offset + j]][children_names[index]])
                     arrow_coordinates["instances"].append(source["instances"][index + sum(level_width[: i + 1])])
                     arrow_index += 1
                 x_offset += number_of_children
@@ -361,10 +383,11 @@ def draw_arrow(mode, source, p, width, level_width, circle_radius, rect_height):
     arrow_coordinates["instances"] = [1 + 7 * (int(x) - arrow_instance_min) / (arrow_instance_max - arrow_instance_min + 1)
                                       for x in arrow_coordinates["instances"]]
     arrow_data_source = ColumnDataSource(data=pd.DataFrame.from_dict(arrow_coordinates))
+    print(arrow_coordinates)
     arrow = Arrow(line_width="instances", end=OpenHead(size=0, line_width=0.5), line_alpha=1, line_color="darkgray",
                   x_start="x_start", y_start="y_start", x_end="x_end", y_end="y_end", source=arrow_data_source)
-    label = LabelSet(x=dodge("x_avg", -0.0), y=dodge("y_avg", 0.0), text="label_name",
-                     text_font_size="18pt", text_color="gray", source=arrow_data_source)
+    label = LabelSet(x=dodge("x_avg", -0.0), y=dodge("y_avg", 0.0), text="label_name_tr",
+                     text_font_size="14pt", text_color="gray", source=arrow_data_source)
     if (mode == "current"):
         return arrow_data_source, arrow, label
     else:
