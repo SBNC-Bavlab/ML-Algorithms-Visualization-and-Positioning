@@ -76,18 +76,18 @@ def create_figure():
     # gini or informationGain or gainRatio
     method_type = RadioButtonGroup(width=160, labels=radio_button_labels, active=1)
     # attributes like buyingAttr, personsAttr, ...
-    attributes = CheckboxButtonGroup(width=600, labels=[attr_to_turkish[attr] for attr in list(cmap.keys()) if attr != "classAttr"],
+    attributes = CheckboxButtonGroup(width=400, labels=[attr_to_turkish[attr] for attr in list(cmap.keys()) if attr != "classAttr"],
                                      active=[i for i, attr in enumerate(list(cmap.keys()))
                                              if attr != "classAttr"])
     # button to apply changes
     button = Button(label="Değişiklikleri Uygula", button_type="success")
 
     # any attribute type
-    root_type = RadioButtonGroup(width=600,
+    root_type = RadioButtonGroup(width=450,
                                  labels=['Hiçbiri'] + [attr_to_turkish[attr] for attr in list(cmap.keys())[:-1]],
                                  active=0)
 
-    tree_mode = RadioButtonGroup(width=600, labels=tree_mode_labels, active=0)
+    tree_mode = RadioButtonGroup(width=200, labels=tree_mode_labels, active=0)
 
     # button to apply changes
     button = Button(label="Değişiklikleri Uygula", button_type="success")
@@ -109,6 +109,9 @@ def create_figure():
     root_info = Paragraph(text="""
            Kök niteliği seçiniz:
         """, width=70)
+    tree_mode_info = Paragraph(text="""
+           Ağacın Detayını Seçiniz:
+        """, width=100)
 
     #### Best rooted plot is created here
     best_root_plot_data = dataSource.data.copy()
@@ -122,7 +125,7 @@ def create_figure():
 
 
     ##Add all components into main_frame variable
-    main_frame = row(column(p, best_root_plot), column(attr_info, attributes, method_info, method_type, root_info, root_type, button, tree_mode))
+    main_frame = column(row(attr_info, attributes, method_info, method_type, button), row(root_info, root_type, tree_mode_info, tree_mode), row(p, best_root_plot))
 
     # Called with respect to change in method_type
     def updateMethodType(new):
