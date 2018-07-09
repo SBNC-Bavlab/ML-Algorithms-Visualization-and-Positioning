@@ -228,8 +228,11 @@
             $("#myLabelChart22").addClass("blur")
             $("#label2").addClass("blur")
             $("#header3, #myChart3, #myLabelChart03, #myLabelChart13, #myLabelChart23").addClass("blur")
+            $("#header3, #myChart3, #myLabelChart03, #myLabelChart13, #myLabelChart23").css("border-left", "")
+            $("#myChart2, #myLabelChart02, #myLabelChart12, #myLabelChart22").css("border-right", "1px solid black")
             $("#infoText").html(descriptions[0])
             descIndex++;
+            //Borders were mainpulated so that when blurring there would not be any collision
             $("#next").click(()=>{
                 $("*").removeClass("blur")
                 $("#infoText").html(descriptions[descIndex])
@@ -237,11 +240,16 @@
                     $("#header1, #myChart1, #myLabelChart01, #myLabelChart11, #myLabelChart21").addClass("blur")
                     $("#header2, #myChart2, #myLabelChart02, #myLabelChart12, #myLabelChart22").addClass("blur")
                     $("#header3, #myChart3, #myLabelChart03, #myLabelChart13, #myLabelChart23").addClass("blur")
+                    $("#myChart1, #myLabelChart01, #myLabelChart11, #myLabelChart21").css("border-left", "")
+                    $("#myChart0, #myLabelChart00, #myLabelChart10, #myLabelChart20").css("border-right", "1px solid black")
                     $("#text_overlay").css("left", "35%")
                 }else if(descIndex == 2){
                     $("#header0, #myChart0, #myLabelChart00, #myLabelChart10, #myLabelChart20").addClass("blur")
+                    $("#myChart1, #myLabelChart01, #myLabelChart11, #myLabelChart21").css("border-left", "1px solid black")
+                    $("#myChart1, #myLabelChart01, #myLabelChart11, #myLabelChart21").css("border-right", "1px solid black")
                     $("#myLabelChart21").addClass("blur")
                     $("#header2, #myChart2, #myLabelChart02, #myLabelChart12, #myLabelChart22").addClass("blur")
+                    $("#myChart2, #myLabelChart02, #myLabelChart12, #myLabelChart22").css("border-left", "")
                     $("#label2").addClass("blur")
                     $("#header3, #myChart3, #myLabelChart03, #myLabelChart13, #myLabelChart23").addClass("blur")
                     $("#text_overlay").css("left", "45%")
@@ -253,6 +261,7 @@
                     $("#next").html("Olur")
                     $("#text_overlay").css("left", "35%")
                 } else if(descIndex == 4){
+                    $("#myChart1, #myLabelChart01, #myLabelChart11, #myLabelChart21").css("border-left", "")
                     $("#text_overlay").css("display", "none")
                 }
                 descIndex++;
@@ -265,7 +274,7 @@
         <div id = "header0" class = "col-sm-2" style="margin-left: 15%">Yaş</div>
         <div id = "header1" class = "col-sm-2">Göz Bozukluğu</div>
         <div id = "header2" class = "col-sm-2">Astigmat</div>
-        <div id = "header3" class = "col-sm-2">Göz yaşı üretimi</div>`
+        <div id = "header3" class = "col-sm-2">Göz yaşı üretimi</div>
     </div>
     <div id = "chartArea" class = "row" style="margin-left: 0px; margin-right: 0px">
     </div>

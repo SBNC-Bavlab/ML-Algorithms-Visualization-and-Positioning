@@ -127,11 +127,43 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.2/bootstrap-slider.min.js"></script>
   <link rel = "stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.2/css/bootstrap-slider.min.css">
   <script>
+
+  var data2 = [
+      ["Sarı", 1, "Kavun"], ["Sarı", 1, "Kavun"], ["Sarı", 1, "Kavun"],  ["Sarı", 1, "Kavun"], ["Sarı", 1, "Kavun"],
+      ["Sarı", 2, "Kavun"], ["Sarı", 2, "Kavun"], ["Sarı", 2, "Kavun"], ["Sarı", 2, "Kavun"], ["Sarı", 2, "Kavun"],
+      ["Sarı", 3, "Kavun"], ["Sarı", 3, "Kavun"], ["Sarı", 3, "Kavun"], ["Sarı", 3, "Kavun"], ["Sarı", 3, "Kavun"], ["Sarı", 3, "Kavun"], ["Sarı", 3, "Kavun"],
+      ["Sarı", 4, "Kavun"], ["Sarı", 4, "Kavun"], ["Sarı", 4, "Kavun"], ["Sarı", 4, "Kavun"],
+      ["Sarı", 5, "Kavun"], ["Sarı", 5, "Kavun"], ["Sarı", 5, "Kavun"], ["Sarı", 5, "Kavun"],
+      ["Sarı", 6, "Kavun"], ["Sarı", 6, "Kavun"], ["Sarı", 6, "Kavun"],
+      ["Sarı", 7, "Kavun"],
+      ["Sarı", 10, "Kavun"], ["Sarı", 10, "Kavun"],
+      ["Sarı", 12, "Kavun"], ["Sarı", 12, "Kavun"],
+      ["Yeşil", 3, "Karpuz"],
+      ["Yeşil", 4, "Karpuz"],
+      ["Yeşil", 6, "Karpuz"], ["Yeşil", 6, "Karpuz"],
+      ["Yeşil", 7, "Karpuz"],
+      ["Yeşil", 9, "Karpuz"], ["Yeşil", 9, "Karpuz"], ["Yeşil", 9, "Karpuz"], ["Yeşil", 9, "Karpuz"],
+      ["Yeşil", 10, "Karpuz"], ["Yeşil", 10, "Karpuz"], ["Yeşil", 10, "Karpuz"], ["Yeşil", 10, "Karpuz"], ["Yeşil", 10, "Karpuz"],
+      ["Yeşil", 11, "Karpuz"], ["Yeşil", 11, "Karpuz"], ["Yeşil", 11, "Karpuz"], ["Yeşil", 11, "Karpuz"], ["Yeşil", 11, "Karpuz"],
+      ["Yeşil", 12, "Karpuz"], ["Yeşil", 12, "Karpuz"], ["Yeşil", 12, "Karpuz"], ["Yeşil", 12, "Karpuz"],
+      ["Yeşil", 13, "Karpuz"], ["Yeşil", 13, "Karpuz"], ["Yeşil", 13, "Karpuz"], ["Yeşil", 13, "Karpuz"], ["Yeşil", 13, "Karpuz"], ["Yeşil", 13, "Karpuz"], ["Yeşil", 13, "Karpuz"],
+      ["Yeşil", 14, "Karpuz"], ["Yeşil", 14, "Karpuz"], ["Yeşil", 14, "Karpuz"], ["Yeşil", 14, "Karpuz"], ["Yeşil", 14, "Karpuz"], ["Yeşil", 14, "Karpuz"], ["Yeşil", 14, "Karpuz"], ["Yeşil", 14, "Karpuz"],
+  ]
+
+
+
+
+
   var data = [["Yeşil", 3, "Karpuz"], ["Yeşil", 6, "Karpuz"], ["Yeşil", 7, "Karpuz"], ["Yeşil", 3, "Karpuz"], ["Yeşil", 5, "Karpuz"],
             ["Yeşil", 5, "Karpuz"], ["Yeşil", 5, "Karpuz"], ["Yeşil", 5, "Karpuz"],
             ['Sarı', 5, 'Kavun'], ['Sarı', 2, 'Kavun'], ['Sarı', 4, 'Kavun'], ['Sarı', 5, 'Kavun'], ['Sarı', 2, 'Kavun'],
-            ['Sarı', 3, 'Kavun'], ['Sarı', 3, "Kavun"]] //['Kırmızı', 1, 'Üzüm'], ['Kırmızı', 1, 'Üzüm'], ['Sarı', 3, 'Limon']]
+            ['Sarı', 3, 'Kavun'], ['Sarı', 3, "Kavun"]]
+  //['Kırmızı', 1, 'Üzüm'], ['Kırmızı', 1, 'Üzüm'], ['Sarı', 3, 'Limon']]
   var test_data = [["Yeşil", 5, "Karpuz"], ["Yeşil", 5, "Karpuz"], ["Yeşil", 1, "Kavun"], ["Yeşil", 6, "Karpuz"], ["Yeşil", 6, "Karpuz"], ["Yeşil", 4, "Karpuz"], ["Yeşil", 3, "Karpuz"], ["Sarı", 3, "Kavun"], ["Sarı", 4, "Kavun"], ["Sarı", 5, "Kavun"]]
+
+
+
+
   let indexOfNumericValue = 1
   var dict = {}
   var questions = {"1'den büyük mü?" : {attribute :"1", type: 1},
@@ -147,7 +179,8 @@
       "Eğer kritik noktanızı 1 olarak belirlerseniz modeliniz çapı 1'den büyük herşeyi karpuz kabul etmiş oluyorsunuz.",
       "Hadi şimdi Mustafa'nın tezgahını kullanarak oluşturduğunuz model yardımıyla Ahmet'in tezgahında bulunan ve sadece çapı bilinen meyvelerin ne olduğunu tahmin etmeye çalışalım.",
       "Modeliniz bu şekilde tahmnin etti",
-      "Ancak gerçek değerler bu şekildeydi"]
+      "Ancak gerçek değerler bu şekildeydi",
+      "Yeni Model Kur butonuna tıklayarak yeni bir model kurup, test edip; en yüksek başarı oranını yakalamaya çalışabilirsiniz"]
 var guide = [".a0 .a1", ".b0 .slider", ".c0 .c1"]
 var criticalValue = 0
   $( function() {
@@ -235,6 +268,8 @@ var criticalValue = 0
             var accuracyEntries = calculateAccuracyOfList()
             tutorial[9] = "Gerçek değerler bu şekildeydi. Modeliniz " + accuracyEntries[0] + " tanesini doğru, " + accuracyEntries[1] + " tanesini yanlış bildi. " +
                 "Başarı oranınız %" + accuracyEntries[2]
+        } else if (tutorialIndex == 10){
+            $("#restart").css("display", "block")
         }
 
         if( tutorialIndex < tutorial.length) {
@@ -244,7 +279,6 @@ var criticalValue = 0
             $("#overlay").css("display","none")
             $("#splitter").bootstrapSlider("disable")
             isTutorial = false
-            $("#restart").css("display", "block")
         }
         tutorialIndex++;
     });
@@ -277,20 +311,15 @@ var criticalValue = 0
     //Generalize the data and create a dict
     data.forEach((entry, i) => {
         var obje = { attributeValues : entry}
-        var text = ""
         var table = document.createElement("table")
         var tr = table.insertRow()
-        var previous = null
-        for(var attribute in entry) {
-            if(attribute != 0 && attribute != 2) { //color and name of the fruit is omitted
-                text += entry[attribute] + "  "
-                cell = tr.insertCell()
-                if (previous != null) {
-                }
-                cell.innerHTML = entry[attribute]
-                previous = $.isNumeric(entry[attribute]) ? 1 : entry[attribute].length;
-            }
-        }
+        tr.style.verticalAlign = "middle"
+
+        cell = tr.insertCell()
+        cell.style.fontSize = "25px"
+        cell.style.verticalAlign = "middle"
+        cell.innerHTML = entry[1]
+
         var cellImg = tr.insertCell()
         var entryLabel = entry[entry.length - 1]
         if(entryLabel != "Elma") {
