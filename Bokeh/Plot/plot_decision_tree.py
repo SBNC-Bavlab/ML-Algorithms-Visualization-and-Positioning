@@ -148,7 +148,7 @@ def create_figure():
         active_attributes_list[:] = []
         for i in new:
             active_attributes_list.append(list(cmap.keys())[i])
-        if (selected_root[0] not in active_attributes_list):
+        if (selected_root[0] != '' and selected_root[0] not in active_attributes_list):
             button.disabled = True
         else:
             button.disabled = False
