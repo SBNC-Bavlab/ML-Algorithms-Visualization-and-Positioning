@@ -17,7 +17,6 @@
     }
     #main_list{
         margin-top: 5px;
-        min-height: 200px;
     }
     #sorular{
         width: 200px;
@@ -28,27 +27,26 @@
         height: 55px;
         font-size: 18px;
     }
-    #main_list li{
+    #main_list tbody tr{
         background-color: rgba(221,221,221,0.54);
         text-align: left;
         border: 1px solid black;
-        width: 350px;
+        width: 750px;
         padding: 2px 2px 2px 2px;
         margin-top: 5px;
-        position: relative;
     }
+
     #left, #right{
-        min-width: 350px;
+        min-width: 450px;
         margin: 25px;
         padding: 0px 0px 0px 0px
     }
-    #left li, #right li{
+    #left tbody tr, #right tbody tr{
         word-break: break-all;
         background-color: lightgreen;
         border: 1px solid black;
-        width: 350px;
+        width: 750px;
         margin: 5px;
-        position: relative;
     }
     .blur {
         -webkit-filter: blur(5px); /* Chrome, Safari, Opera */
@@ -70,9 +68,10 @@
         cursor: pointer;
     }
     #overlay_text{
-        position: absolute;
+        position: fixed;
         top: 50%;
         left: 77%;
+        z-index: 1000;
         font-size: 30px;
         color: white;
         width: 40%;
@@ -80,9 +79,10 @@
         -ms-transform: translate(-50%,-50%);
     }
     #overlay_button{
-        position: absolute;
+        position: fixed;
         top: 80%;
         right: 30%;
+        z-index: 1000;
     }
   </style>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -95,21 +95,21 @@
   <script>
   var startingIndexOfLeftRight = 0;
   var isTutorial = true;
-  var data = [["Yeşil", "Tatlı", "Karpuz"],['Yeşil', "Ekşi", 'Elma'], ['Kırmızı', "Tatlı", 'Elma'], ['Sarı', "Ekşi", 'Limon']]
+  //var data = [["Yeşil", "Tatlı", "Karpuz"],['Yeşil', "Ekşi", 'Elma'], ['Kırmızı', "Tatlı", 'Elma'], ['Sarı', "Ekşi", 'Limon']]
 
-  var data2 = [
+  var data = [
                   ["Trion Lannister", "Zengin değil", "Yok", "İstemiyor", "Sarı", "Lannister"],
                   ["Daenerys Targaryen", "Zengin", "Var", "İstiyor", "Beyaz", "Targaryen"],
                   ["John Snow", "Zengin değil", "Yok", "İstemiyor", "Siyah", "Basterd"],
                   ["Cercei Lannister", "Zengin", "Yok", "İstiyor", "Sarı", "Lannister"],
-                  ["Night King", "Zengin değil", "Var", "İstemiyor", "Genel olarak Beyaz", "White Walker"],
+                  ["Night King", "Zengin değil", "Var", "İstemiyor", "Beyaz", "White Walker"],
                   ["Jamie Lannister", "Zengin", "Yok", "İstemiyor",  "Sarı", "Lannister"],
                   ["Arya Stark", "Zengin değil", "Yok", "İstemiyor", "Siyah", "Stark"],
-                  ["Tywin Lannister", "Zengin", "Yok", "İstiyor?",  "Sarı", "Lannister"],
+                  ["Tywin Lannister", "Zengin", "Yok", "İstiyor",  "Sarı", "Lannister"],
                   ["Sansa Stark", "Zengin değil", "Yok", "İstemiyor", "Kızıl", "Stark"],
-                  ["Lieutenant White Walkers", "Zengin değil", "Var", "İstemiyor", "Genel olarak Beyaz", "White Walker"],
+                  ["Lieutenant White Walkers", "Zengin değil", "Var", "İstemiyor", "Beyaz", "White Walker"],
                   ["Viserys Targaryen", "Zengin değil", "Yok",  "İstiyor", "Beyaz", "Targaryen"],
-                  ["Wights", "Zengin değil", "Yok", "İstemiyor", "Genel olarak Beyaz", "White Walker"],
+                  ["Wights", "Zengin değil", "Yok", "İstemiyor", "Beyaz", "White Walker"],
                   ["Eddard Stark", "Zengin değil", "Yok", "İstemiyor", "Siyah", "Stark"],
                 ]
 
@@ -118,7 +118,10 @@
   var dict = {}
   var questions = {"Kırmızı mı?" : {attribute :"Kırmızı", type: 0},
           "Sarı mı?": {attribute: "Sarı", type: 0},
-          "Ekşi mi?": {attribute: "Ekşi", type: 1}};
+          "Ekşi mi?": {attribute: "Ekşi", type: 1},
+          "Zengin mi?": {attribute: "Zengin", type: 1},
+          "Beyaz saçlı mı?": {attribute: "Beyaz", type: 4},
+          "Ejderyası var mı?": {attribute: "Var", type: 2}};
   var labelToImage = {"Karpuz" : "watermelon.png", "Elma" : {"Kırmızı" : "apple.png", "Yeşil": "green_apple.png"}, "Limon": "lemon.png"}
   var descriptions = ["Burada bir marketteki meyve reyonunda bulunan ürünlerin listesi bulunmakta",
                       "Belirtilen kısımdaki sorulara tıklayarak verilerinizi ikiye ayırabilirsiniz",
@@ -176,11 +179,11 @@
             $(".g0 .g1").css("z-index", 999)
         } else if(descIndex == 7){
             $(".g0 .g1").css("z-index", 0)
-            $("#overlay").css("display", "none")
+            $(".overlay").css("display", "none")
             isTutorial = false;
         } else if(descIndex == descriptions.length - 1){
             $(".b0 .b1").css("z-index", 0)
-            $("#overlay").css("display", "none")
+            $(".overlay").css("display", "none")
             isTutorial = false;
         }
         descIndex++;
@@ -192,9 +195,9 @@
         $button.click((function(question) {return function() {
             resetLeftRight()
             resetEntropyValues()
-            var mainItems = $("#main_list li");
+            var mainItems = $("#main_list tbody tr");
             console.log(question)
-            for(var i = 1; i < mainItems.length; i++){
+            for(var i = 0; i < mainItems.length; i++){
                 var $item = $(mainItems[i]);
                 var conditionAttribute = dict[$item.attr("id")]["attributeValues"][question["type"]];
                 if(conditionAttribute == question["attribute"]){
@@ -204,11 +207,11 @@
                 }
             }
             var totalNumber = mainData.length//left
-            leftEntropy = calculateEntropyById("#left li") //excludes first item haaaaaaaaaaaaaa
-            leftSize = $("#left li").length - 1
+            leftEntropy = calculateEntropyById("#left tbody tr") //excludes first item haaaaaaaaaaaaaa
+            leftSize = $("#left tbody tr").length - 1
             //right
-            rightEntropy = calculateEntropyById("#right li")//excludes first item haaaaaaaaaaaaaa
-            rightSize = $("#right li").length - 1
+            rightEntropy = calculateEntropyById("#right tbody tr")//excludes first item haaaaaaaaaaaaaa
+            rightSize = $("#right tbody tr").length - 1
             var averageEntropy = (leftSize / totalNumber) * leftEntropy + (rightSize / totalNumber) * rightEntropy
             $("#averageEntropy").html("Ortalama Entropi: " + averageEntropy.toFixed(2))
             var gain = mainEntropy - averageEntropy
@@ -227,18 +230,14 @@
     data.forEach((entry, i) => {
         var obje = { attributeValues : entry}
         var text = ""
-        var table = document.createElement("table")
-        var tr = table.insertRow()
+        var $table = $("#main_list")
+        var $tr = $("<tr>")
         var previous = null
         for(var attribute in entry) {
             text += entry[attribute] + "  "
-            cell = tr.insertCell()
-            if(previous != null) {
-                $(cell).css("padding-left", (90 - previous*7.5) + "px")//Hardcoded change
-            }
-            cell.innerHTML = entry[attribute]
-            previous = $.isNumeric(entry[attribute]) ? 1 : entry[attribute].length;
+            $tr.append("<td>" + entry[attribute] + "</td>")
         }
+        /*
         var cellImg = tr.insertCell()
         var entryLabel = entry[entry.length - 1]
         if(entryLabel != "Elma") {
@@ -246,9 +245,10 @@
         } else {
             cellImg.innerHTML = "<img src = 'icons/" + labelToImage[entryLabel][entry[0]] + "' width = '30'></img>"
         }
-        var $newNode = $("<li>").attr("id", "entry_" + i).append($(table))
+        */
+        var $newNode = $tr.attr("id", "entry_" + i)
         dict[$newNode.attr("id")] = obje
-        $("#main_list").append($newNode);
+        $("#main_list > tbody").append($newNode);
     });
     //General calculateEntropyById, excludes first item haaaaaaaaaaaaaa
     function calculateEntropyById(id){
@@ -264,15 +264,15 @@
     }
     //reset left and right div to mainlist
     function resetLeftRight(){
-        var leftItems = $("#left li");
+        var leftItems = $("#left tbody tr");
         for(var i = startingIndexOfLeftRight; i < leftItems.length; i++){
            var $item = $(leftItems[i]);
-           $("#main_list").append($("#" + $item.attr("id")))
+           $("#main_list tbody").append($("#" + $item.attr("id")))
         }
-        var rightItems = $("#right li")
+        var rightItems = $("#right tbody tr")
         for(var i = startingIndexOfLeftRight; i < rightItems.length; i++){
            var $item = $(rightItems[i]);
-           $("#main_list").append($("#" + $item.attr("id")))
+           $("#main_list tbody").append($("#" + $item.attr("id")))
         }
     }
     function resetEntropyValues(){
@@ -283,9 +283,9 @@
     //recalculates entropy of the left and right divs
     function recalculateLeftRight(){
         //left
-        leftEntropy = calculateEntropyById("#left li") //excludes first item haaaaaaaaaaaaaa
+        leftEntropy = calculateEntropyById("#left tbody tr") //excludes first item haaaaaaaaaaaaaa
         //right
-        rightEntropy = calculateEntropyById("#right li")//excludes first item haaaaaaaaaaaaaa
+        rightEntropy = calculateEntropyById("#right tbody tr")//excludes first item haaaaaaaaaaaaaa
         $("#leftEntropy").html("Entropi: " + leftEntropy.toFixed(2))
         $("#rightEntropy").html("Entropi: " + rightEntropy.toFixed(2))
         console.log("Left: ", leftEntropy, "Right: ", rightEntropy)
@@ -320,12 +320,12 @@
     }
     $('#left, #right').sortable({
         stop: onStopSorting,
-        items: "#left li:not(:first-child), #right li:not(:first-child)"
+        items: "#left tbody tr, #right tbody tr"
     });
     $("#main_list, #left, #rigth").disableSelection();
     $("#calculate").click(()=>{
         if ($("#main_list")[0].childElementCount == 1) {
-            var leftList = $("#left li")
+            var leftList = $("#left tbody tr")
             featuresMatrix = []
             for(var i = 1; i < leftList.length; i++){
                 var $item = $(leftList[i])
@@ -353,11 +353,11 @@
 
             if(validSplit) {
                 var totalNumber = mainData.length//left
-                leftEntropy = calculateEntropyById("#left li") //excludes first item haaaaaaaaaaaaaa
-                leftSize = $("#left li").length - 1
+                leftEntropy = calculateEntropyById("#left tbody tr") //excludes first item haaaaaaaaaaaaaa
+                leftSize = $("#left tbody tr").length - 1
                 //right
-                rightEntropy = calculateEntropyById("#right li")//excludes first item haaaaaaaaaaaaaa
-                rightSize = $("#right li").length - 1
+                rightEntropy = calculateEntropyById("#right tbody tr")//excludes first item haaaaaaaaaaaaaa
+                rightSize = $("#right tbody tr").length - 1
                 var averageEntropy = (leftSize / totalNumber) * leftEntropy + (rightSize / totalNumber) * rightEntropy
                 $("#averageEntropy").html("Ortalama Entropi: " + averageEntropy.toFixed(2))
                 var gain = mainEntropy - averageEntropy
@@ -402,19 +402,27 @@
     $("#proceed").click(()=>{
         resetLeftRight()
         resetEntropyValues()
-        startingIndexOfLeftRight = 1
+        startingIndexOfLeftRight = 0
         $("#proceed").css("display", "none")
         $("#question_list").css("display", "none")
         $("#reset").css("display", "inline-block")
         $("#calculate").css("display", "inline-block")
-        $("#left, #right").append("<li>Buraya sürükleyiniz</li>")
-        $("#left li:first-child, #right li:first-child").css("background-color", "orange")
-        $('#right li:not(:first-child), #left li:not(:first-child), #main_list li:not(:first-child)').draggable({
+        $("#left thead tr, #right thead tr").append("<th>Buraya sürükleyiniz</th>")
+        //$("#left li:first-child, #right li:first-child").css("background-color", "orange")
+        $('#right tbody tr, #left tbody tr, #main_list tbody tr').draggable({
             connectToSortable: ".sortable",
             revert: 'invalid',
+            drag: function( event, ui ) {
+                $(ui.helper).css("position", "absolute")
+                console.log(ui.helper)
+            },
+            stop: function( event, ui ) {
+                $(ui.helper).css("position", "")
+                console.log(ui.helper)
+            }
         });
         //Tutorial part
-        $("#overlay").css("display", "block")
+        $(".overlay").css("display", "block")
         $(".a0 .a1").css("z-index", 999)
         $(".c0 .c1").css("z-index", 999)
         $("#overlay_button").css("display", "none")
@@ -429,19 +437,21 @@
 <button id = "next" type="button" style="margin-bottom: 15px; display:none" class="btn btn-outline-primary">İlerle</button>
 <div class = "row a0" align="center" style="margin-left: 5%; margin-right: 0px">
     <div class ="a1 col-sm-6" >
-        <ul id = "main_list" style = "padding-left: 0px">
-            <li id = "header" style="background-color: red;">
-                <table style="color: white;">
-                    <tbody>
-                    <tr>
-                        <td>Rengi</td>
-                        <td style="padding-left: 55px;">Tadı</td>
-                        <td style="padding-left: 83px;">Meyve</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </li>
-        </ul>
+        <table id = "main_list">
+            <thead>
+                <tr id = "header" style="background-color: red;">
+                    <th>Adı</th>
+                    <th>Zengin mi?</th>
+                    <th>Ejderhası var mı?</th>
+                    <th>Tahtı istiyor mu?</th>
+                    <th>Saç rengi</th>
+                    <th>Ailesi</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
     </div>
     <div class = "a2 col-sm-2">
         <ul id = "question_list">
@@ -462,13 +472,28 @@
             <th style="text-align: center; padding-top: 0px">Hayir</th>
             <tr>
                 <td>
-                    <ul id='left' class = "sortable">
+                    <table id='left' class = "sortable">
+                        <thead>
+                            <tr>
 
-                    </ul>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
                 </td>
                 <td>
-                    <ul id='right' class = "sortable">
-                    </ul>
+                    <table id='right' class = "sortable">
+                        <thead>
+                            <tr>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
                 </td>
             </tr>
         </table>
@@ -498,10 +523,11 @@
     Bu sorunun skoru: -
     </div>
 </div>
-<div id="overlay">
-    <div id="overlay_text"></div>
-    <button id="overlay_button" class="btn btn-warning" >Anladım</button>
+<div id="overlay" class = "overlay">
 </div>
+
+<div id="overlay_text" class = "overlay"></div>
+<button id="overlay_button" class="overlay btn btn-warning" >Anladım</button>
 <br>
 <div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
 <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
