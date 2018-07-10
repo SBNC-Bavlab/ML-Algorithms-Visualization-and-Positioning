@@ -6,7 +6,7 @@ Cercei Lannister,Zengin,Yok,İstiyor,Sarı,Lannister
 Night King,Zengin değil,Var,İstemiyor,Genel olarak Beyaz,White Walker
 Jamie Lannister,Zengin,Yok,İstemiyor,Sarı,Lannister
 Arya Stark,Zengin değil,Yok,İstemiyor,Siyah,Stark
-Tywin Lannister,Zengin,Yok,İstiyor?,Sarı,Lannister
+Tywin Lannister,Zengin,Yok,İstiyor,Sarı,Lannister
 Sansa Stark,Zengin değil,Yok,İstemiyor,Kızıl,Stark
 Lieutenant White Walkers,Zengin değil,Var,İstemiyor,Genel olarak Beyaz,White Walker
 Viserys Targaryen,Zengin değil,Yok,İstiyor,Beyaz,Targaryen
