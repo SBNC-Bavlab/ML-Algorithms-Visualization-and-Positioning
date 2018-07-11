@@ -1,10 +1,10 @@
 cmap = {
     "lens": {
-        "ageAttr": "#a6cee3",
-        "spectacleAttr": "#1f78b4",
-        "astigmaticAttr": "#d93b43",
-        "tearAttr": "yellow",
-        "classAttr": "#e08d49"
+        "ageAttr": "red",
+        "spectacleAttr": "yellow",
+        "astigmaticAttr": "blue",
+        "tearAttr": "green",
+        "classAttr": "orange"
     },
     "cars": {
         "buyingAttr": "red",
@@ -12,8 +12,8 @@ cmap = {
         "doorsAttr": "blue",
         "personsAttr": "green",
         "lug_bootAttr": "brown",
-        "safetyAttr": "black",
-        "classAttr": "orange"
+        "safetyAttr": "orange",
+        "classAttr": "black"
     }
 }
 
@@ -72,6 +72,20 @@ attr_to_children = {
         "classAttr":  ["unacc", "acc", "good", "vgood"],
     }
 }
+allAttrsList = []
+colors=[]
+for i in cmap.keys():
+    for j in cmap[i].keys():
+        allAttrsList.append(j)
+    for j in cmap[i].values():
+        colors.append(j)
+allAttrsList.remove("classAttr")
 
 def getDictionaries(choose):
     return cmap[choose], label_to_tr[choose], attr_to_turkish[choose], attr_to_children[choose]
+
+def getAttrsList():
+    return allAttrsList
+
+def getAllColors():
+    return colors

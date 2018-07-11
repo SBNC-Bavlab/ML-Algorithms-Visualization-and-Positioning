@@ -5,16 +5,16 @@ from time import sleep
 from bokeh.transform import dodge, factor_cmap
 from bokeh.models import Arrow, OpenHead, VeeHead, ColumnDataSource, Range1d, LabelSet, Title
 from bokeh.models.callbacks import CustomJS
-from bokeh.models.widgets import RadioButtonGroup, Button, CheckboxButtonGroup, Paragraph, Dropdown
+from bokeh.models.widgets import RadioButtonGroup, Button, CheckboxButtonGroup, Paragraph, Dropdown, Select
 from bokeh.layouts import column, row
 from Bokeh.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 from math import sqrt, pi, atan, cos, sin
-from Bokeh.Plot.dictionaries import getDictionaries
+from Bokeh.Plot.dictionaries import getDictionaries, getAttrsList, getAllColors
 from Bokeh.Plot.getChoice import getChoice, setChoice
 
 
 cmap, label_to_tr, attr_to_turkish, attr_to_children = getDictionaries(getChoice())
-
+allAttrsList = getAttrsList()
 TOOLTIPS = [
     ("Metod Değeri", "@{nonLeafNodes_stat}"),
     ("Örnek Sayısı", "@{instances}")
@@ -65,8 +65,7 @@ def create_figure():
     method_type = RadioButtonGroup(width=160, labels=radio_button_labels, active=1)
     # attributes like buyingAttr, personsAttr, ...
     attributes = CheckboxButtonGroup(width=400, labels=[attr_to_turkish[attr] for attr in list(cmap.keys()) if attr != "classAttr"],
-                                     active=[i for i, attr in enumerate(list(cmap.keys()))
-                                             if attr != "classAttr"])
+                                     active=[i for i, attr in enumerate(list(cmap.keys()))])
     # button to apply changes
     button = Button(label="Değişiklikleri Uygula", button_type="success")
 
@@ -77,9 +76,9 @@ def create_figure():
 
     tree_mode = RadioButtonGroup(width=200, labels=tree_mode_labels, active=0)
     menu = [("Lens Verileri", "item_1"), ("Araba Verileri", "item_2")]
-    dropdown = Dropdown(label="Veri Kümesini Seç", button_type="warning", menu=menu)
     # button to apply changes
     button = Button(label="Değişiklikleri Uygula", button_type="success")
+    dropdown = Select(title="Veri Kümesini Seç::", value="lens", options=["lens", "araba"])
 
     rect_width = 0.7
     rect_height = 0.9
@@ -185,23 +184,27 @@ def create_figure():
         else:
             selected_root[0] = method_type
             button.disabled = False;
-
     root_type.on_click(updateRoot)
-
-    def changeDataset(new):
-        if dropdown.value == "item_1":
+    def changeDataset(attr, old, new):
+        if dropdown.value == "lens":
              setChoice("lens")
         else:
             setChoice("cars")
-    dropdown.on_click(changeDataset)
+        applyChanges()
+        attributes.labels = [attr_to_turkish[attr] for attr in list(cmap.keys()) if attr != "classAttr"]
+        attributes.active = [i for i, attr in enumerate(list(cmap.keys()))]
+        root_type.labels = ['Hiçbiri'] + [attr_to_turkish[attr] for attr in list(cmap.keys())[:-1]]
+        print(dataSource.data)
+
+    dropdown.on_change('value', changeDataset)
 
     def applyChanges():
+        global cmap, label_to_tr, attr_to_turkish, attr_to_children
+        cmap, label_to_tr, attr_to_turkish, attr_to_children = getDictionaries(getChoice())
 
-        data, width, depth, level_width, acc = get_bokeh_data(current_label[0], active_attributes_list  + ["classAttr"],
-                                                              selected_root[0])
+        data, width, depth, level_width, acc = get_bokeh_data(current_label[0], active_attributes_list  + ["classAttr"], selected_root[0])
 
         data = pd.DataFrame.from_dict(data)
-
         #data['stat_value'] = [round(i, 3) for i in data['stat_value']]  # decimal point rounded to 2
         if not data['nonLeafNodes_stat'].dropna().empty:
             data['nonLeafNodes_stat'] = [round(i, 3) for i in data['nonLeafNodes_stat']]
@@ -282,9 +285,10 @@ def create_plot(circle_radius, rect_width, rect_height, width, level_width, grou
     arrow_data_source, arrow, label = draw_arrow(dataSource.data, p, width, level_width, circle_radius,
                                                  rect_height)
     p.add_layout(label)
-    p.circle("y", "x", radius=circle_radius, source=dataSource, name="circles", legend="attribute_type_tr", color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
+    p.circle("y", "x", radius=circle_radius, source=dataSource, name="circles", legend="attribute_type_tr", color=factor_cmap('attribute_type', palette=list(getAllColors()), factors=allAttrsList))
+    print(p.legend)
     p.rect("y", "x", rect_width, rect_height, source=dataSource, name="rectangles", legend="attribute_type_tr",
-           color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
+           color=factor_cmap('attribute_type', palette=list(getAllColors()), factors=allAttrsList))
     rectangles = p.select(name="rectangles")
     rectangles.visible = False
 
