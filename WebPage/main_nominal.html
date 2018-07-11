@@ -271,23 +271,47 @@
     $("#main_list, #left, #rigth").disableSelection();
     $("#calculate").click(()=>{
         var leftList = $("#left li")
-        for(var i = 0; i < leftList.length; i++){
+        featuresMatrix = []
+        for(var i = 1; i < leftList.length; i++){
             var $item = $(leftList[i])
-
+            attributeArr = dict[$item.attr("id")]["attributeValues"]
+            featuresMatrix.push([])
+            for(var j = 0; j < attributeArr.length; j++){
+                featuresMatrix[i - 1].push(attributeArr[j])
+            }
         }
+        console.log(featuresMatrix)
+        validSplit = false;
+        for(var col = 0; featuresMatrix != [] && col < featuresMatrix[0].length - 1 && !validSplit; col++){
+            var previous = featuresMatrix[0][col] // first element is previous
+            var differentFound = false;
+            for(var row = 1; !differentFound && row < featuresMatrix.length; row++){
+                if(featuresMatrix[row][col] != previous){
+                    differentFound = true;
+                }
+            }
+            if(!differentFound){
+                validSplit = true
+            }
+        }
+        console.log(validSplit)
+        if ($("#main_list")[0].childElementCount == 1) {
 
-
-        if($("#main_list")[0].childElementCount == 1){
-            var totalNumber = mainData.length//left
-            leftEntropy = calculateEntropyById("#left li") //excludes first item haaaaaaaaaaaaaa
-            leftSize = $("#left li").length - 1
-            //right
-            rightEntropy = calculateEntropyById("#right li")//excludes first item haaaaaaaaaaaaaa
-            rightSize = $("#right li").length - 1
-            var averageEntropy = (leftSize / totalNumber) * leftEntropy + (rightSize / totalNumber) * rightEntropy
-            $("#averageEntropy").html("Ortalama Entropi: " + averageEntropy.toFixed(2))
-            var gain = mainEntropy - averageEntropy
-            $("#totalGain").html("Bu sorunun skoru: " + gain.toFixed(2))
+            if(validSplit) {
+                var totalNumber = mainData.length//left
+                leftEntropy = calculateEntropyById("#left li") //excludes first item haaaaaaaaaaaaaa
+                leftSize = $("#left li").length - 1
+                //right
+                rightEntropy = calculateEntropyById("#right li")//excludes first item haaaaaaaaaaaaaa
+                rightSize = $("#right li").length - 1
+                var averageEntropy = (leftSize / totalNumber) * leftEntropy + (rightSize / totalNumber) * rightEntropy
+                $("#averageEntropy").html("Ortalama Entropi: " + averageEntropy.toFixed(2))
+                var gain = mainEntropy - averageEntropy
+                $("#totalGain").html("Bu sorunun skoru: " + gain.toFixed(2))
+            }  else {
+                $("#error").html("Verilerinizi herhangi bir soruya veya ortak özelliğe göre bölmediniz.")
+                $("#error").slideDown().delay(5000).slideUp()
+            }
         } else {
             $("#error").html("Bütün elemanlar paylaştırılmadan sorunun skoru hesaplanamaz")
             $("#error").slideDown().delay(5000).slideUp()
