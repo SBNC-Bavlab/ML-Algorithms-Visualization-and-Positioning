@@ -28,7 +28,8 @@ tree_mode_labels = ["Basit", "Detaylı"]
 arrow_list = {"current": [], "previous": []}
 current_label = ["gini"]
 selected_root = [""]
-
+plot_width=1450
+plot_height=650
 
 # Create the main plot
 def create_figure():
@@ -216,12 +217,14 @@ def create_figure():
         data['attribute_type_tr'] = [attr_to_turkish[attr] for attr in data['attribute_type']]
         dataSource.data = ColumnDataSource(data=data).data
 
-        arrow_data, _, _ = draw_arrow(dataSource.data, p, width, level_width, circle_radius, rect_height, "get_data")
-        arrow_data_source.data = ColumnDataSource(data=arrow_data.data).data
 
         ##X and y range calculated
         periods = [str(i) for i in range(0, 2 * width + 1)]
         groups = [str(x) for x in range(0, depth + 2)]
+
+        arrow_data, _, _ = draw_arrow(dataSource.data, p, width, len(periods), len(groups), level_width, circle_radius, rect_height, "get_data")
+        arrow_data_source.data = ColumnDataSource(data=arrow_data.data).data
+
         #        p = create_plot(rect_width, rect_height, groups, periods, dataSource, False, acc)
 
         max_arg = max(2 * width + 1, depth + 2)
@@ -252,14 +255,15 @@ def create_figure():
         data_best_df['attribute_type_tr'] = [attr_to_turkish[attr] for attr in data_best_df['attribute_type']]
         best_root_plot_data_source.data = ColumnDataSource(data=data_best_df).data
 
-        best_arrow_data, _, _ = draw_arrow(best_root_plot_data_source.data, best_root_plot,
-                                           width_best, level_width_best, circle_radius, rect_height, "get_data")
-        best_arrow_data_source.data = ColumnDataSource(data=best_arrow_data.data).data
-
         ##X and y range calculated
         max_arg = max(2 * width + 1, depth + 2)
         periods_best = [str(i) for i in range(0, 2 * width + 1)]
         groups_best = [str(x) for x in range(0, depth + 2)]
+
+        best_arrow_data, _, _ = draw_arrow(best_root_plot_data_source.data, best_root_plot,
+                                           width_best, len(periods_best), len(groups_best), level_width_best, circle_radius, rect_height, "get_data")
+        best_arrow_data_source.data = ColumnDataSource(data=best_arrow_data.data).data
+
         # update best rooted plot
         best_root_plot.x_range.factors = groups_best
         best_root_plot.y_range.factors = periods_best
@@ -280,8 +284,9 @@ def create_figure():
 
 def create_plot(circle_radius, rect_width, rect_height, width, level_width, groups, periods, dataSource, isPrevious=False, acc=None):
     title = "Karar Ağacı " + ("(Algoritmanın Seçtiği Kök Nitelikli Hali)" if (isPrevious) else "(Seçtiğiniz Kök Nitelikli Hali)")+ ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc * 100, 1)) if (acc) else "")
-    p = figure(title=title, plot_width=650, plot_height=441, x_range=groups, y_range=list(periods), tools="hover", toolbar_location=None, tooltips=TOOLTIPS)
-    arrow_data_source, arrow, label = draw_arrow(dataSource.data, p, width, level_width, circle_radius,
+
+    p = figure(title=title, plot_width=plot_width, plot_height=plot_height, x_range=groups, y_range=list(periods), tools="hover", toolbar_location=None, tooltips=TOOLTIPS)
+    arrow_data_source, arrow, label = draw_arrow(dataSource.data, p, width, len(periods), len(groups), level_width, circle_radius,
                                                  rect_height)
     p.add_layout(label)
     p.circle("y", "x", radius=circle_radius, source=dataSource, name="circles", legend="attribute_type_tr", color=factor_cmap('attribute_type', palette=list(getAllColors()), factors=allAttrsList))
@@ -332,7 +337,7 @@ def create_plot(circle_radius, rect_width, rect_height, width, level_width, grou
     return p, arrow_data_source
 
 
-def draw_arrow(source, p, width, level_width, circle_radius, rect_height, mode="draw"):
+def draw_arrow(source, p, width, periods_len, groups_len, level_width, circle_radius, rect_height, mode="draw"):
     ##mode is 'current' or 'previous'
     arrow_index = 0  # index for arrow_list array
     arrow_coordinates = {"x_start": [], "x_end": [], "y_start": [], "y_end": [], "x_avg": [], "y_avg": [],
@@ -357,16 +362,17 @@ def draw_arrow(source, p, width, level_width, circle_radius, rect_height, mode="
                               #- distanceBetweenY*circle_radius/distanceBetweenNodes
                     y_end = source["x"][index + sum(level_width[: i + 1])] \
                             #+ distanceBetweenY*circle_radius/distanceBetweenNodes
-                    angle = atan((y_end - y_start) / (x_end - x_start))
+                    angle = atan((y_end - y_start) / (x_end - x_start) * (groups_len / periods_len) * (plot_height/plot_width))
+                    print(angle)
                     text_length = len(children_names[index])
                     #if(True or arrow_index >= len(arrow_list[mode])):
                     arrow_coordinates["x_start"].append(x_start)
                     arrow_coordinates["x_end"].append(x_end)
                     arrow_coordinates["y_start"].append(y_start)
                     arrow_coordinates["y_end"].append(y_end)
-                    arrow_coordinates["x_avg"].append((x_start + x_end) / 2 - text_length * cos(angle) / 2 * 0.65)
+                    arrow_coordinates["x_avg"].append((x_start + x_end) / 2 - text_length * cos(angle) / 2 * (groups_len / periods_len) * (plot_height/plot_width))
                     arrow_coordinates["angle"].append(angle)
-                    arrow_coordinates["y_avg"].append((y_start + y_end) / 2 - text_length * sin(angle) / 2 * 0.65)
+                    arrow_coordinates["y_avg"].append((y_start + y_end) / 2- text_length * sin(angle) / 2)
                     arrow_coordinates["label_name"].append(children_names[index])
                     arrow_coordinates["label_name_tr"].append(label_to_tr[source['attribute_type'][offset + j]][children_names[index]])
                     arrow_coordinates["instances"].append(source["instances"][index + sum(level_width[: i + 1])])
@@ -387,12 +393,12 @@ def draw_arrow(source, p, width, level_width, circle_radius, rect_height, mode="
                                       for x in arrow_coordinates["instances"]]
     arrow_data_source = ColumnDataSource(data=pd.DataFrame.from_dict(arrow_coordinates))
     if mode=="draw":
-        arrow = p.multi_line(line_width="instances", line_alpha=1, line_color="darkgray",
+        arrow = p.multi_line(line_width="instances", line_alpha=0.7, line_color="darkgray",
                       xs = "xs", ys="ys", source=arrow_data_source)
     else:
         arrow = []
     label = LabelSet(x=dodge("x_avg", 0.0), angle = "angle", y=dodge("y_avg", 0.0), text="label_name_tr",
-                     text_font_size="10pt", text_color="gray", source=arrow_data_source)
+                     text_font_size="10pt", text_color="black", source=arrow_data_source)
     return arrow_data_source, arrow, label
 
 def animate_outline_color(plot, number, delay=0.5):
