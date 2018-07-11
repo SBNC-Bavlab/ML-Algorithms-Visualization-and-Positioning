@@ -283,7 +283,7 @@ def create_plot(circle_radius, rect_width, rect_height, width, level_width, grou
     arrow_data_source, arrow, label = draw_arrow(dataSource.data, p, width, level_width, circle_radius,
                                                  rect_height)
     p.add_layout(label)
-    p.circle("y", "x", radius=circle_radius, source=dataSource, name="circles", fill_alpha=0.5, legend="attribute_type_tr", color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
+    p.circle("y", "x", radius=circle_radius, source=dataSource, name="circles", legend="attribute_type_tr", color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
     p.rect("y", "x", rect_width, rect_height, source=dataSource, name="rectangles", legend="attribute_type_tr",
            color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
 
