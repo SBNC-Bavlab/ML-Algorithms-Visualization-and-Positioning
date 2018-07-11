@@ -78,7 +78,7 @@ def create_figure():
     menu = [("Lens Verileri", "item_1"), ("Araba Verileri", "item_2")]
     # button to apply changes
     button = Button(label="Değişiklikleri Uygula", button_type="success")
-    dropdown = Select(title="Veri Kümesini Seç::", value="lens", options=["lens", "araba"])
+    dropdown = Select(title="Veri Kümesini Seç:", value="lens", options=["lens", "araba"])
 
     rect_width = 0.7
     rect_height = 0.9
@@ -317,7 +317,7 @@ def create_plot(circle_radius, rect_width, rect_height, width, level_width, grou
     #r = p.text(x="y", y=dodge("x", -0.3, range=p.x_range), text="stat_value", **text_props)
     #r.glyph.text_font_size = "7pt"
 
-    r = p.text(x=dodge("leafNodes_y", -0.1), text_color="orange", y=dodge("leafNodes_x", -0.4), name="decision_text", angle=-(pi)/4, text="decision_tr", **text_props)
+    r = p.text(x="leafNodes_y", text_color="orange", y=dodge("leafNodes_x", -0.4), name="decision_text", text="decision_tr", **text_props)
     r.glyph.text_font_size = "8pt"
 
     # r = p.text(x=x, y=dodge("y", -0.2, range=p.y_range), text="atomic mass", **text_props)
