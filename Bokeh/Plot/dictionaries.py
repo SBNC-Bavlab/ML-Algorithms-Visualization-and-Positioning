@@ -12,8 +12,8 @@ cmap = {
         "doorsAttr": "blue",
         "personsAttr": "green",
         "lug_bootAttr": "brown",
-        "safetyAttr": "orange",
-        "classAttr": "black"
+        "safetyAttr": "black",
+        "classAttr": "orange"
     },
     "GoT": {
         "Zengin mi?": "red",
@@ -108,6 +108,7 @@ for i in cmap.keys():
     for j in cmap[i].values():
         colors.append(j)
 allAttrsList.remove("classAttr")
+colors.remove("orange")
 
 def getDictionaries(choose):
     return cmap[choose], label_to_tr[choose], attr_to_turkish[choose], attr_to_children[choose]
