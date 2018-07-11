@@ -3,7 +3,7 @@ from bokeh.io import show
 from bokeh.plotting import figure, Figure
 from time import sleep
 from bokeh.transform import dodge, factor_cmap
-from bokeh.models import Arrow, OpenHead, VeeHead, ColumnDataSource, Range1d, LabelSet, Title
+from bokeh.models import Arrow, OpenHead, VeeHead, ColumnDataSource, Range1d, LabelSet, Title, HoverTool
 from bokeh.models.callbacks import CustomJS
 from bokeh.models.widgets import RadioButtonGroup, Button, CheckboxButtonGroup, Paragraph, Dropdown
 from bokeh.layouts import column, row
@@ -91,15 +91,15 @@ def create_figure():
 
     attr_info = Paragraph(text="""
        Nitelikleri seçiniz:
-    """, width=70)
+    """, width=100)
     method_info = Paragraph(text="""
        Metodu seçiniz:
     """, width=65)
     root_info = Paragraph(text="""
            Kök niteliği seçiniz:
-        """, width=70)
+        """, width=100)
     tree_mode_info = Paragraph(text="""
-           Ağacın Detayını Seçiniz:
+           Ağacın görünümünü seçiniz:
         """, width=100)
 
     #### Best rooted plot is created here
@@ -114,7 +114,7 @@ def create_figure():
 
 
     ##Add all components into main_frame variable
-    main_frame = column(row(attr_info, attributes, method_info, method_type, button), row(root_info, root_type, tree_mode_info, tree_mode, dropdown), p, best_root_plot)
+    main_frame = column(row(attr_info, attributes, button), row(root_info, root_type, tree_mode_info, tree_mode), row(p, best_root_plot))
 
     # Called with respect to change in method_type
     def updateMethodType(new):
@@ -278,13 +278,15 @@ def create_figure():
 
 def create_plot(circle_radius, rect_width, rect_height, width, level_width, groups, periods, dataSource, isPrevious=False, acc=None):
     title = "Karar Ağacı " + ("(Algoritmanın Seçtiği Kök Nitelikli Hali)" if (isPrevious) else "(Seçtiğiniz Kök Nitelikli Hali)")+ ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc * 100, 1)) if (acc) else "")
-    p = figure(title=title, plot_width=1400, plot_height=950, x_range=groups, y_range=list(periods), tools="hover", toolbar_location=None, tooltips=TOOLTIPS)
+    hover = HoverTool(names=["circles", "rectangles"])
+    p = figure(title=title, plot_width=650, plot_height=441, x_range=groups, y_range=list(periods), tools=[hover], toolbar_location=None, tooltips=TOOLTIPS)
     arrow_data_source, arrow, label = draw_arrow(dataSource.data, p, width, level_width, circle_radius,
                                                  rect_height)
     p.add_layout(label)
     p.circle("y", "x", radius=circle_radius, source=dataSource, name="circles", legend="attribute_type_tr", color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
     p.rect("y", "x", rect_width, rect_height, source=dataSource, name="rectangles", legend="attribute_type_tr",
            color=factor_cmap('attribute_type', palette=list(cmap.values()), factors=list(cmap.keys())))
+
     rectangles = p.select(name="rectangles")
     rectangles.visible = False
 

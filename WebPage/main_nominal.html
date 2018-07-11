@@ -94,6 +94,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
   <script>
   var startingIndexOfLeftRight = 0;
+  var isTutorial = true;
   var data = [["Yeşil", "Tatlı", "Karpuz"],['Yeşil', "Ekşi", 'Elma'], ['Kırmızı', "Tatlı", 'Elma'], ['Sarı', "Ekşi", 'Limon']]
   var dict = {}
   var questions = {"Kırmızı mı?" : {attribute :"Kırmızı", type: 0},
@@ -101,7 +102,12 @@
           "Ekşi mi?": {attribute: "Ekşi", type: 1}};
   var labelToImage = {"Karpuz" : "watermelon.png", "Elma" : {"Kırmızı" : "apple.png", "Yeşil": "green_apple.png"}, "Limon": "lemon.png"}
   var descriptions = ["Burada bir marketteki meyve reyonunda bulunan ürünlerin listesi bulunmakta",
-                      "Belirtilen kısımdaki sorulara tıklayarak verilerinizi ikiye ayırabilirsiniz"]
+                      "Belirtilen kısımdaki sorulara tıklayarak verilerinizi ikiye ayırabilirsiniz",
+                      "Veriler sorduğunuz soruya göre ikiye ayrıldı",
+                      "Bu entropi değeri 'Evet' kısmındaki verilerin karmaşıklığını ifade eder",
+                      "Bu entropi değeri ise 'Hayır' kısmındaki verilerin karmaşıklığını ifade eder",
+                      "Verilerinizdeki tamamındaki karmaşıklık oranı burada gösterilmektedir",
+                      "Bu soruyu sormakla elde edeceğiniz karmaşıklığı azalma miktarı 'sorunun skoru' olarak belirtilmektedir"]
   function calculateEntropy(data){
       totalNumber = data.length
       labelDict = {}
@@ -130,15 +136,27 @@
     descIndex++;
     $("#overlay_button").click(()=>{
         $("#overlay_text").html(descriptions[descIndex])
+        console.log(descIndex)
         if(descIndex == 1){
             $(".a0 .a1").css("z-index", 0)
             $(".a0 .a2").css("z-index", 999)
-            $("#question_list > button").attr("disabled", true);
-            $("#overlay_button").html("Başla")
-        } else if(descIndex == 2){
-            $("#question_list > button").attr("disabled", false);
-            $(".a0 .a2").css("z-index", 0)
+            $("#overlay_button").css("display", "none")
+        } else if(descIndex == 3) { // == 2 is handled by question buttons
+            $(".c0 .c1").css("z-index", 0)
+            $(".d0 .d1").css("z-index", 999)
+        } else if(descIndex == 4){
+            $(".d0 .d1").css("z-index", 0)
+            $(".d0 .d2").css("z-index", 999)
+        } else if (descIndex == 5){
+            $(".d0 .d2").css("z-index", 0)
+            $(".f0").css("z-index", 999)
+        } else if (descIndex == 6){
+            $(".f0").css("z-index", 0)
+            $(".g0 .g1").css("z-index", 999)
+        } else if(descIndex == descriptions.length){
+            $(".g0 .g1").css("z-index", 0)
             $("#overlay").css("display", "none")
+            isTutorial = false;
         }
         descIndex++;
     })
@@ -171,6 +189,13 @@
             var gain = mainEntropy - averageEntropy
             $("#totalGain").html("Bu sorunun skoru: " + gain.toFixed(2))
             recalculateLeftRight()
+            if(isTutorial){
+                $(".a0 .a2").css("z-index", 0)
+                $(".c0 .c1").css("z-index", 999)
+                $("#overlay_text").html(descriptions[descIndex])
+                $("#overlay_button").css("display", "block")
+                descIndex++;
+            }
         };})(questions[question]));
     }
     //Generilize the data and create a dict
@@ -250,7 +275,7 @@
         mainData.push(tokens)
     }
     mainEntropy = calculateEntropy(mainData)
-    $("#mainEntropy").html("Entropi: " + mainEntropy.toFixed(2))
+    $("#mainEntropy").html("Sistemin Entropisi: " + mainEntropy.toFixed(2))
       //Define method when sorting completed
     function onStopSorting(event, ui){
         var item = ui.item
@@ -261,9 +286,6 @@
             recalculateLeftRight()
         }
     }
-
-
-
     $('#left, #right').sortable({
         stop: onStopSorting,
         items: "#left li:not(:first-child), #right li:not(:first-child)"
@@ -365,50 +387,52 @@
     </div>
 </div>
 <div class = "b0 row" align="center" style="margin-left: 4.5%; margin-right: 0px">
-    <div  id = "mainEntropy" class = "b1 col-sm-6"  style="margin-bottom: 15px;" >
-        <span>Entropi: -</span>
-    </div>
-    <div class = "b2 col-sm-3">
+    <div class = "b1 col-sm-12">
         <button id = "proceed" type="button" style="margin-bottom: 15px" class="btn btn-outline-success">Kendi Sorunu Belirle</button>
         <button id = "reset" type="button" style="display: none; margin-bottom: 15px" class="btn btn-outline-danger">Resetle</button>
         <button id = "calculate" type="button" style="display: none; margin-bottom: 15px" class="btn btn-outline-primary">Hesapla</button>
     </div>
 </div>
 <div class="c0 row" style="margin-right: 0px">
-    <table class = "c1" border="3px" style = "min-height: 300px; margin-left: 30px" >
-        <th style="text-align: center">Evet</th>
-        <th style="text-align: center; padding-top: 0px">Hayir</th>
-        <tr>
-            <td>
-                <ul id='left' class = "sortable">
+    <div class = "c1">
+        <table class = "" border="3px" style = "min-height: 300px; margin-left: 30px" >
+            <th style="text-align: center">Evet</th>
+            <th style="text-align: center; padding-top: 0px">Hayir</th>
+            <tr>
+                <td>
+                    <ul id='left' class = "sortable">
 
-                </ul>
-            </td>
-            <td>
-                <ul id='right' class = "sortable">
-                </ul>
-            </td>
-        </tr>
-    </table>
+                    </ul>
+                </td>
+                <td>
+                    <ul id='right' class = "sortable">
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
 </div>
 <div class="row d0" style="margin-right: 0px">
-    <div id = "leftEntropy" style="width: 300px; margin-left: 13%" class="d1 col-sm-3" >
+    <div id = "leftEntropy" style="background-color: red; color: white;margin-left: 8%" class="d1 col-sm-2" align="center" >
         Entropi: -
     </div>
-    <div id = "rightEntropy" style="width: 300px;" class = "d2 col-sm-3" >
+    <div id = "rightEntropy" style="background-color: red; color: white;margin-left: 11%" class = "d2 col-sm-2" align="center">
 
         Entropi: -
     </div>
 </div>
 <br>
-<div class="row e0" align="center" style="margin-right: 0px">
-    <div id = "averageEntropy" class = "e1 col-sm-7" >
+<div class="row e0" align="center" style="display: none; margin-right: 0px">
+    <div id = "averageEntropy" class = "e1 col-sm-7">
     Ortalama Entropi: -
     </div>
 </div>
+<div  id = "mainEntropy" class = "f0 col-sm-2"  align = "center" style="margin-left: 21%; background-color: orange" >
+        <span>Sistemin Entropisi: -</span>
+</div>
 <br>
-<div class="row f0" align="center" style="margin-right: 0px">
-    <div id = "totalGain" class = "f1 col-sm-7" >
+<div class="row g0" align="center" style="margin-right: 0px">
+    <div id = "totalGain" class = "g1 col-sm-2" style="margin-left: 21.7%; background-color: orange">
     Bu sorunun skoru: -
     </div>
 </div>
