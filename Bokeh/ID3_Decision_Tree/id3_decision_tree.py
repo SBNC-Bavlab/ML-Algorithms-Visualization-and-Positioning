@@ -36,52 +36,66 @@ spectacleAttr =  ["1", "2"]
 astigmaticAttr = ["1", "2"]
 tearAttr = ["1", "2"]
 
-
-choice = getChoice()
-
 buyingAttr = ["vhigh", "high", "med", "low"]
 maintAttr = ["vhigh", "high", "med", "low"]
 doorsAttr =  ["2", "3", "4", "5more"]
 personsAttr = ["2", "4", "more"]
 lug_bootAttr = ["small", "med", "big"]
 safetyAttr = ["low", "med", "high"]
-if choice == "cars":
-    classAttr = ["unacc", "acc", "good", "vgood"]
-else:
-    classAttr = ["1", "2", "3"]
+attrNamesList = []
+attrDictionary = {}
+classAttr = []
 
-attrNamesList = [
-	"ageAttr",
-	"spectacleAttr",
-	"astigmaticAttr",
-	"tearAttr",
-	"classAttr"
-] if choice == "lens" else [
-    "buyingAttr",
-    "maintAttr",
-    "doorsAttr",
-    "personsAttr",
-    "lug_bootAttr",
-    "safetyAttr",
-    "classAttr"
-]
 
-attrDictionary = {
-	"ageAttr": (0,ageAttr),
-	"spectacleAttr": (1,spectacleAttr),
-	"astigmaticAttr": (2, astigmaticAttr),
-	"tearAttr": (3, tearAttr),
-	"classAttr": (4, classAttr)
-} if choice == "lens" else {
-    "buyingAttr": (0, buyingAttr),
-    "maintAttr": (1, maintAttr),
-    "doorsAttr": (2, doorsAttr),
-    "personsAttr": (3, personsAttr),
-    "lug_bootAttr": (4, lug_bootAttr),
-    "safetyAttr": (5, safetyAttr),
-    "classAttr": (6, classAttr)
-}
+def getNewValues():
+    global  attrNamesList, attrDictionary, classAttr
+    if getChoice() == "cars":
+        classAttr = ["unacc", "acc", "good", "vgood"]
+    else:
+        classAttr = ["1", "2", "3"]
 
+    attrNamesList = [
+        "ageAttr",
+        "spectacleAttr",
+        "astigmaticAttr",
+        "tearAttr",
+        "classAttr"
+    ] if getChoice() == "lens" else [
+        "buyingAttr",
+        "maintAttr",
+        "doorsAttr",
+        "personsAttr",
+        "lug_bootAttr",
+        "safetyAttr",
+        "classAttr"
+    ]
+
+    attrDictionary = {
+        "ageAttr": (0,ageAttr),
+        "spectacleAttr": (1,spectacleAttr),
+        "astigmaticAttr": (2, astigmaticAttr),
+        "tearAttr": (3, tearAttr),
+        "classAttr": (4, classAttr)
+    } if getChoice() == "lens" else {
+        "buyingAttr": (0, buyingAttr),
+        "maintAttr": (1, maintAttr),
+        "doorsAttr": (2, doorsAttr),
+        "personsAttr": (3, personsAttr),
+        "lug_bootAttr": (4, lug_bootAttr),
+        "safetyAttr": (5, safetyAttr),
+        "classAttr": (6, classAttr)
+    }
+
+getNewValues()
+def modifyNewValues(tmpAttrNames):
+    global attrNamesList, attrDictionary
+    newAttrNames = []
+    for i in attrNamesList:
+        if i in tmpAttrNames:
+            newAttrNames.append(i)
+        else:
+            attrDictionary.pop(i)
+    attrNamesList = newAttrNames
 
 data_lens = []
 
@@ -91,8 +105,8 @@ for line in open('../Bokeh/Data/lens.txt'):
 	data_lens.append(tmp)
 
 
-test = data_lens if choice == "lens" else test_car
-train = data_lens if choice == "lens" else data_car
+test = data_lens if getChoice() == "lens" else test_car
+train = data_lens if getChoice() == "lens" else data_car
 
 def setActiveAttrs(activeAttrList):
     #clear the list
@@ -529,10 +543,22 @@ def realWorldTest(rootNodeVar, instancesVar, methodName, setName):
 			# print (guess, ins[-1])
 	return (valid)/float(valid+invalid)
 
+def dataset_same(tmpAttrNames, attrNamesList):
+    for i in tmpAttrNames:
+        if i in attrNamesList and i != "classAttr":
+            return True
+    return False
 
 def generate_tree(method, setRootAttribute):
+    tmpAttrNames = attrNamesList
+    getNewValues()
+    if dataset_same(tmpAttrNames, attrNamesList):
+        modifyNewValues(tmpAttrNames)
     newAttNameList = copy.deepcopy(attrNamesList)
     newAttNameList.remove("classAttr")
+    test = data_lens if getChoice() == "lens" else test_car
+    train = data_lens if getChoice() == "lens" else data_car
+
     rootNode = treeDistribution(newAttNameList, train, method, setRootAttribute)
 
     return rootNode, realWorldTest(rootNode, test, "methodName?", "setName?")
