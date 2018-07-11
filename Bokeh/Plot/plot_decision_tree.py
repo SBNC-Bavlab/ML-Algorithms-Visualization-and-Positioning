@@ -3,7 +3,7 @@ from bokeh.io import show
 from bokeh.plotting import figure, Figure
 from time import sleep
 from bokeh.transform import dodge, factor_cmap
-from bokeh.models import Arrow, OpenHead, VeeHead, ColumnDataSource, Range1d, LabelSet, Title, HoverTool
+from bokeh.models import Arrow, OpenHead, VeeHead, ColumnDataSource, Range1d, LabelSet, Title, HoverTool, BoxZoomTool
 from bokeh.models.callbacks import CustomJS
 from bokeh.models.widgets import RadioButtonGroup, Button, CheckboxButtonGroup, Paragraph, Dropdown, Select
 from bokeh.layouts import column, row
@@ -28,7 +28,7 @@ tree_mode_labels = ["Basit", "Detaylı"]
 arrow_list = {"current": [], "previous": []}
 current_label = ["gini"]
 selected_root = [""]
-plot_width=1450
+plot_width=1400
 plot_height=650
 
 # Create the main plot
@@ -42,7 +42,7 @@ def create_figure():
 
     ##X and y range calculated
     max_arg = max(2*width+1, depth+2)
-    periods = [str(i) for i in range(0, 2*width+1)]
+    periods = [str(i) for i in range(0, width+1)]
     groups = [str(x) for x in range(0, depth+2)]
 
     df = elements.copy()
@@ -219,7 +219,7 @@ def create_figure():
 
 
         ##X and y range calculated
-        periods = [str(i) for i in range(0, 2 * width + 1)]
+        periods = [str(i) for i in range(0, width + 1)]
         groups = [str(x) for x in range(0, depth + 2)]
 
         arrow_data, _, _ = draw_arrow(dataSource.data, p, width, len(periods), len(groups), level_width, circle_radius, rect_height, "get_data")
@@ -228,7 +228,7 @@ def create_figure():
         #        p = create_plot(rect_width, rect_height, groups, periods, dataSource, False, acc)
 
         max_arg = max(2 * width + 1, depth + 2)
-        p.y_range.factors = [str(i) for i in range(0, 2 * width + 1)]
+        p.y_range.factors = [str(i) for i in range(0, width + 1)]
         p.x_range.factors = [str(x) for x in range(0, depth + 2)]
 
         title = "Karar Ağacı (Seçtiğiniz Kök Nitelikli Hali)" \
@@ -257,8 +257,8 @@ def create_figure():
 
         ##X and y range calculated
         max_arg = max(2 * width + 1, depth + 2)
-        periods_best = [str(i) for i in range(0, 2 * width + 1)]
-        groups_best = [str(x) for x in range(0, depth + 2)]
+        periods_best = [str(i) for i in range(0, width_best + 1)]
+        groups_best = [str(x) for x in range(0, depth_best + 2)]
 
         best_arrow_data, _, _ = draw_arrow(best_root_plot_data_source.data, best_root_plot,
                                            width_best, len(periods_best), len(groups_best), level_width_best, circle_radius, rect_height, "get_data")
@@ -285,8 +285,8 @@ def create_figure():
 def create_plot(circle_radius, rect_width, rect_height, width, level_width, groups, periods, dataSource, isPrevious=False, acc=None):
     title = "Karar Ağacı " + ("(Algoritmanın Seçtiği Kök Nitelikli Hali)" if (isPrevious) else "(Seçtiğiniz Kök Nitelikli Hali)")+ ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc * 100, 1)) if (acc) else "")
     hover = HoverTool(names=["circles", "rectangles"])
-    p = figure(title=title, plot_width=650, plot_height=441, x_range=groups, y_range=list(periods), tools=[hover], toolbar_location=None, tooltips=TOOLTIPS)
-    arrow_data_source, arrow, label = draw_arrow(dataSource.data, p, width, level_width, circle_radius,
+    p = figure(title=title, toolbar_location="below", plot_width=plot_width, plot_height=plot_height, x_range=groups, y_range=list(periods), tooltips=TOOLTIPS)
+    arrow_data_source, arrow, label = draw_arrow(dataSource.data, p, width, len(groups), len(periods), level_width, circle_radius,
                                                  rect_height)
     p.add_layout(label)
     p.circle("y", "x", radius=circle_radius, source=dataSource, name="circles", legend="attribute_type_tr", color=factor_cmap('attribute_type', palette=list(getAllColors()), factors=allAttrsList))
@@ -298,7 +298,7 @@ def create_plot(circle_radius, rect_width, rect_height, width, level_width, grou
 
     #####Drawing on the rectangles####
     text_props = {"source": dataSource, "text_align": "center", "text_baseline": "middle"}
-
+    toolbar_location = "below"
     r = p.text(x="nonLeafNodes_y", y=dodge("nonLeafNodes_x", 0, range=p.x_range),
                name="detailed_text",
                text="nonLeafNodes_stat",
@@ -370,9 +370,9 @@ def draw_arrow(source, p, width, periods_len, groups_len, level_width, circle_ra
                     arrow_coordinates["x_end"].append(x_end)
                     arrow_coordinates["y_start"].append(y_start)
                     arrow_coordinates["y_end"].append(y_end)
-                    arrow_coordinates["x_avg"].append((x_start + x_end) / 2 - text_length * cos(angle) / 2 * (groups_len / periods_len) * (plot_height/plot_width))
+                    arrow_coordinates["x_avg"].append((x_start + x_end) / 2 - text_length * cos(angle) / 2 * 0.65)
                     arrow_coordinates["angle"].append(angle)
-                    arrow_coordinates["y_avg"].append((y_start + y_end) / 2- text_length * sin(angle) / 2)
+                    arrow_coordinates["y_avg"].append((y_start + y_end) / 2- text_length * sin(angle) / 2 * 0.65)
                     arrow_coordinates["label_name"].append(children_names[index])
                     arrow_coordinates["label_name_tr"].append(label_to_tr[source['attribute_type'][offset + j]][children_names[index]])
                     arrow_coordinates["instances"].append(source["instances"][index + sum(level_width[: i + 1])])
