@@ -8,7 +8,7 @@ cmap = {
     },
     "cars": {
         "buyingAttr": "red",
-        "maintAttr": "beige",
+        "maintAttr": "yellow",
         "doorsAttr": "blue",
         "personsAttr": "green",
         "lug_bootAttr": "brown",
