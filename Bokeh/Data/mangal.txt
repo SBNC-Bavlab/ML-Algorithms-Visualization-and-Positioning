@@ -12,3 +12,13 @@ hot overcast normal false yes
 mild rain high true no
 cool rain normal true no
 mild rain high false yes
+cool sunny normal false yes
+mild rain high true no
+cool rain normal false yes
+mild rain normal false yes
+hot sunny high true no
+mild rain normal false yes
+hot overcast normal false yes
+cool rain normal false yes
+hot sunny high true no
+cool sunny normal false yes
