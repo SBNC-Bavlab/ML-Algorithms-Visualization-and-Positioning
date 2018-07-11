@@ -62,15 +62,15 @@ def create_figure():
     dataSource = ColumnDataSource(data=df)
 
     # gini or informationGain or gainRatio
-    method_type = RadioButtonGroup(width=160, labels=radio_button_labels, active=1)
+    method_type = RadioButtonGroup(width=200, labels=radio_button_labels, active=1)
     # attributes like buyingAttr, personsAttr, ...
-    attributes = CheckboxButtonGroup(width=400, labels=[attr_to_turkish[attr] for attr in list(cmap.keys()) if attr != "classAttr"],
+    attributes = CheckboxButtonGroup(width=700, labels=[attr_to_turkish[attr] for attr in list(cmap.keys()) if attr != "classAttr"],
                                      active=[i for i, attr in enumerate(list(cmap.keys()))])
     # button to apply changes
     button = Button(label="Değişiklikleri Uygula", button_type="success")
 
     # any attribute type
-    root_type = RadioButtonGroup(width=450,
+    root_type = RadioButtonGroup(width=700,
                                  labels=['Hiçbiri'] + [attr_to_turkish[attr] for attr in list(cmap.keys())[:-1]],
                                  active=0)
 
@@ -93,13 +93,13 @@ def create_figure():
     """, width=70)
     method_info = Paragraph(text="""
        Metodu seçiniz:
-    """, width=65)
+    """, width=70)
     root_info = Paragraph(text="""
            Kök niteliği seçiniz:
         """, width=70)
     tree_mode_info = Paragraph(text="""
            Ağacın Detayını Seçiniz:
-        """, width=100)
+        """, width=70)
 
     #### Best rooted plot is created here
     best_root_plot_data = dataSource.data.copy()
@@ -113,7 +113,7 @@ def create_figure():
 
 
     ##Add all components into main_frame variable
-    main_frame = column(row(attr_info, attributes, method_info, method_type, button), row(root_info, root_type, tree_mode_info, tree_mode, dropdown), p, best_root_plot)
+    main_frame = column(row(attr_info, attributes, method_info, method_type, button), row(root_info, root_type, tree_mode_info, tree_mode, dropdown), row(p, best_root_plot))
 
     # Called with respect to change in method_type
     def updateMethodType(new):
@@ -194,7 +194,6 @@ def create_figure():
         attributes.labels = [attr_to_turkish[attr] for attr in list(cmap.keys()) if attr != "classAttr"]
         attributes.active = [i for i, attr in enumerate(list(cmap.keys()))]
         root_type.labels = ['Hiçbiri'] + [attr_to_turkish[attr] for attr in list(cmap.keys())[:-1]]
-        print(dataSource.data)
 
     dropdown.on_change('value', changeDataset)
 
@@ -281,7 +280,7 @@ def create_figure():
 
 def create_plot(circle_radius, rect_width, rect_height, width, level_width, groups, periods, dataSource, isPrevious=False, acc=None):
     title = "Karar Ağacı " + ("(Algoritmanın Seçtiği Kök Nitelikli Hali)" if (isPrevious) else "(Seçtiğiniz Kök Nitelikli Hali)")+ ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc * 100, 1)) if (acc) else "")
-    p = figure(title=title, plot_width=1400, plot_height=950, x_range=groups, y_range=list(periods), tools="hover", toolbar_location=None, tooltips=TOOLTIPS)
+    p = figure(title=title, plot_width=650, plot_height=441, x_range=groups, y_range=list(periods), tools="hover", toolbar_location=None, tooltips=TOOLTIPS)
     arrow_data_source, arrow, label = draw_arrow(dataSource.data, p, width, level_width, circle_radius,
                                                  rect_height)
     p.add_layout(label)
