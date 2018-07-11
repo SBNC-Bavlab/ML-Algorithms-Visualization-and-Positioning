@@ -18,6 +18,14 @@ class Node(object):
 		self.width = 0
 		self.coord = (0,0)
 
+		self.prelim = 0
+		self.offset_modifier = 0
+		self.thread = None
+		self.ancestor = self
+		self.order_number = 1
+		self.change = 0
+		self.shift = 0
+
 from math import log
 data = pickle.load(open('../Bokeh/Data/car.pkl','rb'))
 data_car = data['train']
