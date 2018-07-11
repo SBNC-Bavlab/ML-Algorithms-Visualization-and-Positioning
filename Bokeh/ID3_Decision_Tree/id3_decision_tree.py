@@ -71,7 +71,7 @@ attrDictionary = {
     "personsAttr": (3, personsAttr),
     "lug_bootAttr": (4, lug_bootAttr),
     "safetyAttr": (5, safetyAttr),
-    "classAttr:": (6, classAttr)
+    "classAttr": (6, classAttr)
 }
 
 
