@@ -112,14 +112,10 @@
                   ["Wights", "Zengin değil", "Yok", "İstemiyor", "Beyaz", "White Walker"],
                   ["Eddard Stark", "Zengin değil", "Yok", "İstemiyor", "Siyah", "Stark"],
                 ]
-
-
+  var colorMap = {"Lannister": "gold", "Targaryen": "rgb(240, 50, 0)", "Stark": "grey", "White Walker": "rgb(212,240,255)"}
 
   var dict = {}
-  var questions = {"Kırmızı mı?" : {attribute :"Kırmızı", type: 0},
-          "Sarı mı?": {attribute: "Sarı", type: 0},
-          "Ekşi mi?": {attribute: "Ekşi", type: 1},
-          "Zengin mi?": {attribute: "Zengin", type: 1},
+  var questions = {"Zengin mi?": {attribute: "Zengin", type: 1},
           "Beyaz saçlı mı?": {attribute: "Beyaz", type: 4},
           "Ejderyası var mı?": {attribute: "Var", type: 2}};
   var labelToImage = {"Karpuz" : "watermelon.png", "Elma" : {"Kırmızı" : "apple.png", "Yeşil": "green_apple.png"}, "Limon": "lemon.png"}
@@ -179,6 +175,10 @@
             $(".g0 .g1").css("z-index", 999)
         } else if(descIndex == 7){
             $(".g0 .g1").css("z-index", 0)
+            $("#overlay_text").css("top", "50%")
+            $("#overlay_text").css("left", "77%")
+            $("#overlay_button").css("top", "80%")
+            $("#overlay_button").css("right", "30%")
             $(".overlay").css("display", "none")
             isTutorial = false;
         } else if(descIndex == descriptions.length - 1){
@@ -220,6 +220,9 @@
             if(isTutorial){
                 $(".a0 .a2").css("z-index", 0)
                 $(".c0 .c1").css("z-index", 999)
+                $("#overlay_text").css("right", "5%")
+                $("#overlay_text").css("top", "80%")
+                $("#overlay_button").css("top", "90%")
                 $("#overlay_text").html(descriptions[descIndex])
                 $("#overlay_button").css("display", "block")
                 descIndex++;
@@ -235,8 +238,10 @@
         var previous = null
         for(var attribute in entry) {
             text += entry[attribute] + "  "
-            $tr.append("<td>" + entry[attribute] + "</td>")
+            $tr.append("<td>" + entry[attribute] + "   </td>")
         }
+        var label = entry[entry.length - 1]
+        $tr.css("background-color", colorMap[label])
         /*
         var cellImg = tr.insertCell()
         var entryLabel = entry[entry.length - 1]
@@ -292,8 +297,8 @@
     }
     //Calculate main entropy
     mainData = []
-    var mainItems = $("#main_list li")
-    for(var i = 1; i < mainItems.length; i++){
+    var mainItems = $("#main_list tbody tr")
+    for(var i = 0; i < mainItems.length; i++){
         var $item = $(mainItems[i])
         console.log($item.attr("id"))
         tokens = dict[$item.attr("id")]["attributeValues"]
@@ -309,12 +314,20 @@
             $(".c0 .c1").css("z-index", 0)
             $(".b0 .b1").css("z-index", 999)
             $("#overlay_button").css("display", "block")
+        }/*
+        if($("#left tbody tr")[0].childElementCount == 0) {
+            $("#left thead tr").append("<th>Buraya sürükleyiniz</th>")
+        } else {
+            $("#left tbody tr").html("")
         }
+        if($("#right tbody tr")[0].childElementCount == 0) {
+            $("#right thead tr").append("<th>Buraya sürükleyiniz</th>")
+        }*/
         var item = ui.item
         resetEntropyValues()
-        var $main_list = $("#main_list")
+        var $main_list = $("#main_list tbody")
         console.log($main_list)
-        if($main_list[0].childElementCount == 1){
+        if($main_list[0].childElementCount == 0){
             recalculateLeftRight()
         }
     }
@@ -324,7 +337,8 @@
     });
     $("#main_list, #left, #rigth").disableSelection();
     $("#calculate").click(()=>{
-        if ($("#main_list")[0].childElementCount == 1) {
+        console.log($("#main_list tbody"))
+        if ($("#main_list tbody")[0].childElementCount == 0) {
             var leftList = $("#left tbody tr")
             featuresMatrix = []
             for(var i = 1; i < leftList.length; i++){
@@ -407,7 +421,6 @@
         $("#question_list").css("display", "none")
         $("#reset").css("display", "inline-block")
         $("#calculate").css("display", "inline-block")
-        $("#left thead tr, #right thead tr").append("<th>Buraya sürükleyiniz</th>")
         //$("#left li:first-child, #right li:first-child").css("background-color", "orange")
         $('#right tbody tr, #left tbody tr, #main_list tbody tr').draggable({
             connectToSortable: ".sortable",
@@ -437,9 +450,9 @@
 <button id = "next" type="button" style="margin-bottom: 15px; display:none" class="btn btn-outline-primary">İlerle</button>
 <div class = "row a0" align="center" style="margin-left: 5%; margin-right: 0px">
     <div class ="a1 col-sm-6" >
-        <table id = "main_list">
+        <table id = "main_list" style="" border="1px solid black">
             <thead>
-                <tr id = "header" style="background-color: red;">
+                <tr id = "header" style="background-color: white;">
                     <th>Adı</th>
                     <th>Zengin mi?</th>
                     <th>Ejderhası var mı?</th>
@@ -472,10 +485,15 @@
             <th style="text-align: center; padding-top: 0px">Hayir</th>
             <tr>
                 <td>
-                    <table id='left' class = "sortable">
-                        <thead>
-                            <tr>
-
+                    <table id='left' class = "sortable" border="1px solid black">
+                        <thead style="background-color: white">
+                            <tr >
+                                <th >Adı</th>
+                                <th>Zengin mi?</th>
+                                <th>Ejderhası var mı?</th>
+                                <th>Tahtı istiyor mu?</th>
+                                <th>Saç rengi</th>
+                                <th>Ailesi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -484,10 +502,15 @@
                     </table>
                 </td>
                 <td>
-                    <table id='right' class = "sortable">
-                        <thead>
+                    <table id='right' class = "sortable" border="1px solid black">
+                        <thead style="background-color: white">
                             <tr>
-
+                                <th>Adı</th>
+                                <th>Zengin mi?</th>
+                                <th>Ejderhası var mı?</th>
+                                <th>Tahtı istiyor mu?</th>
+                                <th>Saç rengi</th>
+                                <th>Ailesi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -504,7 +527,6 @@
         Entropi: -
     </div>
     <div id = "rightEntropy" style="background-color: red; color: white;margin-left: 11%" class = "d2 col-sm-2" align="center">
-
         Entropi: -
     </div>
 </div>

@@ -101,17 +101,17 @@
 
     #overlay_text{
         position: absolute;
-        top: 50%;
-        left: 62%;
-        font-size: 30px;
+        top: 74%;
+        left: 79%;
+        font-size: 27px;
         color: white;
         transform: translate(-50%,-50%);
         -ms-transform: translate(-50%,-50%);
     }
     #overlay_button{
         position: absolute;
-        top: 80%;
-        right: 30%;
+        top: 85%;
+        right: 6%;
     }
     .slider.slider-horizontal{
         width: 500px !important; /* sample value - set it as you like*/
@@ -128,7 +128,7 @@
   <link rel = "stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.2/css/bootstrap-slider.min.css">
   <script>
 
-  var data2 = [
+  var data = [
       ["Sarı", 1, "Kavun"], ["Sarı", 1, "Kavun"], ["Sarı", 1, "Kavun"],  ["Sarı", 1, "Kavun"], ["Sarı", 1, "Kavun"],
       ["Sarı", 2, "Kavun"], ["Sarı", 2, "Kavun"], ["Sarı", 2, "Kavun"], ["Sarı", 2, "Kavun"], ["Sarı", 2, "Kavun"],
       ["Sarı", 3, "Kavun"], ["Sarı", 3, "Kavun"], ["Sarı", 3, "Kavun"], ["Sarı", 3, "Kavun"], ["Sarı", 3, "Kavun"], ["Sarı", 3, "Kavun"], ["Sarı", 3, "Kavun"],
@@ -150,19 +150,12 @@
       ["Yeşil", 14, "Karpuz"], ["Yeşil", 14, "Karpuz"], ["Yeşil", 14, "Karpuz"], ["Yeşil", 14, "Karpuz"], ["Yeşil", 14, "Karpuz"], ["Yeşil", 14, "Karpuz"], ["Yeşil", 14, "Karpuz"], ["Yeşil", 14, "Karpuz"],
   ]
 
-
-
-
-
-  var data = [["Yeşil", 3, "Karpuz"], ["Yeşil", 6, "Karpuz"], ["Yeşil", 7, "Karpuz"], ["Yeşil", 3, "Karpuz"], ["Yeşil", 5, "Karpuz"],
+  var data2 = [["Yeşil", 3, "Karpuz"], ["Yeşil", 6, "Karpuz"], ["Yeşil", 7, "Karpuz"], ["Yeşil", 3, "Karpuz"], ["Yeşil", 5, "Karpuz"],
             ["Yeşil", 5, "Karpuz"], ["Yeşil", 5, "Karpuz"], ["Yeşil", 5, "Karpuz"],
             ['Sarı', 5, 'Kavun'], ['Sarı', 2, 'Kavun'], ['Sarı', 4, 'Kavun'], ['Sarı', 5, 'Kavun'], ['Sarı', 2, 'Kavun'],
             ['Sarı', 3, 'Kavun'], ['Sarı', 3, "Kavun"]]
   //['Kırmızı', 1, 'Üzüm'], ['Kırmızı', 1, 'Üzüm'], ['Sarı', 3, 'Limon']]
   var test_data = [["Yeşil", 5, "Karpuz"], ["Yeşil", 5, "Karpuz"], ["Yeşil", 1, "Kavun"], ["Yeşil", 6, "Karpuz"], ["Yeşil", 6, "Karpuz"], ["Yeşil", 4, "Karpuz"], ["Yeşil", 3, "Karpuz"], ["Sarı", 3, "Kavun"], ["Sarı", 4, "Kavun"], ["Sarı", 5, "Kavun"]]
-
-
-
 
   let indexOfNumericValue = 1
   var dict = {}
@@ -381,20 +374,21 @@ var criticalValue = 0
 <div id="test_list" class = "row c0" style="margin-left: 5%; margin-right: 0px">
 </div>
 <br><br>
-<div id="accuracy" style="opacity: 0;">
+<div id="accuracy" align="center" style="opacity: 0;">
 
 </div>
-<br>
-<div class = "b0 col-sm-2">
-        <input style = "opacity: 1;" id="splitter" ata-slider-id='splitterSlider' type="text" data-slider-min="1" data-slider-max="5" data-slider-step="1" data-slider-value="1"/>
+<br><br>
+<div class = "b0" align="center">
+        <input style = "opacity: 1;" id="splitter" ata-slider-id='splitterSlider' type="text" data-slider-min="1" data-slider-max="14" data-slider-step="1" data-slider-value="1"/>
 </div>
-<div class = "c0" align="right" style="margin-right: 5%">
+<div class = "c0" align="center" style="">
     <button id="restart" style="display: none" class="c1 btn btn-outline-primary">Yeni Model Kur</button>
     <button id="test_model" style="display: none" class="c1 btn btn-outline-success">Modeli Test Et</button>
 </div>
 
-<div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
-<div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+
+<div style="position: absolute; bottom: 0px">Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+<div style="position: absolute; bottom: 16px">Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
 <!--overlay div here-->
 <div id="overlay">
     <div id="overlay_text"></div>

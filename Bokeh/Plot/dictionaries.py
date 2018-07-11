@@ -14,7 +14,7 @@ cmap = {
         "lug_bootAttr": "brown",
         "safetyAttr": "black",
         "classAttr": "orange"
-    }
+    },
     "GoT": {
         "Zengin mi?": "red",
         "Ejderhası var mı?": "beige",
@@ -40,14 +40,14 @@ label_to_tr = {
         "lug_bootAttr": {"small": "küçük", "med": "orta", "big": "büyük"},
         "safetyAttr": {"low": "düşük", "med": "orta", "high": "yüksek"},
         "classAttr": {"-": "Yok", "unacc": "Zor Satılır", "acc": "Belki Satılır", "good": "Satılır", "vgood": "Kolayca Satılır"}
-    }
+    },
     "GoT": {
-            "Zengin mi?": {"Zengin" : "Zengin", "Zengin değil" : "Zengin değil"},
-            "Ejderhası var mı?": {"Var" : "Var", "Yok" : "Yok"},
-            "Tahtı istiyor mu?": {"İstiyor" : "İstiyor", "İstemiyor" : "İstemiyor"},
-            "Saç rengi": {"Sarı" : "Sarı", "Siyah" : "Siyah", "Beyaz" : "Beyaz", "Kızıl" : "Kızıl"},
-            "Ailesi": {"Lannister" : "Lannister", "Stark" : "Stark", "White Walker" : "White Walker", "Targaryen" : "Targaryen"}
-        }
+        "Zengin mi?": {"Zengin" : "Zengin", "Zengin değil" : "Zengin değil"},
+        "Ejderhası var mı?": {"Var" : "Var", "Yok" : "Yok"},
+        "Tahtı istiyor mu?": {"İstiyor" : "İstiyor", "İstemiyor" : "İstemiyor"},
+        "Saç rengi": {"Sarı" : "Sarı", "Siyah" : "Siyah", "Beyaz" : "Beyaz", "Kızıl" : "Kızıl"},
+        "Ailesi": {"Lannister" : "Lannister", "Stark" : "Stark", "White Walker" : "White Walker", "Targaryen" : "Targaryen"}
+    }
 }
 attr_to_turkish = {
     "lens": {
@@ -65,14 +65,14 @@ attr_to_turkish = {
         "lug_bootAttr": "Bagaj Büyüklüğü",
         "safetyAttr": "Emniyetlilik",
         "classAttr": "Sonuç"
-        }
+    },
     "GoT": {
-            "Zengin mi?": "Zengin mi?",
-            "Ejderhası var mı?": "Ejderhası var mı?",
-            "Tahtı istiyor mu?": "Tahtı istiyor mu?",
-            "Saç rengi": "Saç rengi",
-            "Ailesi": "Ailesi"
-        }
+        "Zengin mi?": "Zengin mi?",
+        "Ejderhası var mı?": "Ejderhası var mı?",
+        "Tahtı istiyor mu?": "Tahtı istiyor mu?",
+        "Saç rengi": "Saç rengi",
+        "Ailesi": "Ailesi"
+    }
 }
 
 attr_to_children = {
@@ -91,14 +91,14 @@ attr_to_children = {
         "lug_bootAttr":  ["small", "med", "big"],
         "safetyAttr":  ["low", "med", "high"],
         "classAttr":  ["unacc", "acc", "good", "vgood"],
-    }
+    },
     "GoT": {
-                "Zengin mi?": {"Zengin", "Zengin değil"},
-                "Ejderhası var mı?": {"Var", "Yok"},
-                "Tahtı istiyor mu?": {"İstiyor", "İstemiyor"},
-                "Saç rengi": {"Sarı", "Siyah", "Beyaz", "Kızıl"},
-                "Ailesi": {"Lannister", "Stark", "White Walker", "Targaryen"}
-            }
+        "Zengin mi?": {"Zengin", "Zengin değil"},
+        "Ejderhası var mı?": {"Var", "Yok"},
+        "Tahtı istiyor mu?": {"İstiyor", "İstemiyor"},
+        "Saç rengi": {"Sarı", "Siyah", "Beyaz", "Kızıl"},
+        "Ailesi": {"Lannister", "Stark", "White Walker", "Targaryen"}
+    }
 }
 
 def getDictionaries(choose):
