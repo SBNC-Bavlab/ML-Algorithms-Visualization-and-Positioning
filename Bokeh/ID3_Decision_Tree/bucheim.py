@@ -6,7 +6,7 @@ distance = 5
 
 
 def tree_layout(node):
-    """ main function to run localization of nodes algorithm"""
+    """ main function """
     first_walk(node)
     second_walk(node, 0-node.offset_modifier)
 
@@ -64,7 +64,7 @@ def apportion(node, default_ancestor):
             vor.ancestor = node
             shift = (vil.prelim + sil) - (vir.prelim + sir) + distance
             if shift > 0:
-                move_subtree(ancestor(vil,node,default_ancestor), node, shift)
+                move_subtree(ancestor(vil, node, default_ancestor), node, shift)
                 sir = sir + shift
                 sor = sor + shift
             sil = sil + vil.offset_modifier
@@ -84,7 +84,9 @@ def apportion(node, default_ancestor):
 
 def next_left(node):
     """
-        The function returns 0 if and only if v is on the highest level of its subtree.
+        It returns the successor of node on this contour.This successor is either given by
+        the leftmost child of node or by the thread of node. The function returns None if
+        and only if node is on the highest level of its subtree.
     """
     if node.children is not []:
         return node.children[0]
@@ -93,13 +95,23 @@ def next_left(node):
 
 
 def next_right(node):
-    if node.children != []:
+    """
+        The function  works analogously.
+    """
+    if node.children is not []:
         return node.children[-1]
     else:
         return node.thread
 
 
 def move_subtree(wl, wr, shift):
+    """
+        Shifting a subtree can be done in linear time if performed as explained above. Calling
+        MOVESUBTREE(wl,wr,shift) first shifts the current subtree, rooted at wr. This is done by increasing
+        prelim(wr) and mod(wr) by shift. All other shifts, applied to the smaller subtrees between wl and wr,
+        are performed later by EXECUTESHIFTS. To prepare this, we have to adjust change(wr), shift(wr),
+        and change(wl).
+    """
     subtrees = wr.order_number - wl.order_number
     shift_subtrees = float(shift) / subtrees
     wr.change -= shift_subtrees
@@ -108,7 +120,12 @@ def move_subtree(wl, wr, shift):
     wr.prelim += shift
     wr.offset_modifier += shift
 
+
 def execute_shifts(node):
+    """
+        The function only needs one traversal of the children of v to
+        execute all shifts computed and memorized in MOVESUBTREE.
+    """
     shift = 0
     change = 0
     for child in node.children[::-1]:
@@ -117,13 +134,23 @@ def execute_shifts(node):
         change += child.change
         shift += child.shift + change
 
+
 def ancestor(vil, v, default_ancestor):
+    """
+        The function ANCESTOR returns the left one of the greatest
+        distinct ancestors of vil and its right neighbor.
+    """
     if vil.ancestor in v.parentPointer.children:
         return vil.ancestor
     else:
         return default_ancestor
 
+
 def second_walk(v, m=0):
+    """
+        The function is used to compute all real x-coordinates
+        by summing up the modifiers recursively.
+    """
     v.coord = (v.depth, v.prelim+m+2)
     for child in v.children:
         second_walk(child, m+v.offset_modifier)
