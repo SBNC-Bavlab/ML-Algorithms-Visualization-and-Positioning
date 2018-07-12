@@ -145,7 +145,7 @@
                   ["Lieutenant White Walkers", "Hayır", "Var", "İstemiyor", "Beyaz", "White Walker"],
                   ["Eddard Stark", "Hayır", "Yok", "İstemiyor", "Siyah", "Stark"],
                 ]
-  var colorMap = {"Lannister": "gold", "Targaryen": "rgb(240, 50, 0)", "Stark": "grey", "White Walker": "rgb(212,240,255)"}
+  var colorMap = {"Lannister": "#7C6248", "Targaryen": "#EAFAFD", "Stark": "#8C94A1", "White Walker": "#3A81ED"}
 
   var dict = {}
   var questions = {"Zengin mi?": {attribute: "Evet", type: 1},
@@ -154,7 +154,7 @@
   var labelToImage = {"Stark" : "stark.png", "Targaryen" : "targaryen.png", "Lannister": "lannister.png"}
   var labelToImage2 = {"Karpuz" : "watermelon.png", "Elma" : {"Kırmızı" : "apple.png", "Yeşil": "green_apple.png"}, "Limon": "lemon.png"}
   var whiteWalkerImage = {"Night King" : "night_king.jpg", "Wights": "wights.jpg", "Lieutenant White Walkers": "lieutenant.jpg"}
-  var descriptions = ["Game of Thrones dizisinin karakterleri, onların özellikleri ve üyesi oldukları aileyi görüyorsunuz   ",
+  var descriptions = ["Game of Thrones dizisinin karakterleri, onların özellikleri ve üyesi oldukları haneyi görüyorsunuz   ",
                       "Belirtilen kısımdaki sorulara tıklayarak verilerinizi ikiye ayırabilirsiniz",
                       "Veriler sorduğunuz soruya göre ikiye ayrıldı",
                       "Bu entropi değeri 'Evet' kısmındaki verilerin karmaşıklığını ifade eder",
@@ -191,7 +191,7 @@
     descIndex++;
     $("#overlay_button").click(()=>{
         $("#overlay_text").html(descriptions[descIndex])
-        console.log(descIndex)
+
         if(descIndex == 1){
             $(".a0 .a1").css("z-index", 0)
             $(".a0 .a2").css("z-index", 999)
@@ -233,7 +233,6 @@
             resetLeftRight()
             resetEntropyValues()
             var mainItems = $("#main_list tbody tr");
-            console.log(question)
             for(var i = 0; i < mainItems.length; i++){
                 var $item = $(mainItems[i]);
                 var conditionAttribute = dict[$item.attr("id")]["attributeValues"][question["type"]];
@@ -274,6 +273,7 @@
             var $table = $("#main_list")
             var $tr = $("<tr>")
             var previous = null
+            $tr.addClass("text-center")
             for(var attribute in entry) {
                 text += entry[attribute] + "  "
                 $tr.append("<td>" + entry[attribute] + "   </td>")
@@ -282,9 +282,9 @@
             $tr.css("background-color", colorMap[label])
 
             if(label != "White Walker") {
-                $tr.append("<img src = 'icons/" + labelToImage[label] + "' width = '30'></img>")
+                $tr.append("<img src = 'icons/" + labelToImage[label] + "' width = '50'></img>")
             } else {
-                $tr.append("<img src = 'icons/" + whiteWalkerImage[entry[0]] + "' width = '30'></img>")
+                $tr.append("<img src = 'icons/" + whiteWalkerImage[entry[0]] + "' width = '50'></img>")
             }
 
             var $newNode = $tr.attr("id", "entry_" + i)
@@ -300,7 +300,6 @@
         for(var i = startingIndexOfLeftRight; i < leftItems.length; i++){
             var $item = $(leftItems[i])
             tokens = dict[$item.attr("id")]["attributeValues"]
-            console.log(tokens)
             leftData.push(tokens)
         }
         return calculateEntropy(leftData)
@@ -344,7 +343,6 @@
     var mainItems = $("#main_list tbody tr")
     for(var i = 0; i < mainItems.length; i++){
         var $item = $(mainItems[i])
-        console.log($item.attr("id"))
         tokens = dict[$item.attr("id")]["attributeValues"]
         mainData.push(tokens)
     }
@@ -370,7 +368,6 @@
         var item = ui.item
         resetEntropyValues()
         var $main_list = $("#main_list tbody")
-        console.log($main_list)
         if($main_list[0].childElementCount == 0){
             recalculateLeftRight()
         }
@@ -381,21 +378,22 @@
     });
     $("#main_list, #left, #rigth").disableSelection();
     $("#calculate").click(()=>{
-        console.log($("#main_list tbody"))
         if ($("#main_list tbody")[0].childElementCount == 0) {
             var leftList = $("#left tbody tr")
             featuresMatrix = []
-            for(var i = 1; i < leftList.length; i++){
+            for(var i = 0; i < leftList.length; i++){
                 var $item = $(leftList[i])
                 attributeArr = dict[$item.attr("id")]["attributeValues"]
                 featuresMatrix.push([])
                 for(var j = 0; j < attributeArr.length; j++){
-                    featuresMatrix[i - 1].push(attributeArr[j])
+                    featuresMatrix[i].push(attributeArr[j])
                 }
             }
             console.log(featuresMatrix)
             validSplit = false;
-            for(var col = 0; featuresMatrix != [] && col < featuresMatrix[0].length - 1 && !validSplit; col++){
+            var col;
+            //col started from 1 so that name is not taken into account
+            for(col = 1; featuresMatrix.length != 0 && col < featuresMatrix[0].length - 1 && !validSplit; col++){
                 var previous = featuresMatrix[0][col] // first element is previous
                 var differentFound = false;
                 for(var row = 1; !differentFound && row < featuresMatrix.length; row++){
@@ -404,7 +402,25 @@
                     }
                 }
                 if(!differentFound){
-                    validSplit = true
+                    //Let's check if the same column is valid in the right list
+                    var rightItems = $("#right tbody tr")
+                    if(rightItems.length > 0) {
+                        sameFound = false;
+                        for (var i = 0; i < rightItems.length; i++) {
+                            var $rightItem = $(rightItems[i])
+                            var current = dict[$rightItem.attr("id")]['attributeValues'][col]
+                            console.log(current, ',', previous)
+                            if(current == previous){
+                                sameFound = true;
+                            }
+                        }
+                        console.log("here")
+                        validSplit = !sameFound
+                    } else {
+                        validSplit = true
+                    }
+                    console.log("done")
+
                 }
             }
             console.log(validSplit)
@@ -471,11 +487,9 @@
             revert: 'invalid',
             drag: function( event, ui ) {
                 $(ui.helper).css("position", "absolute")
-                console.log(ui.helper)
             },
             stop: function( event, ui ) {
                 $(ui.helper).css("position", "")
-                console.log(ui.helper)
             }
         });
         //Tutorial part
@@ -500,12 +514,13 @@
         <table id = "main_list" style="" border="1px solid black">
             <thead>
                 <tr id = "header" style="background-color: white">
-                    <th>Adı</th>
-                    <th>Zengin mi?</th>
-                    <th>Ejderhası var mı?</th>
-                    <th>Tahtı istiyor mu?</th>
-                    <th>Saç rengi</th>
-                    <th>Ailesi</th>
+                    <th class="text-center">Adı</th>
+                    <th class="text-center">Zengin mi?</th>
+                    <th class="text-center">Ejderhası var mı?</th>
+                    <th class="text-center">Tahtı istiyor mu?</th>
+                    <th class="text-center">Saç rengi</th>
+                    <th class="text-center">Hanesi</th>
+                    <th><img src="icons/got.png" width="60"></th>
                 </tr>
             </thead>
             <tbody>
@@ -536,12 +551,13 @@
                     <table id='left' class = "sortable" border="1px solid black">
                         <thead style="background-color: white">
                             <tr >
-                                <th >Adı</th>
-                                <th>Zengin mi?</th>
-                                <th>Ejderhası var mı?</th>
-                                <th>Tahtı istiyor mu?</th>
-                                <th>Saç rengi</th>
-                                <th>Ailesi</th>
+                                <th class="text-center" >Adı</th>
+                                <th class="text-center">Zengin mi?</th>
+                                <th class="text-center">Ejderhası var mı?</th>
+                                <th class="text-center">Tahtı istiyor mu?</th>
+                                <th class="text-center">Saç rengi</th>
+                                <th class="text-center">Hanesi</th>
+                                <th><img src="icons/got.png" width="60"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -553,12 +569,13 @@
                     <table id='right' class = "sortable" border="1px solid black">
                         <thead style="background-color: white">
                             <tr>
-                                <th>Adı</th>
-                                <th>Zengin mi?</th>
-                                <th>Ejderhası var mı?</th>
-                                <th>Tahtı istiyor mu?</th>
-                                <th>Saç rengi</th>
-                                <th>Ailesi</th>
+                                <th class="text-center">Adı</th>
+                                <th class="text-center">Zengin mi?</th>
+                                <th class="text-center">Ejderhası var mı?</th>
+                                <th class="text-center">Tahtı istiyor mu?</th>
+                                <th class="text-center">Saç rengi</th>
+                                <th class="text-center">Hanesi</th>
+                                <th><img src="icons/got.png" width="60"></th>
                             </tr>
                         </thead>
                         <tbody>
