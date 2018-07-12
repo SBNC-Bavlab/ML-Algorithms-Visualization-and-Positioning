@@ -30,7 +30,7 @@ arrow_list = {"current": [], "previous": []}
 current_label = ["gini"]
 selected_root = [""]
 current_tree_mode = "Basit"
-plot_width=900
+plot_width=1350
 plot_height=int(plot_width*950/1400)
 
 # Create the main plot

@@ -1,4 +1,4 @@
-from Bokeh.ID3_Decision_Tree.id3_decision_tree import generate_tree, setActiveAttrs
+from Bokeh.ID3_Decision_Tree.id3_decision_tree import generate_tree, set_active_attr
 from Bokeh.ID3_Decision_Tree.bucheim import tree_layout
 import copy
 import math
@@ -100,7 +100,7 @@ def fill_source(source, node_list):
 
 def get_bokeh_data(method, activeAttrList = [], setRootAttribute=""):
     id_index = 0
-    setActiveAttrs(activeAttrList)
+    set_active_attr(activeAttrList)
     root, acc = generate_tree(method, setRootAttribute)
 
     visited = {}

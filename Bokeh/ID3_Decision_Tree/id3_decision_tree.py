@@ -6,9 +6,9 @@ from Bokeh.Plot.getChoice import getChoice
 from math import log
 
 
-data = pickle.load(open('../Bokeh/Data/car.pkl','rb'))
-data_car = data['train']
-test_car = data['test']
+data_set = pickle.load(open('../Bokeh/Data/car.pkl', 'rb'))
+data_car = data_set['train']
+test_car = data_set['test']
 
 data_lens = []
 
@@ -86,8 +86,8 @@ def get_new_values():
     ]
 
     attrDictionary = {
-        "ageAttr": (0,ageAttr),
-        "spectacleAttr": (1,spectacleAttr),
+        "ageAttr": (0, ageAttr),
+        "spectacleAttr": (1, spectacleAttr),
         "astigmaticAttr": (2, astigmaticAttr),
         "tearAttr": (3, tearAttr),
         "classAttr": (4, classAttr)
@@ -114,7 +114,7 @@ def modify_new_values(tmp_attr_names):
     attrNamesList = new_attr_names
 
 
-def set_active_attrs(active_attr_list):
+def set_active_attr(active_attr_list):
     """ Set attributes that are in use"""
     # clear the list
     attrNamesList[:] = []
@@ -135,7 +135,6 @@ def entropy(distribution_list_var):
     entropy_sum = 0.0
     for dist in distribution_list_var:
         percentage = float(dist) / float(number_of_instances)
-        entropy_holder = 0.0
         if percentage == 0:
             entropy_holder = 0.0
         else:
@@ -144,6 +143,7 @@ def entropy(distribution_list_var):
         entropy_sum += entropy_holder
 
     return float(entropy_sum)
+
 
 # Check its usage
 def check_attribute_value_pair_match(attr_index_var, attr_value_var, instance_var):
@@ -236,12 +236,12 @@ def information(attribute_name_var, instances_var):
     return information_sum
 
 
-def information_gain(attribute_name_var, instancesVar):
+def information_gain(attribute_name_var, instances_var):
     """ Calculate the information gain by subtracting node information from system entropy"""
-    global_distribution_list = classify_list("classAttr", instancesVar)
+    global_distribution_list = classify_list("classAttr", instances_var)
     entropy_value = entropy(global_distribution_list)
 
-    information_value = information(attribute_name_var, instancesVar)
+    information_value = information(attribute_name_var, instances_var)
     information_gain_value = entropy_value - information_value
     return information_gain_value
 
@@ -315,8 +315,8 @@ def gini_index(attribute_name_var, instances_var):
 
 
 def choose_the_best(attribute_list_var, instances_var, methodology):
+    """ Best attribute to divide remaining instances according to the methods value"""
     values_list = []
-    value = 0.0
     for attr in attribute_list_var:
         if methodology == "gini":
             value = gini_index(attr, instances_var)
@@ -454,7 +454,7 @@ def observe_from_siblings(node_var):
     """
     siblings = node_var.parentPointer.children
 
-    siblings_distributions = [0,0,0,0]
+    siblings_distributions = [0] * len(classAttr)
     for sibling in siblings:
         sibling_dist = classify_list("classAttr", sibling.data)
         for i in range(len(sibling_dist)):
@@ -478,7 +478,7 @@ def tree_distribution(attribute_list_var, instances_var, methodology, set_root_a
         attrib_list_copy.remove(best_attr_name)
         root_node = Node("", best_attr_name, instances_copy, [], attrib_list_copy, methodology)
         root_node.parentPointer = None
-        root_node.value= success_value
+        root_node.value = success_value
 
     else:
         if methodology == "gini":
@@ -574,7 +574,7 @@ def generate_tree(method, set_root_attribute):
     """
         Generate tree
     """
-
+    global test, train
     tmp_attr_names = attrNamesList
     get_new_values()
     if dataset_same(tmp_attr_names, attrNamesList):
