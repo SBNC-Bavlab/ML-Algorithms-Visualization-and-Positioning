@@ -3,7 +3,7 @@ from bokeh.io import show
 from bokeh.plotting import figure, Figure
 from time import sleep
 from bokeh.transform import dodge, factor_cmap
-from bokeh.models import Arrow, OpenHead, VeeHead, ColumnDataSource, Range1d, LabelSet, Title, HoverTool, BoxZoomTool
+from bokeh.models import Arrow, OpenHead, VeeHead, ColumnDataSource, Range1d, LabelSet, Title, HoverTool, BoxZoomTool, PanTool, WheelZoomTool
 from bokeh.models.callbacks import CustomJS
 from bokeh.models.widgets import RadioButtonGroup, Button, CheckboxButtonGroup, Paragraph, Dropdown, Select
 from bokeh.layouts import column, row
@@ -88,24 +88,23 @@ def create_figure():
     p, arrow_data_source = create_plot(circle_radius, rect_width, rect_height, width, level_width, groups, periods, dataSource, False, acc)
     p.axis.visible=False
 
-
     attr_info = Paragraph(text="""
        Nitelikleri seçiniz:
     """, width=100)
     method_info = Paragraph(text="""
        Metodu seçiniz:
-    """, width=70)
+    """, width=100)
     root_info = Paragraph(text="""
            Kök niteliği seçiniz:
         """, width=100)
     tree_mode_info = Paragraph(text="""
            Ağacın görünümünü seçiniz:
-        """, width=70)
+        """, width=100)
 
     #### Best rooted plot is created here
     best_root_plot_data = dataSource.data.copy()
     best_root_plot_data_source = ColumnDataSource(data=best_root_plot_data)
-    best_root_plot, best_arrow_data_source = create_plot(circle_radius, rect_width, rect_height, width, level_width, groups, periods, best_root_plot_data_source, True, acc)
+    best_root_plot, best_arrow_data_source = create_plot(circle_radius, rect_height, rect_width, width, level_width, groups, periods, best_root_plot_data_source, True, acc)
     best_root_plot.axis.visible=False
     #best_arrow_data_source, best_arrow, best_label = draw_arrow(best_root_plot_data_source.data,
     #                                                best_root_plot, width, level_width, circle_radius, rect_height)
@@ -217,7 +216,7 @@ def create_figure():
         data['attribute_type_tr'] = [attr_to_turkish[attr] for attr in data['attribute_type']]
         dataSource.data = ColumnDataSource(data=data).data
 
-
+        p.select(name="label").visible = False
         ##X and y range calculated
         periods = [str(i) for i in range(0, width + 1)]
         groups = [str(x) for x in range(0, depth + 2)]
@@ -225,12 +224,13 @@ def create_figure():
         arrow_data, _, _ = draw_arrow(dataSource.data, p, width, len(periods), len(groups), level_width, circle_radius, rect_height, "get_data")
         arrow_data_source.data = ColumnDataSource(data=arrow_data.data).data
 
+
         #        p = create_plot(rect_width, rect_height, groups, periods, dataSource, False, acc)
 
         max_arg = max(2 * width + 1, depth + 2)
         p.y_range.factors = [str(i) for i in range(0, width + 1)]
         p.x_range.factors = [str(x) for x in range(0, depth + 2)]
-
+        #p.renderers.remove(p.select_one({'name': "rectangles"}))
         title = "Karar Ağacı (Seçtiğiniz Kök Nitelikli Hali)" \
                 + ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc * 100, 1)) if (acc) else "")
 
@@ -285,17 +285,18 @@ def create_figure():
 def create_plot(circle_radius, rect_width, rect_height, width, level_width, groups, periods, dataSource, isPrevious=False, acc=None):
     title = "Karar Ağacı " + ("(Algoritmanın Seçtiği Kök Nitelikli Hali)" if (isPrevious) else "(Seçtiğiniz Kök Nitelikli Hali)")+ ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc * 100, 1)) if (acc) else "")
     hover = HoverTool(names=["circles", "rectangles"])
-    p = figure(title=title, toolbar_location="below", plot_width=plot_width, plot_height=plot_height, x_range=groups, y_range=list(periods), tooltips=TOOLTIPS)
-    arrow_data_source, arrow, label = draw_arrow(dataSource.data, p, width, len(groups), len(periods), level_width, circle_radius,
+    wheel = WheelZoomTool()
+    p = figure(title=title, toolbar_location="below", tools = [hover, wheel, PanTool()], plot_width=plot_width, plot_height=plot_height, x_range=groups, y_range=list(periods), tooltips=TOOLTIPS)
+    arrow_data_source, arrow, label = draw_arrow(dataSource.data, p, width, len(periods), len(groups), level_width, circle_radius,
                                                  rect_height)
+    p.toolbar.active_scroll = wheel
     p.add_layout(label)
     p.circle("y", "x", radius=circle_radius, source=dataSource, name="circles", legend="attribute_type_tr", color=factor_cmap('attribute_type', palette=list(getAllColors()), factors=allAttrsList))
     print(p.legend)
-    p.rect("y", "x", rect_width, rect_height, source=dataSource, name="rectangles", legend="attribute_type_tr",
+    rectangle = p.rect("y", "x", rect_width, rect_height, source=dataSource, name="rectangles", legend="attribute_type_tr",
            color=factor_cmap('attribute_type', palette=list(getAllColors()), factors=allAttrsList))
     rectangles = p.select(name="rectangles")
     rectangles.visible = False
-
     #####Drawing on the rectangles####
     text_props = {"source": dataSource, "text_align": "center", "text_baseline": "middle"}
     toolbar_location = "below"
@@ -321,8 +322,8 @@ def create_plot(circle_radius, rect_width, rect_height, width, level_width, grou
     #r = p.text(x="y", y=dodge("x", -0.3, range=p.x_range), text="stat_value", **text_props)
     #r.glyph.text_font_size = "7pt"
 
-    r = p.text(x="leafNodes_y", text_color="orange", y=dodge("leafNodes_x", -0.4), name="decision_text", text="decision_tr", **text_props)
-    r.glyph.text_font_size = "8pt"
+    r = p.text(x="leafNodes_y", text_color="orange", y=dodge("leafNodes_x", -0.2), name="decision_text", text="decision_tr", **text_props)
+    r.glyph.text_font_size = "7pt"
 
     # r = p.text(x=x, y=dodge("y", -0.2, range=p.y_range), text="atomic mass", **text_props)
     # r.glyph.text_font_size = "5pt"
@@ -370,9 +371,9 @@ def draw_arrow(source, p, width, periods_len, groups_len, level_width, circle_ra
                     arrow_coordinates["x_end"].append(x_end)
                     arrow_coordinates["y_start"].append(y_start)
                     arrow_coordinates["y_end"].append(y_end)
-                    arrow_coordinates["x_avg"].append((x_start + x_end) / 2 - text_length * cos(angle) / 2 * 0.65)
+                    arrow_coordinates["x_avg"].append((x_start + x_end) / 2)
                     arrow_coordinates["angle"].append(angle)
-                    arrow_coordinates["y_avg"].append((y_start + y_end) / 2- text_length * sin(angle) / 2 * 0.65)
+                    arrow_coordinates["y_avg"].append((y_start + y_end) / 2)
                     arrow_coordinates["label_name"].append(children_names[index])
                     arrow_coordinates["label_name_tr"].append(label_to_tr[source['attribute_type'][offset + j]][children_names[index]])
                     arrow_coordinates["instances"].append(source["instances"][index + sum(level_width[: i + 1])])
@@ -397,8 +398,8 @@ def draw_arrow(source, p, width, periods_len, groups_len, level_width, circle_ra
                       xs = "xs", ys="ys", source=arrow_data_source)
     else:
         arrow = []
-    label = LabelSet(x=dodge("x_avg", 0.0), angle = "angle", y=dodge("y_avg", 0.0), text="label_name_tr",
-                     text_font_size="10pt", text_color="black", source=arrow_data_source)
+    label = LabelSet(x=dodge("x_avg", 0.0), angle = "angle", y=dodge("y_avg", 0.0), name="label", text="label_name_tr",
+                     text_font_size="8pt", text_color="black", source=arrow_data_source)
     return arrow_data_source, arrow, label
 
 def animate_outline_color(plot, number, delay=0.5):
