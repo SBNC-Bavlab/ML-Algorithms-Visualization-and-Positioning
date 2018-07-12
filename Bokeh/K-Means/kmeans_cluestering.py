@@ -1,18 +1,23 @@
+from __future__ import division
 
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.cluster import KMeans
 
-X = np.array([[5,3,4],
-     [10,15,2],
-     [15,12,3],
-     [24,10,5],
-     [30,45,6],
-     [85,70,7],
-     [71,80,2],
-     [60,7,8],
-     [55,52,61],
-     [80,91,4]])
+from bokeh.core.properties import Instance, String
+from bokeh.models import ColumnDataSource, LayoutDOM
+from bokeh.plotting import figure, show
+
+X = np.array([[5,3],
+     [10,15],
+     [15,12],
+     [24,10],
+     [30,45],
+     [85,70],
+     [71,80],
+     [60,7],
+     [55,52],
+     [80,91]])
 
 
 kmeans = KMeans(n_clusters=3)
@@ -24,6 +29,8 @@ print(kmeans.labels_)
 
 cluster_xs = kmeans.cluster_centers_[:, 0]
 cluster_ys = kmeans.cluster_centers_[:, 1]
-plt.scatter(X[:,0],X[:,1], X[:,2], c=kmeans.labels_, cmap='rainbow')
-plt.scatter(cluster_xs, cluster_ys, color = 'black')
-plt.show()
+TOOLS="hover,crosshair,pan,wheel_zoom,zoom_in,zoom_out,box_zoom,undo,redo,reset,tap,save,box_select,poly_select,lasso_select,"
+
+p = figure(tools=TOOLS)
+p.circle(X[:, 0], X[:, 1], size = 5 )
+show(p)
