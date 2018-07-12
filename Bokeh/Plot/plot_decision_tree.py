@@ -89,7 +89,6 @@ def create_figure():
     p, arrow_data_source = create_plot(circle_radius, rect_width, rect_height, width, level_width, groups, periods, dataSource, False, acc)
     p.axis.visible=False
 
-
     attr_info = Paragraph(text="""
        Nitelikleri seçiniz:
     """, width=200)
@@ -256,13 +255,14 @@ def create_figure():
         data['attribute_type_tr'] = [attr_to_turkish[attr] for attr in data['attribute_type']]
         dataSource.data = ColumnDataSource(data=data).data
 
-
+        p.select(name="label").visible = False
         ##X and y range calculated
         periods = [str(i) for i in range(0, width + 1)]
         groups = [str(x) for x in range(0, depth + 2)]
 
         arrow_data, _, _ = draw_arrow(dataSource.data, p, width, len(periods), len(groups), level_width, circle_radius, rect_height, "get_data")
         arrow_data_source.data = ColumnDataSource(data=arrow_data.data).data
+
 
         #        p = create_plot(rect_width, rect_height, groups, periods, dataSource, False, acc)
 
@@ -326,16 +326,17 @@ def create_figure():
 def create_plot(circle_radius, rect_width, rect_height, width, level_width, groups, periods, dataSource, isPrevious=False, acc=None):
     title = "Karar Ağacı " + ("(Algoritmanın Seçtiği Kök Nitelikli Hali)" if (isPrevious) else "(Seçtiğiniz Kök Nitelikli Hali)")+ ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc * 100, 1)) if (acc) else "")
     hover = HoverTool(names=["circles", "rectangles"])
-    p = figure(title=title, toolbar_location="below", tools=[hover, WheelZoomTool(), ResetTool(), PanTool()], plot_width=plot_width, plot_height=plot_height, x_range=groups, y_range=list(periods), tooltips=TOOLTIPS)
+    wheel = WheelZoomTool()
+    p = figure(title=title, toolbar_location="below", tools=[hover, wheel, ResetTool(), PanTool()], plot_width=plot_width, plot_height=plot_height, x_range=groups, y_range=list(periods), tooltips=TOOLTIPS)
     arrow_data_source, arrow, label = draw_arrow(dataSource.data, p, width, len(periods), len(groups), level_width, circle_radius,
                                                  rect_height)
+    p.toolbar.active_scroll = wheel
     p.add_layout(label)
     p.circle("y", "x", radius=circle_radius, radius_units = 'screen', source=dataSource, name="circles", legend="attribute_type_tr", color=factor_cmap('attribute_type', palette=list(getAllColors()), factors=allAttrsList))
     p.rect("y", "x", rect_width, rect_height, source=dataSource, name="rectangles", legend="attribute_type_tr",
            color=factor_cmap('attribute_type', palette=list(getAllColors()), factors=allAttrsList))
     rectangles = p.select(name="rectangles")
     rectangles.visible = False
-
     #####Drawing on the rectangles####
     text_props = {"source": dataSource, "text_align": "center", "text_baseline": "middle"}
     toolbar_location = "below"
@@ -410,10 +411,8 @@ def draw_arrow(source, p, width, periods_len, groups_len, level_width, circle_ra
                     arrow_coordinates["y_start"].append(y_start)
                     arrow_coordinates["y_end"].append(y_end)
                     arrow_coordinates["x_avg"].append((x_start + x_end) / 2)
-                    #- text_length * cos(angle) / 2 * 0.65)
                     arrow_coordinates["angle"].append(angle)
                     arrow_coordinates["y_avg"].append((y_start + y_end) / 2)
-                    #- text_length * sin(angle) / 2 * 0.65)
                     arrow_coordinates["label_name"].append(children_names[index])
                     arrow_coordinates["label_name_tr"].append(label_to_tr[source['attribute_type'][offset + j]][children_names[index]])
                     arrow_coordinates["instances"].append(source["instances"][index + sum(level_width[: i + 1])])

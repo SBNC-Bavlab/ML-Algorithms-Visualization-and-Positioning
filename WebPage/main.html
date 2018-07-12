@@ -150,13 +150,12 @@
   ]
 
 
-    var test_data = [
-        ["Sarı", 3, "Kavun"], ["Sarı", 4, "Kavun"], ["Sarı", 5, "Kavun"], ["Sarı", 5, "Kavun"], ["Sarı", 5, "Kavun"],["Sarı", 6, "Kavun"], ["Sarı", 6, "Kavun"],
-        ["Yeşil", 7, "Karpuz"],["Yeşil", 7, "Karpuz"]["Sarı", 7, "Kavun"], ["Yeşil", 8, "Karpuz"],
-        ["Yeşil", 9, "Karpuz"], ["Yeşil", 9, "Karpuz"], ["Yeşil", 9, "Karpuz"], ["Yeşil", 11, "Karpuz"], ["Yeşil", 12, "Karpuz"], ["Yeşil", 12, "Karpuz"],
-        ["Yeşil", 13, "Karpuz"],
-
-    ]
+  var test_data = [["Sarı", 3, "Kavun"], ["Sarı", 4, "Kavun"], ["Sarı", 5, "Kavun"],
+      ["Sarı", 5, "Kavun"], ["Sarı", 5, "Kavun"], ["Sarı", 6, "Kavun"],
+      ["Sarı", 6, "Kavun"], ["Yeşil", 7, "Karpuz"], ["Yeşil", 7, "Karpuz"],
+      ["Sarı", 7, "Kavun"], ["Yeşil", 8, "Karpuz"], ["Yeşil", 9, "Karpuz"],
+      ["Yeşil", 9, "Karpuz"], ["Yeşil", 9, "Karpuz"], ["Yeşil", 11, "Karpuz"],
+      ["Yeşil", 12, "Karpuz"], ["Yeşil", 12, "Karpuz"], ["Yeşil", 13, "Karpuz"]]
 
 
   var data2 = [["Yeşil", 3, "Karpuz"], ["Yeşil", 6, "Karpuz"], ["Yeşil", 7, "Karpuz"], ["Yeşil", 3, "Karpuz"], ["Yeşil", 5, "Karpuz"],
@@ -186,6 +185,7 @@
 var guide = [".a0 .a1", ".b0 .slider", ".c0 .c1"]
 var criticalValue = 0
   $( function() {
+    console.log('here2', test_data)
     data.sort((a, b) => {
         return a[indexOfNumericValue] - b[indexOfNumericValue]
     })
@@ -217,7 +217,7 @@ var criticalValue = 0
                 invalid++;
            }
         }
-        return [valid, invalid, (100 * valid / (valid + invalid)).toFixed(1)]
+        return [valid, invalid, (100 * valid / (valid + invalid)).toFixed(0)]
     }
     $("#overlay_button").click(()=>{
         if(tutorialIndex == 5){
@@ -230,12 +230,14 @@ var criticalValue = 0
         else if(tutorialIndex == 7){
             $("#main_list").css("display", "none")
             $("#tezgahName").html("Ahmet'in Tezgahı")
+            console.log("here")
+            console.log(test_data)
             test_data.forEach((entry, i)=>{
                 var obje = { attributeValues : entry}
                 var text = ""
                 var table = document.createElement("table")
                 var tr = table.insertRow()
-
+                console.log(entry)
                 //only diameter
                 text += entry[indexOfNumericValue] + "  "
                 cell = tr.insertCell()
@@ -388,7 +390,7 @@ var criticalValue = 0
 </div>
 <br><br>
 <div class = "b0" align="center">
-        <input style = "opacity: 1;" id="splitter" ata-slider-id='splitterSlider' type="text" data-slider-min="1" data-slider-max="14" data-slider-step="1" data-slider-value="1"/>
+        <input style = "opacity: 1;" id="splitter" ata-slider-id='splitterSlider' type="text" data-slider-min='0' data-slider-max="14" data-slider-step="1" data-slider-value="1"/>
 </div>
 <div class = "c0" align="center" style="">
     <button id="restart" style="display: none" class="c1 btn btn-outline-primary">Yeni Model Kur</button>
