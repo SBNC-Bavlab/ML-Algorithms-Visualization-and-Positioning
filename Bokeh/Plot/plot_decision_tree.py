@@ -3,12 +3,12 @@ from bokeh.io import show
 from bokeh.plotting import figure, Figure
 from time import sleep
 from bokeh.transform import dodge, factor_cmap
-from bokeh.models import Arrow, OpenHead, VeeHead, ColumnDataSource, Range1d, LabelSet, Title, HoverTool, BoxZoomTool
+from bokeh.models import Arrow, OpenHead, VeeHead, ColumnDataSource, Range1d, LabelSet, Title, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs
 from bokeh.models.callbacks import CustomJS
-from bokeh.models.widgets import RadioButtonGroup, Button, CheckboxButtonGroup, Paragraph, Dropdown, Select
+from bokeh.models.widgets import RadioButtonGroup, Button, CheckboxButtonGroup, Paragraph, Dropdown, Select, MultiSelect, CheckboxGroup
 from bokeh.layouts import column, row
 from Bokeh.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
-from math import sqrt, pi, atan, cos, sin
+from math import sqrt, pi, atan, cos, sin, isnan
 from Bokeh.Plot.dictionaries import getDictionaries, getAttrsList, getAllColors
 from Bokeh.Plot.getChoice import getChoice, setChoice
 
@@ -17,7 +17,8 @@ cmap, label_to_tr, attr_to_turkish, attr_to_children = getDictionaries(getChoice
 allAttrsList = getAttrsList()
 TOOLTIPS = [
     ("Metod Değeri", "@{nonLeafNodes_stat}"),
-    ("Örnek Sayısı", "@{instances}")
+    ("Örnek Sayısı", "@{instances}"),
+    ("Sonuç", "@{decision_tr}")
     #        ("Type", "@metal"),
     #        ("CPK color", "$color[hex, swatch]:CPK"),
     #        ("Electronic configuration", "@{electronic configuration}"),
@@ -28,8 +29,8 @@ tree_mode_labels = ["Basit", "Detaylı"]
 arrow_list = {"current": [], "previous": []}
 current_label = ["gini"]
 selected_root = [""]
-plot_width=1400
-plot_height=650
+plot_width=1000
+plot_height=int(1000*950/1400)
 
 # Create the main plot
 def create_figure():
@@ -38,6 +39,7 @@ def create_figure():
     # method options: gini, gainRatio, informationGain
     source, width, depth, level_width, acc = get_bokeh_data("gini", active_attributes_list + ["classAttr"],
                                                             selected_root[0])
+    source["nonLeafNodes_stat"] = [str(x) for x in source["nonLeafNodes_stat"]]
     elements = pd.DataFrame.from_dict(source)
 
     ##X and y range calculated
@@ -49,41 +51,38 @@ def create_figure():
     # decimal point rounded to 2
     #df['stat_value'] = [round(i, 3) for i in df['stat_value']]
     if not df['nonLeafNodes_stat'].dropna().empty:
-        df['nonLeafNodes_stat'] = [round(i, 3) for i in df['nonLeafNodes_stat']]
+        df['nonLeafNodes_stat'] = ["-" if i=="None" else str(round(float(i), 3)) for i in df['nonLeafNodes_stat']]
     else:
         df['nonLeafNodes_stat'] = [1]
     df['decision'] = [decision if decision else "-" for decision in df['decision']]
-    df["nonLeafNodes_stat"] = ["" + str(x) for x in df["nonLeafNodes_stat"]]
+    df["nonLeafNodes_stat"] = df["nonLeafNodes_stat"].fillna(0)
     df["decision"] = ["" + x for x in df["decision"]]
     df["decision_tr"] = [label_to_tr["classAttr"]["" + x]for x in df["decision"]]
     df['attribute_type_tr'] = [attr_to_turkish[attr] for attr in df['attribute_type']]
     #    df['stat_value'] = [value if value != nan else "-" for value in df['stat_value']]
     #    print(df.last())
-    print(df)
+    print(df["nonLeafNodes_stat"].fillna("-", inplace=True))
     dataSource = ColumnDataSource(data=df)
 
     # gini or informationGain or gainRatio
-    method_type = RadioButtonGroup(width=200, labels=radio_button_labels, active=1)
+    method_type = Select(title="Metodu seçiniz:", options=radio_button_labels, value = "gini")
     # attributes like buyingAttr, personsAttr, ...
-    attributes = CheckboxButtonGroup(width=700, labels=[attr_to_turkish[attr] for attr in list(cmap.keys()) if attr != "classAttr"],
+    attributes = CheckboxGroup(labels=[attr_to_turkish[attr] for attr in list(cmap.keys()) if attr != "classAttr"],
                                      active=[i for i, attr in enumerate(list(cmap.keys()))])
     # button to apply changes
     button = Button(label="Değişiklikleri Uygula", button_type="success")
 
     # any attribute type
-    root_type = RadioButtonGroup(width=700,
-                                 labels=['Hiçbiri'] + [attr_to_turkish[attr] for attr in list(cmap.keys())[:-1]],
-                                 active=0)
+    root_type = Select(title="Kök niteliği seçiniz:", options=['Hiçbiri'] + [attr_to_turkish[attr] for attr in list(cmap.keys())[:-1]], value="Hiçbiri")
 
-    tree_mode = RadioButtonGroup(width=200, labels=tree_mode_labels, active=0)
+    tree_mode = Select(title="Ağacın görünümünü seçiniz:", options=tree_mode_labels, value="Basit")
     menu = [("Lens Verileri", "item_1"), ("Araba Verileri", "item_2")]
     # button to apply changes
-    button = Button(label="Değişiklikleri Uygula", button_type="success")
+    button = Button(width=250, label="Değişiklikleri Uygula", button_type="success")
     dropdown = Select(title="Veri Kümesini Seç:", value="lens", options=["lens", "araba"])
-
     rect_width = 0.7
     rect_height = 0.9
-    circle_radius = 0.2
+    circle_radius = 5
 
     p, arrow_data_source = create_plot(circle_radius, rect_width, rect_height, width, level_width, groups, periods, dataSource, False, acc)
     p.axis.visible=False
@@ -94,13 +93,13 @@ def create_figure():
     """, width=100)
     method_info = Paragraph(text="""
        Metodu seçiniz:
-    """, width=70)
+    """, width=90)
     root_info = Paragraph(text="""
            Kök niteliği seçiniz:
         """, width=100)
     tree_mode_info = Paragraph(text="""
            Ağacın görünümünü seçiniz:
-        """, width=70)
+        """, width=90)
 
     #### Best rooted plot is created here
     best_root_plot_data = dataSource.data.copy()
@@ -111,18 +110,19 @@ def create_figure():
     #                                                best_root_plot, width, level_width, circle_radius, rect_height)
     #best_root_plot.add_layout(best_arrow)
     #best_root_plot.add_layout(best_label)
-
-
+    tab1 = Panel(child=p, title="Customized")
+    tab2 = Panel(child=best_root_plot, title="İdeal")
+    myTab = Tabs(tabs=[tab1, tab2])
     ##Add all components into main_frame variable
-    main_frame = column(row(attr_info, attributes, method_info, method_type, button), row(root_info, root_type, tree_mode_info, tree_mode, dropdown), row(p, best_root_plot))
-
+    main_frame = row(column(root_type, method_type, tree_mode, dropdown, button, attr_info, attributes), myTab)
     # Called with respect to change in method_type
-    def updateMethodType(new):
+    def updateMethodType(attr, old, new):
+        new = method_type.options.index(new)
         ##Method_type -> gini or Gain ratio
         method_type = radio_button_labels[new]
         current_label[0] = method_type
 
-    method_type.on_click(updateMethodType)
+    method_type.on_change("value", updateMethodType)
 
     # Called with respect to change in attributes check-box
     def updateAttributes(new):
@@ -135,8 +135,8 @@ def create_figure():
             button.disabled = False
     attributes.on_click(updateAttributes)
 
-    def toggleMode(new):
-        if(new):
+    def toggleMode(attr, old, new):
+        if(new == "Detaylı"):
             circles = p.select(name="circles")
             circles.visible=False
             rectangles = p.select(name="rectangles")
@@ -170,10 +170,11 @@ def create_figure():
             best_root_plot.select(name="decision_text").visible=True
 
 
-    tree_mode.on_click(toggleMode)
+    tree_mode.on_change("value", toggleMode)
 
-    def updateRoot(new):
+    def updateRoot(attr, old, new):
         ##Select root manually
+        new = root_type.options.index(new)
         method_type = list(cmap.keys())[new - 1]
         if (new == 0):
             selected_root[0] = ''
@@ -185,7 +186,7 @@ def create_figure():
         else:
             selected_root[0] = method_type
             button.disabled = False;
-    root_type.on_click(updateRoot)
+    root_type.on_change('value', updateRoot)
     def changeDataset(attr, old, new):
         if dropdown.value == "lens":
              setChoice("lens")
@@ -194,7 +195,7 @@ def create_figure():
         applyChanges()
         attributes.labels = [attr_to_turkish[attr] for attr in list(cmap.keys()) if attr != "classAttr"]
         attributes.active = [i for i, attr in enumerate(list(cmap.keys()))]
-        root_type.labels = ['Hiçbiri'] + [attr_to_turkish[attr] for attr in list(cmap.keys())[:-1]]
+        root_type.options = ['Hiçbiri'] + [attr_to_turkish[attr] for attr in list(cmap.keys())[:-1]]
 
     dropdown.on_change('value', changeDataset)
 
@@ -203,11 +204,12 @@ def create_figure():
         cmap, label_to_tr, attr_to_turkish, attr_to_children = getDictionaries(getChoice())
 
         data, width, depth, level_width, acc = get_bokeh_data(current_label[0], active_attributes_list  + ["classAttr"], selected_root[0])
+        data["nonLeafNodes_stat"] = [str(x) for x in data["nonLeafNodes_stat"]]
 
         data = pd.DataFrame.from_dict(data)
         #data['stat_value'] = [round(i, 3) for i in data['stat_value']]  # decimal point rounded to 2
         if not data['nonLeafNodes_stat'].dropna().empty:
-            data['nonLeafNodes_stat'] = [round(i, 3) for i in data['nonLeafNodes_stat']]
+            data['nonLeafNodes_stat'] = ["-" if i=="None" else str(round(float(i), 3)) for i in data['nonLeafNodes_stat']]
         else:
             data['nonLeafNodes_stat'] = [1]
         ##none entries replaced with "-"
@@ -242,10 +244,12 @@ def create_figure():
         data_best, width_best, depth_best, level_width_best, acc_best = get_bokeh_data(current_label[0], active_attributes_list + ["classAttr"], "")
 
         # Datasource should be deep copied
+        data_best["nonLeafNodes_stat"] = [str(x) for x in data_best["nonLeafNodes_stat"]]
+
         data_best_df = pd.DataFrame.from_dict(data_best)
         #data_best_df['stat_value'] = [round(i, 3) for i in data_best_df['stat_value']]  # decimal point rounded to 2
         if not data_best_df['nonLeafNodes_stat'].dropna().empty:
-            data_best_df['nonLeafNodes_stat'] = [round(i, 3) for i in data_best_df['nonLeafNodes_stat']]
+            data_best_df['nonLeafNodes_stat'] = ["-" if i=="None" else str(round(float(i), 3)) for i in data_best_df['nonLeafNodes_stat']]
         else:
             data_best_df['nonLeafNodes_stat'] = [1]
         ##none entries replaced with "-"
@@ -285,12 +289,11 @@ def create_figure():
 def create_plot(circle_radius, rect_width, rect_height, width, level_width, groups, periods, dataSource, isPrevious=False, acc=None):
     title = "Karar Ağacı " + ("(Algoritmanın Seçtiği Kök Nitelikli Hali)" if (isPrevious) else "(Seçtiğiniz Kök Nitelikli Hali)")+ ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc * 100, 1)) if (acc) else "")
     hover = HoverTool(names=["circles", "rectangles"])
-    p = figure(title=title, toolbar_location="below", plot_width=plot_width, plot_height=plot_height, x_range=groups, y_range=list(periods), tooltips=TOOLTIPS)
-    arrow_data_source, arrow, label = draw_arrow(dataSource.data, p, width, len(groups), len(periods), level_width, circle_radius,
+    p = figure(title=title, toolbar_location="below", tools=[hover, WheelZoomTool(), ResetTool(), PanTool()], plot_width=plot_width, plot_height=plot_height, x_range=groups, y_range=list(periods), tooltips=TOOLTIPS)
+    arrow_data_source, arrow, label = draw_arrow(dataSource.data, p, width, len(periods), len(groups), level_width, circle_radius,
                                                  rect_height)
     p.add_layout(label)
-    p.circle("y", "x", radius=circle_radius, source=dataSource, name="circles", legend="attribute_type_tr", color=factor_cmap('attribute_type', palette=list(getAllColors()), factors=allAttrsList))
-    print(p.legend)
+    p.circle("y", "x", radius=circle_radius, radius_units = 'screen', source=dataSource, name="circles", legend="attribute_type_tr", color=factor_cmap('attribute_type', palette=list(getAllColors()), factors=allAttrsList))
     p.rect("y", "x", rect_width, rect_height, source=dataSource, name="rectangles", legend="attribute_type_tr",
            color=factor_cmap('attribute_type', palette=list(getAllColors()), factors=allAttrsList))
     rectangles = p.select(name="rectangles")
@@ -321,8 +324,8 @@ def create_plot(circle_radius, rect_width, rect_height, width, level_width, grou
     #r = p.text(x="y", y=dodge("x", -0.3, range=p.x_range), text="stat_value", **text_props)
     #r.glyph.text_font_size = "7pt"
 
-    r = p.text(x="leafNodes_y", text_color="orange", y=dodge("leafNodes_x", -0.4), name="decision_text", text="decision_tr", **text_props)
-    r.glyph.text_font_size = "8pt"
+    #r = p.text(x="leafNodes_y", text_color="orange", y=dodge("leafNodes_x", -0.4), name="decision_text", text="decision_tr", **text_props)
+    #r.glyph.text_font_size = "8pt"
 
     # r = p.text(x=x, y=dodge("y", -0.2, range=p.y_range), text="atomic mass", **text_props)
     # r.glyph.text_font_size = "5pt"
@@ -363,16 +366,17 @@ def draw_arrow(source, p, width, periods_len, groups_len, level_width, circle_ra
                     y_end = source["x"][index + sum(level_width[: i + 1])] \
                             #+ distanceBetweenY*circle_radius/distanceBetweenNodes
                     angle = atan((y_end - y_start) / (x_end - x_start) * (groups_len / periods_len) * (plot_height/plot_width))
-                    print(angle)
                     text_length = len(children_names[index])
                     #if(True or arrow_index >= len(arrow_list[mode])):
                     arrow_coordinates["x_start"].append(x_start)
                     arrow_coordinates["x_end"].append(x_end)
                     arrow_coordinates["y_start"].append(y_start)
                     arrow_coordinates["y_end"].append(y_end)
-                    arrow_coordinates["x_avg"].append((x_start + x_end) / 2 - text_length * cos(angle) / 2 * 0.65)
+                    arrow_coordinates["x_avg"].append((x_start + x_end) / 2)
+                    #- text_length * cos(angle) / 2 * 0.65)
                     arrow_coordinates["angle"].append(angle)
-                    arrow_coordinates["y_avg"].append((y_start + y_end) / 2- text_length * sin(angle) / 2 * 0.65)
+                    arrow_coordinates["y_avg"].append((y_start + y_end) / 2)
+                    #- text_length * sin(angle) / 2 * 0.65)
                     arrow_coordinates["label_name"].append(children_names[index])
                     arrow_coordinates["label_name_tr"].append(label_to_tr[source['attribute_type'][offset + j]][children_names[index]])
                     arrow_coordinates["instances"].append(source["instances"][index + sum(level_width[: i + 1])])
@@ -398,7 +402,7 @@ def draw_arrow(source, p, width, periods_len, groups_len, level_width, circle_ra
     else:
         arrow = []
     label = LabelSet(x=dodge("x_avg", 0.0), angle = "angle", y=dodge("y_avg", 0.0), text="label_name_tr",
-                     text_font_size="10pt", text_color="black", source=arrow_data_source)
+                     text_font_size="8pt", text_color="darkgray", source=arrow_data_source)
     return arrow_data_source, arrow, label
 
 def animate_outline_color(plot, number, delay=0.5):
