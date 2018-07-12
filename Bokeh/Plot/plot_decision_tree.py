@@ -3,7 +3,7 @@ from bokeh.io import show
 from bokeh.plotting import figure, Figure
 from time import sleep
 from bokeh.transform import dodge, factor_cmap
-from bokeh.models import Arrow, OpenHead, VeeHead, ColumnDataSource, Range1d, LabelSet, Title, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs
+from bokeh.models import Arrow, OpenHead, VeeHead, ColumnDataSource, Range1d, LabelSet, Title, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs, Toggle
 from bokeh.models.callbacks import CustomJS
 from bokeh.models.widgets import RadioButtonGroup, Button, CheckboxButtonGroup, Paragraph, Dropdown, Select, MultiSelect, CheckboxGroup
 from bokeh.layouts import column, row
@@ -29,8 +29,9 @@ tree_mode_labels = ["Basit", "Detaylı"]
 arrow_list = {"current": [], "previous": []}
 current_label = ["gini"]
 selected_root = [""]
-plot_width=1000
-plot_height=int(1000*950/1400)
+current_tree_mode = "Basit"
+plot_width=900
+plot_height=int(plot_width*950/1400)
 
 # Create the main plot
 def create_figure():
@@ -65,23 +66,24 @@ def create_figure():
     dataSource = ColumnDataSource(data=df)
 
     # gini or informationGain or gainRatio
-    method_type = Select(title="Metodu seçiniz:", options=radio_button_labels, value = "gini")
     # attributes like buyingAttr, personsAttr, ...
     attributes = CheckboxGroup(labels=[attr_to_turkish[attr] for attr in list(cmap.keys()) if attr != "classAttr"],
                                      active=[i for i, attr in enumerate(list(cmap.keys()))])
     # button to apply changes
-    button = Button(label="Değişiklikleri Uygula", button_type="success")
+    button = Button(width=275, label="Değişiklikleri Uygula", button_type="success")
+    decision_button = Toggle(width=275, label="Sonuç gösterme", button_type="warning")
+    arrow_button = Toggle(width=275, label="Karar değerlerini gösterme", button_type="warning")
 
     # any attribute type
     root_type = Select(title="Kök niteliği seçiniz:", options=['Hiçbiri'] + [attr_to_turkish[attr] for attr in list(cmap.keys())[:-1]], value="Hiçbiri")
+    method_type = Select(title="Metodu seçiniz:", options=radio_button_labels, value="gini")
 
     tree_mode = Select(title="Ağacın görünümünü seçiniz:", options=tree_mode_labels, value="Basit")
     menu = [("Lens Verileri", "item_1"), ("Araba Verileri", "item_2")]
     # button to apply changes
-    button = Button(width=250, label="Değişiklikleri Uygula", button_type="success")
     dropdown = Select(title="Veri Kümesini Seç:", value="lens", options=["lens", "araba"])
-    rect_width = 0.7
-    rect_height = 0.9
+    rect_width = 2
+    rect_height = 0.5
     circle_radius = 5
 
     p, arrow_data_source = create_plot(circle_radius, rect_width, rect_height, width, level_width, groups, periods, dataSource, False, acc)
@@ -90,7 +92,7 @@ def create_figure():
 
     attr_info = Paragraph(text="""
        Nitelikleri seçiniz:
-    """, width=100)
+    """, width=200)
     method_info = Paragraph(text="""
        Metodu seçiniz:
     """, width=90)
@@ -114,10 +116,13 @@ def create_figure():
     tab2 = Panel(child=best_root_plot, title="İdeal")
     myTab = Tabs(tabs=[tab1, tab2])
     ##Add all components into main_frame variable
-    main_frame = row(column(root_type, method_type, tree_mode, dropdown, button, attr_info, attributes), myTab)
+
+    main_frame = row(column(root_type,
+    #method_type,
+    attr_info, attributes, button, decision_button, arrow_button, dropdown, tree_mode), myTab)
     # Called with respect to change in method_type
     def updateMethodType(attr, old, new):
-        new = method_type.options.index(new)
+        new = method_type.options
         ##Method_type -> gini or Gain ratio
         method_type = radio_button_labels[new]
         current_label[0] = method_type
@@ -136,7 +141,13 @@ def create_figure():
     attributes.on_click(updateAttributes)
 
     def toggleMode(attr, old, new):
+        global current_tree_mode
         if(new == "Detaylı"):
+            current_tree_mode = "Detaylı"
+        else:
+            current_tree_mode = "Basit"
+
+        if(current_tree_mode == "Detaylı"):
             circles = p.select(name="circles")
             circles.visible=False
             rectangles = p.select(name="rectangles")
@@ -148,10 +159,12 @@ def create_figure():
             rectangles.visible=True
 
             p.select(name="detailed_text").visible=True
-            p.select(name="decision_text").visible=False
-
             best_root_plot.select(name="detailed_text").visible=True
-            best_root_plot.select(name="decision_text").visible=False
+
+            if decision_button.label == "Sonuç gösterme":
+                p.select(name="decision_text").visible=False
+                best_root_plot.select(name="decision_text").visible=False
+            decision_button.disabled = True
         else:
             circles = p.select(name="circles")
             circles.visible=True
@@ -164,13 +177,36 @@ def create_figure():
             rectangles.visible=False
 
             p.select(name="detailed_text").visible=False
-            p.select(name="decision_text").visible=True
-
             best_root_plot.select(name="detailed_text").visible=False
-            best_root_plot.select(name="decision_text").visible=True
-
+            if decision_button.label == "Sonuç gösterme":
+                p.select(name="decision_text").visible=True
+                best_root_plot.select(name="decision_text").visible=True
+            decision_button.disabled = False
 
     tree_mode.on_change("value", toggleMode)
+
+    def turnDecisionOff(new):
+        if new:
+            p.select(name="decision_text").visible=False
+            best_root_plot.select(name="decision_text").visible=False
+            decision_button.label = "Sonuç göster"
+        else:
+            p.select(name="decision_text").visible=True
+            best_root_plot.select(name="decision_text").visible=True
+            decision_button.label = "Sonuç gösterme"
+
+    decision_button.on_click(turnDecisionOff)
+
+    def turnArrowLabelsOff(new):
+        if new:
+            p.select(name="arrowLabels").visible=False
+            best_root_plot.select(name="arrowLabels").visible=False
+            arrow_button.label = "Karar değerlerini göster"
+        else:
+            p.select(name="arrowLabels").visible=True
+            best_root_plot.select(name="arrowLabels").visible=True
+            arrow_button.label = "Karar değerlerini gösterme"
+    arrow_button.on_click(turnArrowLabelsOff)
 
     def updateRoot(attr, old, new):
         ##Select root manually
@@ -192,17 +228,18 @@ def create_figure():
              setChoice("lens")
         else:
             setChoice("cars")
+        selected_root[0] = ""
         applyChanges()
         attributes.labels = [attr_to_turkish[attr] for attr in list(cmap.keys()) if attr != "classAttr"]
         attributes.active = [i for i, attr in enumerate(list(cmap.keys()))]
         root_type.options = ['Hiçbiri'] + [attr_to_turkish[attr] for attr in list(cmap.keys())[:-1]]
+
 
     dropdown.on_change('value', changeDataset)
 
     def applyChanges():
         global cmap, label_to_tr, attr_to_turkish, attr_to_children
         cmap, label_to_tr, attr_to_turkish, attr_to_children = getDictionaries(getChoice())
-
         data, width, depth, level_width, acc = get_bokeh_data(current_label[0], active_attributes_list  + ["classAttr"], selected_root[0])
         data["nonLeafNodes_stat"] = [str(x) for x in data["nonLeafNodes_stat"]]
 
@@ -324,8 +361,8 @@ def create_plot(circle_radius, rect_width, rect_height, width, level_width, grou
     #r = p.text(x="y", y=dodge("x", -0.3, range=p.x_range), text="stat_value", **text_props)
     #r.glyph.text_font_size = "7pt"
 
-    #r = p.text(x="leafNodes_y", text_color="orange", y=dodge("leafNodes_x", -0.4), name="decision_text", text="decision_tr", **text_props)
-    #r.glyph.text_font_size = "8pt"
+    r = p.text(x="leafNodes_y", text_color="orange", y=dodge("leafNodes_x", -0.4), name="decision_text", text="decision_tr", **text_props)
+    r.glyph.text_font_size = "8pt"
 
     # r = p.text(x=x, y=dodge("y", -0.2, range=p.y_range), text="atomic mass", **text_props)
     # r.glyph.text_font_size = "5pt"
@@ -401,7 +438,7 @@ def draw_arrow(source, p, width, periods_len, groups_len, level_width, circle_ra
                       xs = "xs", ys="ys", source=arrow_data_source)
     else:
         arrow = []
-    label = LabelSet(x=dodge("x_avg", 0.0), angle = "angle", y=dodge("y_avg", 0.0), text="label_name_tr",
+    label = LabelSet(x=dodge("x_avg", 0.0), angle = "angle", name="arrowLabels", y=dodge("y_avg", 0.0), text="label_name_tr",
                      text_font_size="8pt", text_color="darkgray", source=arrow_data_source)
     return arrow_data_source, arrow, label
 
