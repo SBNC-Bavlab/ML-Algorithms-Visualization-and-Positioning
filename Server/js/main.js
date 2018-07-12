@@ -130,7 +130,7 @@ $( function() {
                 const $item = $(testItems[i]);
                 const $tr = $($item).find("table > tbody > tr");
                 const label = idToObject[$item.attr("id")]["attributeValues"][2];
-                $tr.append("<td> " + "<img src = '../icons/" + labelToImage[label] + "' width = '60'></td>")
+                $tr.append("<td> " + "<img src = " + labelToImage[label] + "'../icons' width = '60'></td>")
             }
             const accuracyEntries = calculateAccuracyOfList();
             tutorial[9] = "Gerçek değerler bu şekildeydi. Modeliniz " + accuracyEntries[0] + " tanesini doğru, " + accuracyEntries[1] + " tanesini yanlış bildi. " +
@@ -195,9 +195,9 @@ $( function() {
         const cellImg = tr.insertCell();
         const entryLabel = entry[entry.length - 1];
         if(entryLabel !== "Elma") {
-            cellImg.innerHTML = "<img src = '../icons/" + labelToImage[entryLabel] + "' width = '60'>"
+            cellImg.innerHTML = "<img src = " + labelToImage[entryLabel] + "'../icons' width = '60'>"
         } else {
-            cellImg.innerHTML = "<img src = '../icons/" + labelToImage[entryLabel][entry[0]] + "' width = '60'>"
+            cellImg.innerHTML = "<img src = " + labelToImage[entryLabel][entry[0]] + "'../icons' width = '60'>"
         }
         const $newNode = $("<div>").attr("id", "entry_" + i).addClass("col-sm-1 a1").append($(table));
         idToObject[$newNode.attr("id")] = obje;
