@@ -7,8 +7,7 @@ from Bokeh.Plot.dictionaries import modify_new_values, get_new_values, get_class
 from math import log
 attrNamesList = []
 attrDictionary = {}
-classAttr = get_class_attr()
-
+classAttr = []
 
 class Node(object):
     """ Tree node """
@@ -461,7 +460,7 @@ def generate_tree(method, set_root_attribute, activeAttrList):
     """
         Generate tree
     """
-    global test, train, attrNamesList, attrDictionary
+    global test, train, attrNamesList, attrDictionary, classAttr
     attrNamesList = set_active_attr(activeAttrList)
     tmp_attr_names = attrNamesList
     attrNamesList, attrDictionary = get_new_values()
@@ -471,6 +470,7 @@ def generate_tree(method, set_root_attribute, activeAttrList):
     new_att_name_list.remove("classAttr")
     test = get_test_set()
     train = get_train_set()
+    classAttr = get_class_attr()
     root_node = tree_distribution(new_att_name_list, train, method, set_root_attribute)
 
     return root_node, real_world_test(root_node, test)
