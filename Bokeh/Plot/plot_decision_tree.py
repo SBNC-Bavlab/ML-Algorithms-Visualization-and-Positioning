@@ -6,8 +6,7 @@ from bokeh.models.widgets import Button, Paragraph, Select, CheckboxGroup
 from bokeh.layouts import column, row
 from Bokeh.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 from math import atan
-from Bokeh.Plot.dictionaries import get_dictionaries, get_all_colors
-from Bokeh.Plot.getChoice import get_choice, set_choice
+from Bokeh.Plot.singleton import get_dictionaries, get_all_colors, get_choice, set_choice
 
 cmap, label_to_tr, attr_to_turkish, attr_to_children, all_attrs_list = get_dictionaries(get_choice())
 
