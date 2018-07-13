@@ -6,10 +6,10 @@ from bokeh.models.widgets import Button, Paragraph, Select, CheckboxGroup
 from bokeh.layouts import column, row
 from Bokeh.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 from math import atan
-from Bokeh.Plot.dictionaries import getDictionaries, getAllColors
-from Bokeh.Plot.getChoice import getChoice, setChoice
+from Bokeh.Plot.dictionaries import get_dictionaries, get_all_colors
+from Bokeh.Plot.getChoice import get_choice, set_choice
 
-cmap, label_to_tr, attr_to_turkish, attr_to_children, allAttrsList = getDictionaries(getChoice())
+cmap, label_to_tr, attr_to_turkish, attr_to_children, all_attrs_list = get_dictionaries(get_choice())
 
 TOOLTIPS = [
     ("Metod Değeri", "@{nonLeafNodes_stat}"),
@@ -59,8 +59,9 @@ def modify_individual_plot(p, data_source, active_attributes_list, arrow_data_so
     arrow_data, _, _ = draw_arrow(data_source.data, p, width, len(periods), len(groups), level_width, "get_data")
     arrow_data_source.data = ColumnDataSource(data=arrow_data.data).data
 
-    p.title.text = "Karar Ağacı (" + ("Seçtiğiniz " if selected_root else "Algoritmanın Seçtiği ") + "Kök Nitelikli Hali)" \
-            + ("\t\t\t\tTahmin Başarısı (%): " + str(round(acc * 100, 1)) if acc else "")
+    p.title.text = "Karar Ağacı (" + ("Seçtiğiniz " if selected_root else "Algoritmanın Seçtiği ") \
+                   + "Kök Nitelikli Hali)" + ("\t\t\t\tTahmin Başarısı (%): "
+                                              + str(round(acc * 100, 1)) if acc else "")
 
 
 def create_figure():
@@ -222,9 +223,9 @@ def create_figure():
         """
         global selected_root
         if new == "lens":
-            setChoice("lens")
+            set_choice("lens")
         else:
-            setChoice("cars")
+            set_choice("cars")
         selected_root = ""
         apply_changes()
         attribute_checkbox.labels = [attr_to_turkish[attr] for attr in list(cmap.keys()) if attr != "classAttr"]
@@ -238,11 +239,12 @@ def create_figure():
         compute new data source to be used for the new tree. change values of several variables to be used before
         sending them to get_bokeh_data
         """
-        global cmap, label_to_tr, attr_to_turkish, attr_to_children
-        cmap, label_to_tr, attr_to_turkish, attr_to_children, allAttrsList = getDictionaries(getChoice())
+        global cmap, label_to_tr, attr_to_turkish, attr_to_children, all_attrs_list
+        cmap, label_to_tr, attr_to_turkish, attr_to_children, all_attrs_list = get_dictionaries(get_choice())
 
         modify_individual_plot(p, data_source, active_attributes_list, arrow_data_source, selected_root)
-        modify_individual_plot(best_root_plot, best_root_plot_data_source, active_attributes_list, best_arrow_data_source, "")
+        modify_individual_plot(best_root_plot, best_root_plot_data_source, active_attributes_list,
+                               best_arrow_data_source, "")
 
         apply_changes_button.disabled = False
 
@@ -276,9 +278,9 @@ def create_plot(width, level_width, groups, periods, data_source, is_previous=Fa
     p.add_layout(label)
     p.circle("y", "x", radius=circle_radius, radius_units='screen', source=data_source,
              name="circles", legend="attribute_type_tr",
-             color=factor_cmap('attribute_type', palette=list(getAllColors()), factors=allAttrsList))
+             color=factor_cmap('attribute_type', palette=list(get_all_colors()), factors=all_attrs_list))
     p.rect("y", "x", rect_width, rect_height, source=data_source, name="rectangles", legend="attribute_type_tr",
-           color=factor_cmap('attribute_type', palette=list(getAllColors()), factors=allAttrsList))
+           color=factor_cmap('attribute_type', palette=list(get_all_colors()), factors=all_attrs_list))
     p.select(name="rectangles").visible = False
 
     # Drawing on the rectangles
