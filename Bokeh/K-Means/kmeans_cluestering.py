@@ -1,4 +1,5 @@
 from __future__ import division
+from sklearn.preprocessing import normalize
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -16,10 +17,10 @@ def create_figure(random_cluster = True):
 
     if random_cluster:
         p.title.text = "A"
-        kmeans = KMeans(n_clusters=3)
+        kmeans = KMeans(n_clusters=2)
     else:
         p.title.text = "B"
-        kmeans = KMeans(n_clusters=3, init=np.array([[5,5],[5,5],[5,5]]))
+        kmeans = KMeans(n_clusters=4)#init=np.array([[5,5],[5,5],[5,5]]))
     kmeans.fit(X)
 
     cluster_xs = kmeans.cluster_centers_[:, 0]
@@ -35,12 +36,12 @@ def create_figure(random_cluster = True):
 
     dataSource = ColumnDataSource(data=pd.DataFrame.from_dict(df))
 
-    p.circle(x='x', y='y', size = 5, source=dataSource,  color=factor_cmap('cluster', palette=list(cmap.values()), factors=list(cmap.keys())))
+    p.circle(x='x', y='y', size=5, source=dataSource,  color=factor_cmap('cluster', palette=list(cmap.values()), factors=list(cmap.keys())))
 
-    p.rect(cluster_xs, cluster_ys, 0.2, 0.2, color="black")
+    p.rect(cluster_xs, cluster_ys, 5, 5, width_units = "screen", height_units = "screen", color="black")
 
 
     return p;
 p = create_figure()
-p2 = create_figure(False)
-show(row(p, p2))
+#p2 = create_figure(False)
+show(row(p))

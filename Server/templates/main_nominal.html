@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>İnteraktif Karar Ağacı</title>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+  <script src="../js/main_nominal.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/main_nominal.css">
+</head>
+<body>
+<div id = 'backgroundImage'>
+
+</div>
+<div id ="error" class="alert alert-warning" style="z-index: 999; display: none; position: fixed; width: 50%; margin-left: 25%; text-align: center" role="alert">
+</div>
+<div class = "row a0" align="center" style="margin-left: 5%; margin-right: 0">
+    <div class ="a1 col-sm-6" >
+        <table id = "main_list" style="" border="1px solid black">
+            <thead>
+                <tr id = "header" style="background-color: white">
+                    <th class="text-center">Adı</th>
+                    <th class="text-center">Zengin mi?</th>
+                    <th class="text-center">Ejderhası var mı?</th>
+                    <th class="text-center">Tahtı istiyor mu?</th>
+                    <th class="text-center">Saç rengi</th>
+                    <th class="text-center">Hanesi</th>
+                    <th><img src="../../WebPage/icons/got.png" width="60"></th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    <div class = "a2 col-sm-2">
+        <ul id = "question_list">
+        </ul>
+    </div>
+</div>
+<br>
+<div class = "b0 row" align="center" style="margin-left: 4.5%; margin-right: 0">
+    <div class = "b1 col-sm-12">
+        <button id = "proceed" type="button" style="margin-bottom: 15px" class="btn btn-success">Kendi Sorunu Belirle</button>
+        <button id = "reset" type="button" style="display: none; margin-bottom: 15px" class="btn btn-danger">Resetle</button>
+        <button id = "calculate" type="button" style="display: none; margin-bottom: 15px" class="btn btn-primary">Hesapla</button>
+    </div>
+</div>
+<div class="c0 row" style="margin-right: 0">
+    <div class = "c1">
+        <table class = "" border="5px solid black" style = "min-height: 300px; margin-left: 30px" >
+            <tr>
+                <th style="text-align: center">Evet</th>
+                <th style="text-align: center; padding-top: 0">Hayir</th>
+            </tr>
+            <tr>
+                <td>
+                    <table id='left' class = "sortable" border="1px solid black">
+                        <thead style="background-color: white">
+                            <tr >
+                                <th class="text-center" >Adı</th>
+                                <th class="text-center">Zengin mi?</th>
+                                <th class="text-center">Ejderhası var mı?</th>
+                                <th class="text-center">Tahtı istiyor mu?</th>
+                                <th class="text-center">Saç rengi</th>
+                                <th class="text-center">Hanesi</th>
+                                <th><img src="../../WebPage/icons/got.png" width="60"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </td>
+                <td>
+                    <table id='right' class = "sortable" border="1px solid black">
+                        <thead style="background-color: white">
+                            <tr>
+                                <th class="text-center">Adı</th>
+                                <th class="text-center">Zengin mi?</th>
+                                <th class="text-center">Ejderhası var mı?</th>
+                                <th class="text-center">Tahtı istiyor mu?</th>
+                                <th class="text-center">Saç rengi</th>
+                                <th class="text-center">Hanesi</th>
+                                <th><img src="../../WebPage/icons/got.png" width="60"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="row d0" style="margin-right: 0">
+    <div id = "leftEntropy" style="background-color: red; color: white;margin-left: 8%" class="d1 col-sm-2 col-sm-offset-5" align="center" >
+        Entropi: -
+    </div>
+    <div id = "rightEntropy" style="background-color: red; color: white;margin-left: 11%" class = "d2 col-sm-2" align="center">
+        Entropi: -
+    </div>
+</div>
+<br>
+<div class="row e0" align="center" style="display: none; margin-right: 0">
+    <div id = "averageEntropy" class = "e1 col-sm-7">
+    Ortalama Entropi: -
+    </div>
+</div>
+<div  id = "mainEntropy" class = "f0 col-sm-2"  align = "center" style="margin-left: 21%; background-color: orange" >
+        <span>Sistemin entropisi: -</span>
+</div>
+<br>
+<div class="row g0" align="center" style="margin-right: 0">
+    <div id = "totalGain" class = "g1 col-sm-2" style="margin-left: 21.7%; background-color: orange">
+    Bu sorunun skoru: -
+    </div>
+</div>
+<div id="overlay" class = "overlay">
+</div>
+
+<div id="overlay_text" class = "overlay"></div>
+<button id="overlay_button" class="overlay btn btn-warning" >Anladım</button>
+<br>
+<div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+<div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+</body>
+</html>

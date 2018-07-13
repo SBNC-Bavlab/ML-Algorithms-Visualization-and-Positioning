@@ -1,0 +1,12 @@
+@font-face {
+    font-family: "San Fransisco";
+    src: url(../css/sf.otf) format("truetype");
+}
+@font-face {
+    font-family: "San Fransisco Bold";
+    src: url(../css/sf_bold.otf) format("truetype");
+}
+.blur{
+    -webkit-filter: blur(8px); /* Chrome, Safari, Opera */
+    filter: blur(8px);
+}

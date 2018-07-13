@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Grafikler</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/charts.css">
+    <script src="../js/charts.js"></script>
+</head>
+<body>
+    <div class="row" style="margin-left: 0">
+        <div id = "header0" class = "col-sm-2" style="margin-left: 15%">Yaş</div>
+        <div id = "header1" class = "col-sm-2">Göz Bozukluğu</div>
+        <div id = "header2" class = "col-sm-2">Astigmat</div>
+        <div id = "header3" class = "col-sm-2">Göz yaşı üretimi</div>
+    </div>
+    <div id = "chartArea" class = "row" style="margin-left: 0; margin-right: 0">
+    </div>
+    <div id = "text_overlay" style="position: absolute; top: 30%; left: 11%; width: 30%; z-index: 999; ">
+        <div id="infoText" style="font-family: 'San Fransisco Bold'; font-size: 30px"></div>
+        <button id="next" style="position: absolute; margin-top: 2%; right: 0" class="btn btn-outline-success">Devam</button>
+    </div>
+
+</body>
+</html>
