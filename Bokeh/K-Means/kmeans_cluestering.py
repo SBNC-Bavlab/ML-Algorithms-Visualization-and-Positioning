@@ -10,13 +10,7 @@ import pandas as pd
 from sklearn.datasets.samples_generator import make_blobs
 from bokeh.models import ColumnDataSource
 from bokeh.layouts import row
-#X, y = make_blobs()
-df = pd.read_csv("../Data/customer.csv")
-
-xs = df['Milk'].values
-ys = df['Delicassen'].values
-X = np.array(list(zip(xs, ys)))
-X = normalize(X)
+X, y = make_blobs()
 def create_figure(random_cluster = True):
     TOOLS = "hover,crosshair,pan,wheel_zoom,zoom_in,zoom_out,box_zoom,undo,redo,reset,tap,save,box_select,poly_select,lasso_select,"
     p = figure(tools=TOOLS)
