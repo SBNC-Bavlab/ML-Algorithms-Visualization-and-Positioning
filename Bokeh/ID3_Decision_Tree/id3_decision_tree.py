@@ -1,40 +1,13 @@
-import pickle
 import copy
 from queue import Queue
 import random
 from Bokeh.Plot.getChoice import get_choice
+from Bokeh.Plot.dictionaries import modify_new_values, get_new_values, get_class_attr, get_test_set, \
+    get_train_set, set_active_attr
 from math import log
-
-
-data_set = pickle.load(open('../Bokeh/Data/car.pkl', 'rb'))
-data_car = data_set['train']
-test_car = data_set['test']
-
-data_lens = []
-
-for line in open('../Bokeh/Data/lens.txt'):
-    tmp = line.split("  ")
-    tmp[-1] = tmp[-1].strip()
-    data_lens.append(tmp)
-
-
-test = data_lens if get_choice() == "lens" else test_car
-train = data_lens if get_choice() == "lens" else data_car
-
-ageAttr = ["1", "2", "3"]
-spectacleAttr = ["1", "2"]
-astigmaticAttr = ["1", "2"]
-tearAttr = ["1", "2"]
-
-buyingAttr = ["vhigh", "high", "med", "low"]
-maintAttr = ["vhigh", "high", "med", "low"]
-doorsAttr = ["2", "3", "4", "5more"]
-personsAttr = ["2", "4", "more"]
-lug_bootAttr = ["small", "med", "big"]
-safetyAttr = ["low", "med", "high"]
 attrNamesList = []
 attrDictionary = {}
-classAttr = []
+classAttr = get_class_attr()
 
 
 class Node(object):
@@ -59,69 +32,6 @@ class Node(object):
         self.order_number = 1
         self.change = 0
         self.shift = 0
-
-
-def get_new_values():
-    """ Set attribute and values according to the data set"""
-    global attrNamesList, attrDictionary, classAttr
-    if get_choice() == "cars":
-        classAttr = ["unacc", "acc", "good", "vgood"]
-    else:
-        classAttr = ["1", "2", "3"]
-
-    attrNamesList = [
-        "ageAttr",
-        "spectacleAttr",
-        "astigmaticAttr",
-        "tearAttr",
-        "classAttr"
-    ] if get_choice() == "lens" else [
-        "buyingAttr",
-        "maintAttr",
-        "doorsAttr",
-        "personsAttr",
-        "lug_bootAttr",
-        "safetyAttr",
-        "classAttr"
-    ]
-
-    attrDictionary = {
-        "ageAttr": (0, ageAttr),
-        "spectacleAttr": (1, spectacleAttr),
-        "astigmaticAttr": (2, astigmaticAttr),
-        "tearAttr": (3, tearAttr),
-        "classAttr": (4, classAttr)
-    } if get_choice() == "lens" else {
-        "buyingAttr": (0, buyingAttr),
-        "maintAttr": (1, maintAttr),
-        "doorsAttr": (2, doorsAttr),
-        "personsAttr": (3, personsAttr),
-        "lug_bootAttr": (4, lug_bootAttr),
-        "safetyAttr": (5, safetyAttr),
-        "classAttr": (6, classAttr)
-    }
-
-
-def modify_new_values(tmp_attr_names):
-    """ Set new data set attributes """
-    global attrNamesList, attrDictionary
-    new_attr_names = []
-    for i in attrNamesList:
-        if i in tmp_attr_names:
-            new_attr_names.append(i)
-        else:
-            attrDictionary.pop(i)
-    attrNamesList = new_attr_names
-
-
-def set_active_attr(active_attr_list):
-    """ Set attributes that are in use"""
-    # clear the list
-    attrNamesList[:] = []
-    # fill again
-    for attr in active_attr_list:
-        attrNamesList.append(attr)
-
 
 def entropy(distribution_list_var):
     """ Calculate uncertainty of the nodes instances"""
@@ -547,20 +457,20 @@ def dataset_same(tmp_attr_names, attr_names_list):
     return False
 
 
-def generate_tree(method, set_root_attribute):
+def generate_tree(method, set_root_attribute, activeAttrList):
     """
         Generate tree
     """
-    global test, train
+    global test, train, attrNamesList, attrDictionary
+    attrNamesList = set_active_attr(activeAttrList)
     tmp_attr_names = attrNamesList
-    get_new_values()
+    attrNamesList, attrDictionary = get_new_values()
     if dataset_same(tmp_attr_names, attrNamesList):
-        modify_new_values(tmp_attr_names)
+        attrNamesList, attrDictionary = modify_new_values(tmp_attr_names, attrNamesList, attrDictionary)
     new_att_name_list = copy.deepcopy(attrNamesList)
     new_att_name_list.remove("classAttr")
-    test = data_lens if get_choice() == "lens" else test_car
-    train = data_lens if get_choice() == "lens" else data_car
-
+    test = get_test_set()
+    train = get_train_set()
     root_node = tree_distribution(new_att_name_list, train, method, set_root_attribute)
 
     return root_node, real_world_test(root_node, test)
