@@ -53,7 +53,7 @@ class Node(object):
         self.coord = (0, 0)
 
         self.prelim = 0
-        self.offset_modifier = 0
+        self.mod = 0
         self.thread = None
         self.ancestor = self
         self.order_number = 1
@@ -145,26 +145,6 @@ def entropy(distribution_list_var):
     return float(entropy_sum)
 
 
-# Check its usage
-def check_attribute_value_pair_match(attr_index_var, attr_value_var, instance_var):
-    """ Check the value of the attribute on the instance equal to attribute value that is compared"""
-    if instance_var[attr_index_var] == attr_value_var:
-        return True
-    return False
-
-
-def get_number_of_instances_from_local_distribution_list(local_distribution_var):
-    """ Sum instances of a node"""
-    number_of_instances = 0
-    for value in local_distribution_var:
-        if value < 0:
-            absolute_val = -value
-        else:
-            absolute_val = value
-        number_of_instances += absolute_val
-    return number_of_instances
-
-
 def classify_list(attribute_name_var, instances_var):
     """ Return a list that divide the instances according to the values of a attribute"""
     """ For instance, there is a attribute which has values like "low", "med", "high" """
@@ -176,8 +156,7 @@ def classify_list(attribute_name_var, instances_var):
     for attributeValue in attribute_values:
         counter = 0
         for instance in instances_var:
-            flag = check_attribute_value_pair_match(attribute_index, attributeValue, instance)
-            if flag:
+            if instance[attribute_index] == attributeValue:
                 counter += 1
         local_distribution.append(counter)
 
@@ -201,8 +180,7 @@ def get_distribution_list(attribute_name_var, instances_var):
         local_distribution = [0] * len(classAttr)
 
         for instance in instances_var:
-            flag = check_attribute_value_pair_match(attribute_index, attributeValue, instance)
-            if flag:
+            if instance[attribute_index] == attributeValue:
                 class_value = instance[-1]
                 class_index = classAttr.index(class_value)
                 local_distribution[class_index] += 1
@@ -226,7 +204,7 @@ def information(attribute_name_var, instances_var):
 
     information_sum = 0.0
     for localDistribution in distribution_list:
-        number_of_instances_in_local = get_number_of_instances_from_local_distribution_list(localDistribution)
+        number_of_instances_in_local = sum(localDistribution)
         proportion_to_all = float(number_of_instances_in_local) / number_of_instances
         local_entropy = entropy(localDistribution)
 
@@ -262,7 +240,7 @@ def intrinsic_information(attribute_name_var, instances_var):
 
     intrinsic_sum = 0.0
     for localDistribution in distribution_list:
-        n_of_instances_in_local = get_number_of_instances_from_local_distribution_list(localDistribution)
+        n_of_instances_in_local = sum(localDistribution)
         proportion_to_all = float(n_of_instances_in_local) / number_of_instances
         log_of_proportion = log_for_intrinsic_information(proportion_to_all, number_of_different_values)
 
@@ -282,7 +260,7 @@ def gain_ratio(attribute_name_var, instances_var):
 
 def gini(distribution_list_var):
     """ Calculate gini value of the node by subtracking sum of proportion of branches from 1"""
-    number_of_instances = get_number_of_instances_from_local_distribution_list(distribution_list_var)
+    number_of_instances = sum(distribution_list_var)
     if number_of_instances == 0:
         return 0
 
@@ -301,7 +279,7 @@ def gini_index(attribute_name_var, instances_var):
 
     gini_index_value = 0.0
     for localDistribution in distribution_list:
-        number_of_instances_in_local = get_number_of_instances_from_local_distribution_list(localDistribution)
+        number_of_instances_in_local = sum(localDistribution)
         if number_of_instances == 0:
             proportion_to_all = 0
         else:
@@ -347,8 +325,7 @@ def distribute_by_attribute(attribute_name_var, instances_var):
         local_distribution = []
 
         for instance in instances_var:
-            flag = check_attribute_value_pair_match(attribute_index, attributeValue, instance)
-            if flag:
+            if instance[attribute_index] == attributeValue:
                 local_distribution.append(instance)
         distribution.append(local_distribution)
 
