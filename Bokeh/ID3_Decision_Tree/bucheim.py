@@ -88,7 +88,7 @@ def next_left(node):
         the leftmost child of node or by the thread of node. The function returns None if
         and only if node is on the highest level of its subtree.
     """
-    if len(node.children) != 0:
+    if node.children:
         return node.children[0]
     else:
         return node.thread
@@ -98,7 +98,7 @@ def next_right(node):
     """
         The function  works analogously.
     """
-    if len(node.children) != 0:
+    if node.children:
         return node.children[-1]
     else:
         return node.thread

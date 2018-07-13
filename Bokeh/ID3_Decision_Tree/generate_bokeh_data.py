@@ -76,7 +76,7 @@ def fill_source(source, node_list):
 
         source["y"].append(node.coord[1])
 
-        if node.children is not []:
+        if node.children:
             source["nonLeafNodes_x"].append(node.coord[0])
             source["nonLeafNodes_y"].append(node.coord[1])
             source["nonLeafNodes_stat"].append(node.value)
