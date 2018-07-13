@@ -2,7 +2,7 @@ import pickle
 import copy
 from queue import Queue
 import random
-from Bokeh.Plot.getChoice import getChoice
+from Bokeh.Plot.getChoice import get_choice
 from math import log
 
 
@@ -18,8 +18,8 @@ for line in open('../Bokeh/Data/lens.txt'):
     data_lens.append(tmp)
 
 
-test = data_lens if getChoice() == "lens" else test_car
-train = data_lens if getChoice() == "lens" else data_car
+test = data_lens if get_choice() == "lens" else test_car
+train = data_lens if get_choice() == "lens" else data_car
 
 ageAttr = ["1", "2", "3"]
 spectacleAttr = ["1", "2"]
@@ -64,7 +64,7 @@ class Node(object):
 def get_new_values():
     """ Set attribute and values according to the data set"""
     global attrNamesList, attrDictionary, classAttr
-    if getChoice() == "cars":
+    if get_choice() == "cars":
         classAttr = ["unacc", "acc", "good", "vgood"]
     else:
         classAttr = ["1", "2", "3"]
@@ -75,7 +75,7 @@ def get_new_values():
         "astigmaticAttr",
         "tearAttr",
         "classAttr"
-    ] if getChoice() == "lens" else [
+    ] if get_choice() == "lens" else [
         "buyingAttr",
         "maintAttr",
         "doorsAttr",
@@ -91,7 +91,7 @@ def get_new_values():
         "astigmaticAttr": (2, astigmaticAttr),
         "tearAttr": (3, tearAttr),
         "classAttr": (4, classAttr)
-    } if getChoice() == "lens" else {
+    } if get_choice() == "lens" else {
         "buyingAttr": (0, buyingAttr),
         "maintAttr": (1, maintAttr),
         "doorsAttr": (2, doorsAttr),
@@ -558,8 +558,8 @@ def generate_tree(method, set_root_attribute):
         modify_new_values(tmp_attr_names)
     new_att_name_list = copy.deepcopy(attrNamesList)
     new_att_name_list.remove("classAttr")
-    test = data_lens if getChoice() == "lens" else test_car
-    train = data_lens if getChoice() == "lens" else data_car
+    test = data_lens if get_choice() == "lens" else test_car
+    train = data_lens if get_choice() == "lens" else data_car
 
     root_node = tree_distribution(new_att_name_list, train, method, set_root_attribute)
 

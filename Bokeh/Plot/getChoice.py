@@ -1,7 +1,7 @@
 choice = ["lens"]
 
-def getChoice():
+def get_choice():
     return choice[0]
 
-def setChoice(new):
+def set_choice(new):
     choice[0] = new

@@ -110,8 +110,8 @@ for i in cmap.keys():
 allAttrsList.remove("classAttr")
 colors.remove("orange")
 
-def getDictionaries(choose):
+def get_dictionaries(choose):
     return cmap[choose], label_to_tr[choose], attr_to_turkish[choose], attr_to_children[choose], allAttrsList
 
-def getAllColors():
+def get_all_colors():
     return colors
