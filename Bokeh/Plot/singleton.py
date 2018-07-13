@@ -19,6 +19,8 @@ choice = "lens"
 data_lens = []
 test_lens = []
 
+all_attrs_list = []
+colors = []
 
 cmap = {
     "lens": {
@@ -123,8 +125,6 @@ attr_to_children = {
         "Ailesi": {"Lannister", "Stark", "White Walker", "Targaryen"}
     }
 }
-all_attrs_list = []
-colors = []
 for i in cmap.keys():
     for j in cmap[i].keys():
         all_attrs_list.append(j)
