@@ -30,7 +30,7 @@ label_to_tr = {
         "spectacleAttr": {"1": "Miyop", "2": "Hipermetrop"},
         "astigmaticAttr": {"1": "Yok", "2": "Var"},
         "tearAttr": {"1": "Az", "2": "Normal"},
-        "classAttr": {'-': "Yok", "1": "Sert Lens", "2": "Yumuşak Lens", "3": "Lens Takamaz"}
+        "classAttr": {'-': "-", "1": "Sert Lens", "2": "Yumuşak Lens", "3": "Lens Takamaz"}
     },
     "cars": {
         "buyingAttr": {"vhigh": "Çok Yüksek", "high": "Yüksek", "med": "Orta", "low": "Düşük"},
@@ -39,7 +39,7 @@ label_to_tr = {
         "personsAttr": {"2": "2", "4": "4", "more": "daha fazla"},
         "lug_bootAttr": {"small": "küçük", "med": "orta", "big": "büyük"},
         "safetyAttr": {"low": "düşük", "med": "orta", "high": "yüksek"},
-        "classAttr": {"-": "Yok", "unacc": "Zor Satılır", "acc": "Belki Satılır", "good": "Satılır", "vgood": "Kolayca Satılır"}
+        "classAttr": {"-": "-", "unacc": "Zor Satılır", "acc": "Belki Satılır", "good": "Satılır", "vgood": "Kolayca Satılır"}
     },
     "GoT": {
         "Zengin mi?": {"Zengin" : "Zengin", "Zengin değil" : "Zengin değil"},
@@ -111,10 +111,7 @@ allAttrsList.remove("classAttr")
 colors.remove("orange")
 
 def getDictionaries(choose):
-    return cmap[choose], label_to_tr[choose], attr_to_turkish[choose], attr_to_children[choose]
-
-def getAttrsList():
-    return allAttrsList
+    return cmap[choose], label_to_tr[choose], attr_to_turkish[choose], attr_to_children[choose], allAttrsList
 
 def getAllColors():
     return colors
