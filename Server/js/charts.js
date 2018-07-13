@@ -90,11 +90,13 @@ function readTextFileAndPlot(file)
 
 }
 /**
+ * Digit-Value pairs for lens.txt dataset
 1. age of the patient: (1) young, (2) pre-presbyopic, (3) presbyopic
 2. spectacle prescription:  (1) myope, (2) hypermetrope
 3. astigmatic:     (1) no, (2) yes
 4. tear production rate:  (1) reduced, (2) normal
  */
+//Calculate frequency of values in an attribute
 function calculateFrequence(data, colNumber){
     const freqDict = {};
     const key = Object.keys(features)[colNumber];
@@ -110,6 +112,7 @@ function calculateFrequence(data, colNumber){
     }
     return freqDict;
 }
+//Draw graph using Chart.js
 function drawGraph(data, labels, label, chartID){
     const datalist = {
             labels: labels,
@@ -160,11 +163,9 @@ function drawGraph(data, labels, label, chartID){
         }
     });
 }
-$( function() {
-    readTextFileAndPlot("lens.txt")
-});
-let descIndex = 0;
+//This function will be called having downloaded and plotted the data
 function afterGraphCompleted(){
+    let descIndex = 0;
     $("#header0, #myChart0, #myLabelChart00, #myLabelChart10, #myLabelChart20").addClass("blur");
     $("#header1, #myChart1, #myLabelChart01, #myLabelChart11, #myLabelChart21").addClass("blur");
     $("#myLabelChart22").addClass("blur");
@@ -209,3 +210,8 @@ function afterGraphCompleted(){
         descIndex++;
     });
 }
+//When the html document is loaded
+$( function() {
+    //read the data
+    readTextFileAndPlot("../../Bokeh/Data/lens.txt")
+});

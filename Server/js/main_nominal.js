@@ -49,7 +49,7 @@ function calculateEntropy(data){
   const labelDict = {};
   for (let i in data){
     //get the last column which is the label
-  const entry = data[i];
+    const entry = data[i];
     const decision = entry[entry.length - 1];
     if( decision in labelDict){
         labelDict[decision]++;
@@ -80,9 +80,9 @@ function loadDataIntoMainList(data){
         $tr.css("background-color", colorMap[label]);
 
         if(label !== "White Walker") {
-            $tr.append("<img src = " + labelToImage[label] + "'../icons' width = '50'>")
+            $tr.append("<img src = '../icons/" + labelToImage[label] + "' width = '50'>")
         } else {
-            $tr.append("<img src = " + whiteWalkerImage[entry[0]] + "'../icons' width = '50'>")
+            $tr.append("<img src = '../icons/" + whiteWalkerImage[entry[0]] + "' width = '50'>")
         }
 
         const $newNode = $tr.attr("id", "entry_" + i);
