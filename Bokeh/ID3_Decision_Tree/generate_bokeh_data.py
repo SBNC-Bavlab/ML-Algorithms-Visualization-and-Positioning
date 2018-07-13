@@ -123,6 +123,8 @@ def get_bokeh_data(method, active_attr_list=[], set_root_attribute=""):
         if node.parentPointer:
             node.order_number = node.parentPointer.children.index(node) + 1
 
+    tree_layout(root)
+
     min_width = min([node.coord[1] for node in node_list])
     if min_width < 1.0:
         padding = 1.0 - min_width
