@@ -81,7 +81,7 @@ def create_figure():
     tree_mode = Select(title="Ağacın görünümünü seçiniz:", options=tree_mode_labels, value="Basit")
     menu = [("Lens Verileri", "item_1"), ("Araba Verileri", "item_2")]
     # button to apply changes
-    dropdown = Select(title="Veri Kümesini Seç:", value="lens", options=["lens", "araba"])
+    dropdown = Select(title="Veri kümesini seç:", value="lens", options=["lens", "araba"])
     rect_width = 2
     rect_height = 0.5
     circle_radius = 5
