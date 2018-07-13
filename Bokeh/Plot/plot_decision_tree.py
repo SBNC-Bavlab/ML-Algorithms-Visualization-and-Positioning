@@ -32,6 +32,9 @@ circle_radius = 5
 
 
 def get_new_data_source(df):
+    """
+    modular data source
+    """
     df["nonLeafNodes_stat"] = [str(x) for x in df["nonLeafNodes_stat"]]
     if not df['nonLeafNodes_stat'].dropna().empty:
         df['nonLeafNodes_stat'] = ["-" if i == "None" else str(round(float(i), 3)) for i in df['nonLeafNodes_stat']]
@@ -45,6 +48,9 @@ def get_new_data_source(df):
 
 
 def modify_individual_plot(p, data_source, active_attributes_list, arrow_data_source, root):
+    """
+    modular plot
+    """
     data, width, depth, level_width, acc = get_bokeh_data(current_label, active_attributes_list + ["classAttr"],
                                                           root)
     data = pd.DataFrame.from_dict(data)
@@ -116,7 +122,7 @@ def create_figure():
     main_frame = row(column(root_select, attr_info, attribute_checkbox, apply_changes_button,
                             decision_button, arrow_button, dataset_select, tree_select), tree_tab)
 
-    def update_method_type(attr, old, new):
+    def update_method_type(_attr, _old, new):
         """
         change method type to be used according to the selected value
         """
@@ -159,7 +165,7 @@ def create_figure():
             best_root_plot.select(name="decision_text").visible = not new
         decision_button.disabled = new
 
-    def toggle_mode(attr, old, new):
+    def toggle_mode(_attr, _old, new):
         """
         switch between normal and detailed mode
         """
@@ -199,7 +205,7 @@ def create_figure():
             arrow_button.label = "Karar değerlerini gösterme"
     arrow_button.on_click(turn_arrow_labels_off)
 
-    def update_root(attr, old, new):
+    def update_root(_attr, _old, new):
         """
         change root attribute to be used for creating a new tree
         """
@@ -217,7 +223,7 @@ def create_figure():
             apply_changes_button.disabled = False
     root_select.on_change('value', update_root)
 
-    def change_dataset(attr, old, new):
+    def change_dataset(_attr, _old, new):
         """
         use selected dataset for the tree
         """
