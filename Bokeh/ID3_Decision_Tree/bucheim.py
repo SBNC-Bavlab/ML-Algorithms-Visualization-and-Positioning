@@ -8,7 +8,7 @@ distance = 5
 def tree_layout(node):
     """ main function """
     first_walk(node)
-    second_walk(node, 0-node.offset_modifier)
+    second_walk(node, 0-node.mod)
 
 
 def first_walk(node):
@@ -17,9 +17,9 @@ def first_walk(node):
         applied recursively to the children of node, as well as the function APPORTION. After spacing out the
         children by calling EXECUTESHIFTS, the node  is placed to the midpoint of its outermost children.
     """
-    if node.name == "classAttr":
-        node.prelim = 0.
-        if node.parentPointer and node.parentPointer.children[0] != node:
+    if node.decision:  # if node is a leaf
+        node.prelim = 0
+        if node.parentPointer and node.parentPointer.children[0] != node:  # if node has a left sibling
             index_node = node.parentPointer.children.index(node)
             node.prelim = node.parentPointer.children[index_node-1].prelim + distance
     else:
@@ -27,12 +27,15 @@ def first_walk(node):
         for child in node.children:
             first_walk(child)
             default_ancestor = apportion(child, default_ancestor)
+
         execute_shifts(node)
+
         midpoint = (node.children[0].prelim + node.children[-1].prelim)/2
-        if node.parentPointer and node.parentPointer.children[0] != node:
+
+        if node.parentPointer and node.parentPointer.children[0] != node:  # if node has a left sibling
             index_node = node.parentPointer.children.index(node)
             node.prelim = node.parentPointer.children[index_node - 1].prelim + distance
-            node.offset_modifier = node.prelim - midpoint
+            node.mod = node.prelim - midpoint
         else:
             node.prelim = midpoint
 
@@ -48,36 +51,35 @@ def apportion(node, default_ancestor):
         index_node = node.parentPointer.children.index(node)
         left_sibling = node.parentPointer.children[index_node-1]
 
-        vir = vor = node
-        vil = left_sibling
-        vol = vir.parentPointer.children[0]
-        sir = vir.offset_modifier
-        sor = vor.offset_modifier
-        sil = vil.offset_modifier
-        sol = vol.offset_modifier
+        node_in_right = node_out_right = node
+        node_in_left = left_sibling
+        node_out_left = node_in_right.parentPointer.children[0]
+        mod_in_right = node_in_right.mod
+        mod_out_right = node_out_right.mod
+        mod_in_left = node_in_left.mod
+        mod_out_left = node_out_left.mod
 
-        while next_right(vil) and next_left(vir):
-            vil = next_right(vil)
-            vir = next_left(vir)
-            vol = next_left(vol)
-            vor = next_right(vor)
-            vor.ancestor = node
-            shift = (vil.prelim + sil) - (vir.prelim + sir) + distance
+        while next_right(node_in_left) and next_left(node_in_right):
+            node_in_left = next_right(node_in_left)
+            node_in_right = next_left(node_in_right)
+            node_out_left = next_left(node_out_left)
+            node_out_right = next_right(node_out_right)
+            node_out_right.ancestor = node
+            shift = (node_in_left.prelim + mod_in_left) - (node_in_right.prelim + mod_in_right) + distance
             if shift > 0:
-                move_subtree(ancestor(vil, node, default_ancestor), node, shift)
-                sir = sir + shift
-                sor = sor + shift
-            sil = sil + vil.offset_modifier
-            sir = sir + vir.offset_modifier
-            sol = sol + vol.offset_modifier
-            sor = sor + vor.offset_modifier
-        if next_right(vil) and next_right(vor) is None:
-            vor.thread = next_right(vil)
-            vor.offset_modifier = vor.offset_modifier + sil - sor
-        else:
-            if next_left(vir) and next_left(vol) is None:
-                vol.thread = next_left(vir)
-                vol.offset_modifier = vol.offset_modifier + sir - sol
+                move_subtree(ancestor(node_in_left, node, default_ancestor), node, shift)
+                mod_in_right = mod_in_right + shift
+                mod_out_right = mod_out_right + shift
+            mod_in_left = mod_in_left + node_in_left.mod
+            mod_in_right = mod_in_right + node_in_right.mod
+            mod_out_left = mod_out_left + node_out_left.mod
+            mod_out_right = mod_out_right + node_out_right.mod
+        if next_right(node_in_left) and next_right(node_out_right) is None:
+            node_out_right.thread = next_right(node_in_left)
+            node_out_right.mod = node_out_right.mod + mod_in_left - mod_out_right
+        if next_left(node_in_right) and next_left(node_out_left) is None:
+            node_out_left.thread = next_left(node_in_right)
+            node_out_left.mod = node_out_left.mod + mod_in_right - mod_out_left
             default_ancestor = node
     return default_ancestor
 
@@ -88,7 +90,7 @@ def next_left(node):
         the leftmost child of node or by the thread of node. The function returns None if
         and only if node is on the highest level of its subtree.
     """
-    if node.children:
+    if node.children:  # if node has a child
         return node.children[0]
     else:
         return node.thread
@@ -98,13 +100,13 @@ def next_right(node):
     """
         The function  works analogously.
     """
-    if node.children:
+    if node.children:  # if node has a child
         return node.children[-1]
     else:
         return node.thread
 
 
-def move_subtree(wl, wr, shift):
+def move_subtree(node_left, node_right, shift):
     """
         Shifting a subtree can be done in linear time if performed as explained above. Calling
         MOVESUBTREE(wl,wr,shift) first shifts the current subtree, rooted at wr. This is done by increasing
@@ -112,13 +114,13 @@ def move_subtree(wl, wr, shift):
         are performed later by EXECUTESHIFTS. To prepare this, we have to adjust change(wr), shift(wr),
         and change(wl).
     """
-    subtrees = wr.order_number - wl.order_number
+    subtrees = node_right.order_number - node_left.order_number
     shift_subtrees = float(shift) / subtrees
-    wr.change -= shift_subtrees
-    wl.change += shift_subtrees
-    wr.shift += shift
-    wr.prelim += shift
-    wr.offset_modifier += shift
+    node_right.change -= shift_subtrees
+    node_left.change += shift_subtrees
+    node_right.shift += shift
+    node_right.prelim += shift
+    node_right.mod += shift
 
 
 def execute_shifts(node):
@@ -128,29 +130,29 @@ def execute_shifts(node):
     """
     shift = 0
     change = 0
-    for child in node.children[::-1]:
+    for child in node.children[::-1]:  # all children from right to left
         child.prelim += shift
-        child.offset_modifier += shift
+        child.mod += shift
         change += child.change
         shift += child.shift + change
 
 
-def ancestor(vil, v, default_ancestor):
+def ancestor(node_in_left, node, default_ancestor):
     """
         The function ANCESTOR returns the left one of the greatest
         distinct ancestors of vil and its right neighbor.
     """
-    if vil.ancestor in v.parentPointer.children:
-        return vil.ancestor
+    if node_in_left.ancestor in node.parentPointer.children:  # if the ancestor is a sibling of the node
+        return node_in_left.ancestor
     else:
         return default_ancestor
 
 
-def second_walk(v, m=0):
+def second_walk(node, m=0):
     """
         The function is used to compute all real x-coordinates
         by summing up the modifiers recursively.
     """
-    v.coord = (v.depth, v.prelim+m+2)
-    for child in v.children:
-        second_walk(child, m+v.offset_modifier)
+    node.coord = (node.depth, node.prelim + m + 2)
+    for child in node.children:
+        second_walk(child, m + node.mod)
