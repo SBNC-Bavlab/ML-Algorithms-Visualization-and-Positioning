@@ -32,17 +32,17 @@ const colorMap = {"Lannister": "#7C6248", "Targaryen": "#EAFAFD", "Stark": "#8C9
 const dict = {};
 const questions = {"Zengin mi?": {attribute: "Evet", type: 1},
       "Beyaz saçlı mı?": {attribute: "Beyaz", type: 4},
-      "Ejderyası var mı?": {attribute: "Var", type: 2}};
+      "Ejderhası var mı?": {attribute: "Var", type: 2}};
 const labelToImage = {"Stark" : "stark.png", "Targaryen" : "targaryen.png", "Lannister": "lannister.png"};
 const whiteWalkerImage = {"Night King" : "night_king.jpg", "Wights": "wights.jpg", "Lieutenant White Walkers": "lieutenant.jpg"};
 const descriptions = ["Game of Thrones dizisinin karakterleri, onların özellikleri ve üyesi oldukları haneyi görüyorsunuz   ",
                   "Belirtilen kısımdaki sorulara tıklayarak verilerinizi ikiye ayırabilirsiniz",
                   "Veriler sorduğunuz soruya göre ikiye ayrıldı",
-                  "Bu entropi değeri 'Evet' kısmındaki verilerin karmaşıklığını ifade eder",
-                  "Bu entropi değeri ise 'Hayır' kısmındaki verilerin karmaşıklığını ifade eder",
+                  "Bu karmaşıklık değeri 'Evet' kısmındaki verilerin karmaşıklığını ifade eder",
+                  "Bu karmaşıklık değeri ise 'Hayır' kısmındaki verilerin karmaşıklığını ifade eder",
                   "Verilerinizdeki tamamındaki karmaşıklık oranı burada gösterilmektedir",
                   "Bu soruyu sormakla elde edeceğiniz karmaşıklığı azalma miktarı 'sorunun skoru' olarak belirtilmektedir",
-                  "Şimdi de verilerinize uygun bir soru sorun ve onları sürükleyip 'Evet' veya 'Hayır' alanlarına bırakın",
+                  "Farklı özellikleri deneyerek en iyisi skoru veren soruyu bulun. Karakterleri 'Evet' veya 'Hayır' alanlarına sürükleyerek işe başlayabilirsiniz",
                   "Verilerinizi bu şekilde yukarıda eleman kalmayana kadar bölün ve en son sorunun skorunu hesaplamak için Hesapla butonuna tıklayınız. Resetle butonu ile verileri geri yukarı taşıyabilirsiniz"];
 function calculateEntropy(data){
   const totalNumber = data.length;
@@ -122,8 +122,8 @@ function resetLeftRightAddNewList(){
     loadDataIntoMainList(reducedData)
 }
 function resetEntropyValues(){
-    $("#leftEntropy, #rightEntropy").html("Entropi: -");
-    $("#averageEntropy").html("Ortalama Entropi: -");
+    $("#leftEntropy, #rightEntropy").html("Karmaşıklık: -");
+    $("#averageEntropy").html("Ortalama Karmaşıklık: -");
     $("#totalGain").html("Bu sorunun skoru: -");
 }
 //recalculates entropy of the left and right divs
@@ -132,8 +132,8 @@ function recalculateLeftRight(){
     let leftEntropy = calculateEntropyById("#left tbody tr");
     //right
     let rightEntropy = calculateEntropyById("#right tbody tr");
-    $("#leftEntropy").html("Entropi: " + leftEntropy.toFixed(2));
-    $("#rightEntropy").html("Entropi: " + rightEntropy.toFixed(2));
+    $("#leftEntropy").html("Karmaşıklık: " + leftEntropy.toFixed(2));
+    $("#rightEntropy").html("Karmaşıklık: " + rightEntropy.toFixed(2));
     console.log("Left: ", leftEntropy, "Right: ", rightEntropy);
 }
 //This function is called when the Document is loaded
@@ -235,7 +235,7 @@ $( function() {
         mainData.push(tokens)
     }
     const mainEntropy = calculateEntropy(mainData);
-    $("#mainEntropy").html("Sistemin entropisi: " + mainEntropy.toFixed(2));
+    $("#mainEntropy").html("Sistemin Karmaşıklığı: " + mainEntropy.toFixed(2));
 
 
     //Define method when drag&drop completed

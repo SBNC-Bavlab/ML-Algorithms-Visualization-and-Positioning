@@ -1,5 +1,5 @@
-const descriptions = ["Verimizden Astigmat olan insanların sadece sert lens kullanabildiklerini; olmayanların ise yalnızca yumuşak lens kullanabildiklerini çıkarabilriiz.",
-                    "Bu verimizde ise yaş arttıkça lens takmaya müsaade etme oranının azaldığını göürüyoruz",
+const descriptions = ["Verimizden Astigmat olan insanların sadece sert lens kullanabildiklerini; olmayanların ise yalnızca yumuşak lens kullanabildiklerini çıkarabiliriz.",
+                    "Bu verimizde ise yaş arttıkça lens takmaya müsaade etme oranının azaldığını görüyoruz",
                     "Bu kısım gösteriyor ki; göz bozukluğu hipermetrop olanlar daha çok yumuşak lens kullanabiliyorken, miyop olanlar sert lense yönlendiriliyor.",
                     "Hadi şimdi de siz grafikleri keşfedip çıkarımlarda bulunun"];
 const features = {"Yaş": ["Genç", "Orta", "Yaşlı"], "Göz Bozukluğu" : ["Miyop", "Hipermetrop"], "Astigmat" : ["Yok", "Var"], "Göz yaşı üretimi" : ["Az", "Normal"]};
@@ -175,7 +175,7 @@ function afterGraphCompleted(){
     $("#myChart2, #myLabelChart02, #myLabelChart12, #myLabelChart22").css("border-right", "1px solid black");
     $("#infoText").html(descriptions[0]);
     descIndex++;
-    //Borders were mainpulated so that when blurring there would not be any collision
+    //Borders were manipulated so that when blurring there would not be any collision
     $("#next").click(()=>{
         $("*").removeClass("blur");
         $("#infoText").html(descriptions[descIndex]);

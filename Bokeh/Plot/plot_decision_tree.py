@@ -195,7 +195,7 @@ def create_figure():
         if new == 0:
             selected_root[0] = ''
             button.disabled = False
-        elif method_type not in active_attributes_list:
+        elif method_type_selected not in active_attributes_list:
             selected_root[0] = method_type_selected
             button.disabled = True
         else:
@@ -411,5 +411,5 @@ def draw_arrow(source, p, width, periods_len, groups_len, level_width, mode="dra
         arrow = []
     label = LabelSet(x='x_avg', y='y_avg', angle="angle",
                      name="arrowLabels", text="label_name_tr",
-                     text_font_size="8pt", text_color="darkgray", source=arrow_data_source)
+                     text_font_size="12pt", text_color="darkgray", source=arrow_data_source)
     return arrow_data_source, arrow, label
