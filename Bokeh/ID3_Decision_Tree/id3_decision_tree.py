@@ -1,40 +1,8 @@
-import pickle
 import copy
 from queue import Queue
 import random
-from Bokeh.Plot.getChoice import getChoice
+from Bokeh.Plot.singleton import modify_new_values, get_new_values, get_test_set, get_train_set, set_active_attr
 from math import log
-
-
-data_set = pickle.load(open('../Bokeh/Data/car.pkl', 'rb'))
-data_car = data_set['train']
-test_car = data_set['test']
-
-data_lens = []
-
-for line in open('../Bokeh/Data/lens.txt'):
-    tmp = line.split("  ")
-    tmp[-1] = tmp[-1].strip()
-    data_lens.append(tmp)
-
-
-test = data_lens if getChoice() == "lens" else test_car
-train = data_lens if getChoice() == "lens" else data_car
-
-ageAttr = ["1", "2", "3"]
-spectacleAttr = ["1", "2"]
-astigmaticAttr = ["1", "2"]
-tearAttr = ["1", "2"]
-
-buyingAttr = ["vhigh", "high", "med", "low"]
-maintAttr = ["vhigh", "high", "med", "low"]
-doorsAttr = ["2", "3", "4", "5more"]
-personsAttr = ["2", "4", "more"]
-lug_bootAttr = ["small", "med", "big"]
-safetyAttr = ["low", "med", "high"]
-attrNamesList = []
-attrDictionary = {}
-classAttr = []
 
 
 class Node(object):
@@ -53,74 +21,12 @@ class Node(object):
         self.coord = (0, 0)
 
         self.prelim = 0
-        self.offset_modifier = 0
+        self.mod = 0
         self.thread = None
         self.ancestor = self
         self.order_number = 1
         self.change = 0
         self.shift = 0
-
-
-def get_new_values():
-    """ Set attribute and values according to the data set"""
-    global attrNamesList, attrDictionary, classAttr
-    if getChoice() == "cars":
-        classAttr = ["unacc", "acc", "good", "vgood"]
-    else:
-        classAttr = ["1", "2", "3"]
-
-    attrNamesList = [
-        "ageAttr",
-        "spectacleAttr",
-        "astigmaticAttr",
-        "tearAttr",
-        "classAttr"
-    ] if getChoice() == "lens" else [
-        "buyingAttr",
-        "maintAttr",
-        "doorsAttr",
-        "personsAttr",
-        "lug_bootAttr",
-        "safetyAttr",
-        "classAttr"
-    ]
-
-    attrDictionary = {
-        "ageAttr": (0, ageAttr),
-        "spectacleAttr": (1, spectacleAttr),
-        "astigmaticAttr": (2, astigmaticAttr),
-        "tearAttr": (3, tearAttr),
-        "classAttr": (4, classAttr)
-    } if getChoice() == "lens" else {
-        "buyingAttr": (0, buyingAttr),
-        "maintAttr": (1, maintAttr),
-        "doorsAttr": (2, doorsAttr),
-        "personsAttr": (3, personsAttr),
-        "lug_bootAttr": (4, lug_bootAttr),
-        "safetyAttr": (5, safetyAttr),
-        "classAttr": (6, classAttr)
-    }
-
-
-def modify_new_values(tmp_attr_names):
-    """ Set new data set attributes """
-    global attrNamesList, attrDictionary
-    new_attr_names = []
-    for i in attrNamesList:
-        if i in tmp_attr_names:
-            new_attr_names.append(i)
-        else:
-            attrDictionary.pop(i)
-    attrNamesList = new_attr_names
-
-
-def set_active_attr(active_attr_list):
-    """ Set attributes that are in use"""
-    # clear the list
-    attrNamesList[:] = []
-    # fill again
-    for attr in active_attr_list:
-        attrNamesList.append(attr)
 
 
 def entropy(distribution_list_var):
@@ -145,26 +51,6 @@ def entropy(distribution_list_var):
     return float(entropy_sum)
 
 
-# Check its usage
-def check_attribute_value_pair_match(attr_index_var, attr_value_var, instance_var):
-    """ Check the value of the attribute on the instance equal to attribute value that is compared"""
-    if instance_var[attr_index_var] == attr_value_var:
-        return True
-    return False
-
-
-def get_number_of_instances_from_local_distribution_list(local_distribution_var):
-    """ Sum instances of a node"""
-    number_of_instances = 0
-    for value in local_distribution_var:
-        if value < 0:
-            absolute_val = -value
-        else:
-            absolute_val = value
-        number_of_instances += absolute_val
-    return number_of_instances
-
-
 def classify_list(attribute_name_var, instances_var):
     """ Return a list that divide the instances according to the values of a attribute"""
     """ For instance, there is a attribute which has values like "low", "med", "high" """
@@ -176,8 +62,7 @@ def classify_list(attribute_name_var, instances_var):
     for attributeValue in attribute_values:
         counter = 0
         for instance in instances_var:
-            flag = check_attribute_value_pair_match(attribute_index, attributeValue, instance)
-            if flag:
+            if instance[attribute_index] == attributeValue:
                 counter += 1
         local_distribution.append(counter)
 
@@ -201,8 +86,7 @@ def get_distribution_list(attribute_name_var, instances_var):
         local_distribution = [0] * len(classAttr)
 
         for instance in instances_var:
-            flag = check_attribute_value_pair_match(attribute_index, attributeValue, instance)
-            if flag:
+            if instance[attribute_index] == attributeValue:
                 class_value = instance[-1]
                 class_index = classAttr.index(class_value)
                 local_distribution[class_index] += 1
@@ -226,7 +110,7 @@ def information(attribute_name_var, instances_var):
 
     information_sum = 0.0
     for localDistribution in distribution_list:
-        number_of_instances_in_local = get_number_of_instances_from_local_distribution_list(localDistribution)
+        number_of_instances_in_local = sum(localDistribution)
         proportion_to_all = float(number_of_instances_in_local) / number_of_instances
         local_entropy = entropy(localDistribution)
 
@@ -262,7 +146,7 @@ def intrinsic_information(attribute_name_var, instances_var):
 
     intrinsic_sum = 0.0
     for localDistribution in distribution_list:
-        n_of_instances_in_local = get_number_of_instances_from_local_distribution_list(localDistribution)
+        n_of_instances_in_local = sum(localDistribution)
         proportion_to_all = float(n_of_instances_in_local) / number_of_instances
         log_of_proportion = log_for_intrinsic_information(proportion_to_all, number_of_different_values)
 
@@ -282,7 +166,7 @@ def gain_ratio(attribute_name_var, instances_var):
 
 def gini(distribution_list_var):
     """ Calculate gini value of the node by subtracking sum of proportion of branches from 1"""
-    number_of_instances = get_number_of_instances_from_local_distribution_list(distribution_list_var)
+    number_of_instances = sum(distribution_list_var)
     if number_of_instances == 0:
         return 0
 
@@ -301,7 +185,7 @@ def gini_index(attribute_name_var, instances_var):
 
     gini_index_value = 0.0
     for localDistribution in distribution_list:
-        number_of_instances_in_local = get_number_of_instances_from_local_distribution_list(localDistribution)
+        number_of_instances_in_local = sum(localDistribution)
         if number_of_instances == 0:
             proportion_to_all = 0
         else:
@@ -347,8 +231,7 @@ def distribute_by_attribute(attribute_name_var, instances_var):
         local_distribution = []
 
         for instance in instances_var:
-            flag = check_attribute_value_pair_match(attribute_index, attributeValue, instance)
-            if flag:
+            if instance[attribute_index] == attributeValue:
                 local_distribution.append(instance)
         distribution.append(local_distribution)
 
@@ -570,20 +453,19 @@ def dataset_same(tmp_attr_names, attr_names_list):
     return False
 
 
-def generate_tree(method, set_root_attribute):
+def generate_tree(method, set_root_attribute, active_attr_list):
     """
         Generate tree
     """
-    global test, train
+    global attrNamesList, attrDictionary, classAttr
+    attrNamesList = set_active_attr(active_attr_list)
     tmp_attr_names = attrNamesList
-    get_new_values()
+    attrNamesList, attrDictionary = get_new_values()
     if dataset_same(tmp_attr_names, attrNamesList):
-        modify_new_values(tmp_attr_names)
+        attrNamesList, attrDictionary = modify_new_values(tmp_attr_names, attrNamesList, attrDictionary)
     new_att_name_list = copy.deepcopy(attrNamesList)
     new_att_name_list.remove("classAttr")
-    test = data_lens if getChoice() == "lens" else test_car
-    train = data_lens if getChoice() == "lens" else data_car
-
+    test, classAttr = get_test_set()
+    train, classAttr = get_train_set()
     root_node = tree_distribution(new_att_name_list, train, method, set_root_attribute)
-
     return root_node, real_world_test(root_node, test)

@@ -105,8 +105,7 @@ def fill_source(source, node_list):
 def get_bokeh_data(method, active_attr_list=[], set_root_attribute=""):
     """ Generate tree, fill source dictionary and return corresponding values to the plotting functions"""
     id_index = 0
-    set_active_attr(active_attr_list)
-    root, acc = generate_tree(method, set_root_attribute)
+    root, acc = generate_tree(method, set_root_attribute, active_attr_list)
 
     visited = {}
     depth = get_depth(root, id_index, visited)
