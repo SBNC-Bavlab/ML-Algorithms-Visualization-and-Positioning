@@ -3,7 +3,6 @@ var slider = d3.sliderHorizontal()
 .min(1)
 .max(15)
 .step(1)
-    .tick(12)
 .width(510)
 .displayValue(false)
 .on('onchange', val => {

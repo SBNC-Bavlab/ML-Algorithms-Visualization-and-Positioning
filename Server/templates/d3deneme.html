@@ -6,7 +6,7 @@
     <script src="../js/snap.svg-min.js"></script>
     <script src="../js/d3-simple-slider.min.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/button.css">
-		<link rel="stylesheet" type="text/css" href="../css/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="../css/normalize.css" />
     <title>Title</title>
     <style>
 
@@ -201,16 +201,16 @@ function calculateAccuracy(){
     rectangleData.forEach(function(d, i){
         radiusDict[d.label].forEach(function(fruit, j){
             console.log(fruit, d.color);
-            var resultImg = "checked.png";
+            var resultImg = "success.png";
             if(d.color === "rgb(228, 239, 14)" && fruit === "Karpuz"){
                 invalid++;
                 resultImg = "error.png";
             }else if (d.color === "rgb(228, 239, 14)" && fruit === "Kavun"){
                 valid++;
-                resultImg = "checked.png";
+                resultImg = "success.png";
             }else if (d.color === "rgb(11, 229, 15)" && fruit === "Karpuz"){
                 valid++;
-                resultImg = "checked.png"
+                resultImg = "success.png"
             }else if (d.color === "rgb(11, 229, 15)" && fruit === "Kavun"){
                 invalid++;
                 resultImg = "error.png";
@@ -227,7 +227,10 @@ function calculateTest(){
     manipulateRectangleData(test_data);
     paintRectangles();
     calculateFruitPlaces();
+
+    //DANGEROUS HERE ANY OTHER g would be affected by that
     d3.select('svg g').style('opacity','0');
+
     d3.selectAll('.button__text').text("Yeni Model Kur")
     svgContainer.selectAll("rect")
                             .data(rectangleData)
@@ -301,19 +304,20 @@ function calculateTest(){
                     };
                 });
 }
+
 function againTrain(){
     isDatasetTraining = true;
     manipulateRectangleData(train_data);
     paintRectangles();
     calculateFruitPlaces();
 
-    console.log(radiusDict)
-    console.log(rectangleData)
+    console.log(radiusDict);
+    console.log(rectangleData);
 
-    d3.selectAll('.button__text').text("Modeli Test Et")
+    d3.selectAll('.button__text').text("Modeli Test Et");
     svgContainer.selectAll(".tick").style('display','none');
     svgContainer.select("g").style("opacity", '1');
-    svgContainer.selectAll('text.accuracy').style('display', 'none')
+    svgContainer.selectAll('text.accuracy').style('display', 'none');
     svgContainer.selectAll("rect")
                             .data(rectangleData)
                             .enter()
@@ -361,6 +365,7 @@ function againTrain(){
                         return "../icons/" + d.fruit_img;
                     });
 }
+
 </script>
     <div class="button-wrap">
         <button class="button button--line button--effect-1" disabled="true" style="display:none; margin-top: 0">
