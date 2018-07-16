@@ -1,13 +1,8 @@
 import copy
 from queue import Queue
 import random
-from Bokeh.Plot.dictionaries import modify_new_values, get_new_values, get_class_attr, get_test_set, \
-    get_train_set, set_active_attr
+from Bokeh.Plot.singleton import modify_new_values, get_new_values, get_test_set, get_train_set, set_active_attr
 from math import log
-
-attrNamesList = []
-attrDictionary = {}
-classAttr = get_class_attr()
 
 
 class Node(object):
@@ -462,7 +457,7 @@ def generate_tree(method, set_root_attribute, active_attr_list):
     """
         Generate tree
     """
-    global test, train, attrNamesList, attrDictionary
+    global attrNamesList, attrDictionary, classAttr
     attrNamesList = set_active_attr(active_attr_list)
     tmp_attr_names = attrNamesList
     attrNamesList, attrDictionary = get_new_values()
@@ -470,8 +465,7 @@ def generate_tree(method, set_root_attribute, active_attr_list):
         attrNamesList, attrDictionary = modify_new_values(tmp_attr_names, attrNamesList, attrDictionary)
     new_att_name_list = copy.deepcopy(attrNamesList)
     new_att_name_list.remove("classAttr")
-    test = get_test_set()
-    train = get_train_set()
+    test, classAttr = get_test_set()
+    train, classAttr = get_train_set()
     root_node = tree_distribution(new_att_name_list, train, method, set_root_attribute)
-
     return root_node, real_world_test(root_node, test)

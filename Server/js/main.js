@@ -37,7 +37,7 @@ const tutorial = ["Elimizde pazar satıcısı Mustafa'nın tezgahındaki karpuz 
   "Yani öyle bir çap değeri bulmalıyız ki çapı onun üstündeki meyvelere karpuz diğerlerine kavun diyebilelim",
   "Yalnız karpuz boyutunda kavun veya kavun boyutunda karpuz olabileceği için bu göründüğü kadar kolay olmayabilir",
   "Sürükleyici ile bir sayı seçip butona tıklayın.",
-  "Eğer kritik noktanızı 1 olarak belirlerseniz modeliniz çapı 1'den büyük herşeyi karpuz kabul etmiş oluyorsunuz.",
+  "Eğer kritik noktanızı 1 olarak belirlerseniz modeliniz çapı 1'den büyük her şeyi karpuz kabul etmiş oluyorsunuz.",
   "Hadi şimdi Mustafa'nın tezgahını kullanarak oluşturduğunuz model yardımıyla Ahmet'in tezgahında bulunan ve sadece çapı bilinen meyvelerin ne olduğunu tahmin etmeye çalışalım.",
   "Modeliniz bu şekilde tahmnin etti",
   "Ancak gerçek değerler bu şekildeydi",
@@ -180,6 +180,7 @@ $( function() {
     $splitter.on("slide", splitterAction);
     $splitter.on("click", splitterAction);
 
+    /*
     //Data is put into main_list and create a idToObject
     data.forEach((entry, i) => {
         const obje = { attributeValues : entry};
@@ -203,6 +204,7 @@ $( function() {
         idToObject[$newNode.attr("id")] = obje;
         $("#main_list").append($newNode);
     });
+    */
     $("#restart").click(()=>{
         $("#restart").css("display","none");
         $("#main_list").css("display", "flex");

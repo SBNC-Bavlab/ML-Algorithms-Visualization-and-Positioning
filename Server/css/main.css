@@ -52,10 +52,21 @@ td{
     z-index: 2;
     cursor: pointer;
 }
-#main_list > div{
+
+#main_list > #header > div{
     background-color: rgba(221,221,221,0.54);
     text-align: left;
     border: 1px solid black;
+    width: 400px;
+    font-size: 30px;
+    text-align: center;
+    height: 60px;
+    padding: 2px 2px 2px 2px;
+    margin-top: 5px;
+    margin-left: 2px;
+}
+#main_list > div:not(#header) > div{
+    text-align: left;
     width: 400px;
     height: 60px;
     padding: 2px 2px 2px 2px;

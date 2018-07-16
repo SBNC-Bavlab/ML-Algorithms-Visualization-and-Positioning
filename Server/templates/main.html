@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="//d3js.org/d3.v4.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -12,8 +13,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.2/bootstrap-slider.min.js"></script>
   <link rel = "stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.2/css/bootstrap-slider.min.css">
-  <script src="../js/main.js"></script>
-    <link rel="stylesheet" type="text/css" href="../css/main.css">
+
+  <script src="../js/main.js"></script><link rel="stylesheet" type="text/css" href="../css/main.css">
   <title>İnteraktif Karar Ağacı</title>
 
 </head>
@@ -22,7 +23,44 @@
 <div id ="error" class="alert alert-warning" style="display: none; position: fixed; z-index: 999; width: 50%; margin-left: 25%; text-align: center" role="alert">
 </div>
 <button id = "next" type="button" style="margin-bottom: 15px; display:none" class="btn btn-outline-primary">İlerle</button>
-<div id = "main_list" class = "row a0" style="margin-left: 5%; margin-right: 0">
+
+
+<div id = "main_list" style="margin-left: 5%; margin-right: 0">
+    <div id="header" class="row">
+        <div class="col-sm-1">1</div>
+        <div class="col-sm-1">2</div>
+        <div class="col-sm-1">3</div>
+        <div class="col-sm-1">4</div>
+        <div class="col-sm-1">5</div>
+        <div class="col-sm-1">6</div>
+        <div class="col-sm-1">7</div>
+        <div class="col-sm-1">8</div>
+        <div class="col-sm-1">9</div>
+        <div class="col-sm-1">10</div>
+        <div class="col-sm-1">11</div>
+        <div class="col-sm-1">12</div>
+        <div class="col-sm-1">13</div>
+        <div class="col-sm-1">14</div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1" style="text-align: center"><img width="60" src="../icons/melon.png"></div>
+        <div class="col-sm-1" style="text-align: center"><img width="60" src="../icons/melon.png"></div>
+        <div class="col-sm-1" style="text-align: center"><img width="60" src="../icons/melon.png"></div>
+        <div class="col-sm-1" style="text-align: center"><img width="60" src="../icons/watermelon.png"></div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1" style="text-align: center"><img width="60" src="../icons/melon.png"></div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1" style="text-align: center"><img width="60" src="../icons/melon.png"></div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1" style="text-align: center"><img width="60" src="../icons/melon.png"></div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1" style="text-align: center"><img width="60" src="../icons/watermelon.png"></div>
+    </div>
+
 </div>
 
 <div id="test_list" class = "row c0" style="margin-left: 5%; margin-right: 0">
