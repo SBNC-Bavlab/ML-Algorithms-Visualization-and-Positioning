@@ -6,72 +6,56 @@
     <script src="../js/snap.svg-min.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/button.css">
     <link rel="stylesheet" type="text/css" href="../css/normalize.css" />
-    <link href="https://fonts.googleapis.com/css?family=Chela+One|Cormorant+Unicase&subset=latin,latin-ext" rel="stylesheet">
     <title>Title</title>
 </head>
-<style>
-    @font-face {
-        font-family: "Got";
-        src: url(../css/got.ttf) format("truetype");
-    }
-</style>
 <body>
 
 <script src="../js/liquidFillGauge.js"></script>
 <script>
     const gauge0Width = innerWidth * 0.75;
-    const gauge0Height = innerHeight * 0.1 + 10;
+    const gauge0Height = innerHeight * 0.1;
     const gauge1Width = innerWidth * 0.75;
-    const gauge1Height = innerHeight * 0.5 + 10;
+    const gauge1Height = innerHeight * 0.5;
     const scaledRadius = 0.3 * 370;
     const questions = [{name: "Zengin mi?", attribute: "Evet", type: 1},
         {name: "Beyaz saçlı mı?", attribute: "Beyaz", type: 4},
         {name: "Ejderhası var mı?", attribute: "Var", type: 2},
         {name: "Tahtı istiyor mu?", attribute: "Evet", type: 3}];
     const got = [
-              ["Trion Lannister", "Hayır", "Yok", "Hayır", "Sarı", "Lannıster"],
+              ["Trion Lannister", "Hayır", "Yok", "Hayır", "Sarı", "Lannister"],
               ["Daenerys Targaryen", "Evet", "Var", "Evet", "Beyaz", "Targaryen"],
               ["John Snow", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
-              ["Cercei Lannister", "Evet", "Yok", "Evet", "Sarı", "Lannıster"],
-              ["Night King", "Hayır", "Var", "Hayır", "Beyaz", "Whıte Walker"],
-              ["Jamie Lannister", "Evet", "Yok", "Hayır",  "Sarı", "Lannıster"],
+              ["Cercei Lannister", "Evet", "Yok", "Evet", "Sarı", "Lannister"],
+              ["Night King", "Hayır", "Var", "Hayır", "Beyaz", "White Walker"],
+              ["Jamie Lannister", "Evet", "Yok", "Hayır",  "Sarı", "Lannister"],
               ["Arya Stark", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
-              ["Tywin Lannister", "Evet", "Yok", "Evet",  "Sarı", "Lannıster"],
+              ["Tywin Lannister", "Evet", "Yok", "Evet",  "Sarı", "Lannister"],
               ["Sansa Stark", "Hayır", "Yok", "Hayır", "Kızıl", "Stark"],
-              ["Lieutenant Whıte Walker", "Hayır", "Var", "Hayır", "Beyaz", "Whıte Walker"],
+              ["Lieutenant White Walkers", "Hayır", "Var", "Hayır", "Beyaz", "White Walker"],
               ["Viserys Targaryen", "Hayır", "Yok",  "Evet", "Beyaz", "Targaryen"],
-              ["Wights", "Hayır", "Yok", "Hayır", "Beyaz", "Whıte Walker"],
+              ["Wights", "Hayır", "Yok", "Hayır", "Beyaz", "White Walker"],
               ["Eddard Stark", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
             ];
-    /*const got = [
-              ["Trion", "Hayır", "Yok", "Hayır", "Sarı", "Lannister"],
-              ["Daenerys", "Evet", "Var", "Evet", "Beyaz", "Targaryen"],
-              ["John Snow", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
-              ["Cercei", "Evet", "Yok", "Evet", "Sarı", "Lannister"],
-              ["Night King", "Hayır", "Var", "Hayır", "Beyaz", "White Walker"],
-              ["Jamie", "Evet", "Yok", "Hayır",  "Sarı", "Lannister"],
-              ["Arya", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
-              ["Tywin", "Evet", "Yok", "Evet",  "Sarı", "Lannister"],
-              ["Sansa", "Hayır", "Yok", "Hayır", "Kızıl", "Stark"],
-              ["Lieutenant", "Hayır", "Var", "Hayır", "Beyaz", "White Walker"],
-              ["Viserys", "Hayır", "Yok",  "Evet", "Beyaz", "Targaryen"],
-              ["Wights", "Hayır", "Yok", "Hayır", "Beyaz", "White Walker"],
-              ["Eddard", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
-            ];*/
-    const rowNames = ['İSİM', 'ZENGİN Mİ?', 'EJDERHA?', 'TAHTI İSTİYOR?', 'SAÇ RENGİ', 'HANESİ'];
+    const rowNames = ['İsim', 'Zengin mi?', 'Ejderha?', 'Tahtı istiyor?', 'Saç rengi', 'Hanesi'];
+    const gotResultToProfileAttribute = [{"Evet": "Zengin", "Hayır": "Zengin değil"},
+                                         {"Var": "Ejderhası var", "Yok": "Ejderhası yok"},
+                                         {"Evet": "Tahtı istiyor", "Hayır": "Tahtı istemiyor"},
+                                         {"Sarı": "Sarı saçlı", "Beyaz": "Beyaz saçlı", "Siyah": "Siyah saçlı", "Kızıl": "Kızıl saçlı"}];
     got.sort(function(a, b){
         const str1 = a[a.length - 1];
         const str2 = b[b.length - 1];
         return str1 < str2 ? -1 : str1 > str2; ;
     });
-    const familyToColorIndex = {'Lannister': 2,'Targaryen': 1,'Stark': 0,'Whıte Walker': 3}
+    const familyToColorIndex = {'Lannister': 2,'Targaryen': 1,'Stark': 0,'White Walker': 3};
+    const color = d3.scaleOrdinal()
+        .range(d3.schemeCategory10);
     const svg = d3.select("body")
                             .append("svg")
                             .attr('id', 'gauge')
                             .attr("width", innerWidth)
                             .attr("height", innerHeight);
     const gotPosArray = [];
-
+    /*
     for(let i = 0; i < got.length; i++){
         for(let j = 0; j < got[0].length; j++) {
             if (j == 1) {
@@ -82,60 +66,38 @@
                 gotPosArray.push({'x': 100 * j + 100, 'y': 53 * i + 75, 'text': got[i][j]})
             }
         }
+    }*/
+    for(let i = 0; i < got.length; i++){
+        for(let j = 0; j < got[0].length; j++) {
+            gotPosArray.push({'x': 210 * (i % 3) + 105, 'y': 150 * Math.floor(i / 3) + 20 * j + 30, 'text': got[i][j]})
+            console.log(got[i][j])
+        }
     }
     const rectWidth = 600;
     const rectHeight = 40;
     const rectColor = "rgb(245, 245, 220)";
-    svg.selectAll('text.header').data(rowNames)
-        .enter().append('text')
-                        .attr("class", "header")
-                        .attr('x', function(d, i){
-                            if (i == 0){
-                                return 100 * i + 100;
-                            } else if (i === 1) {
-                                return 200 * i + 65;
-                            } else if(i === 3){
-                                return 80 * i + 178;
-                            } else if(i === 5){
-                                return 80 * i + 195;
-                            } else if(i > 1){
-                                return 80 * i + 190;
-                            }
-                        })
-                        .attr('y', function(d, i){
-                            return 25;
-                        })
-                        .text(function (d) {
-                            return d;
-                        })
-                        .style("font-family", "Cormorant Unicase")
-                        .style("font-size", "11px")
-                        .style("font-weight", "bold");
-    svg.append('rect').lower()
-        .transition()
-        .ease(d3.easeLinear)
-        .duration(1000)
-        .attr('border', 1)
-        .attr('fill', 'red')
-        .attr('x', 100)
-        .attr('y', 0)
-        .attr('width', rectWidth)
-        .attr('height', rectHeight);
-    svg.selectAll("rect.item").data(got)
+    var x = 0;
+    var circles = svg.selectAll("circle.item").data(got)
         .enter()
-        .append("rect")
+        .append("circle")
         .attr("class", "item")
         .transition()
         .ease(d3.easeLinear)
         .duration(1000)
-        .attr('border', 1)
-        .attr('fill', rectColor)
-        .attr('x', 100)
-        .attr('y', function(d, i){
-            return 53 * i + 50;
+        .attr('cx', function(d, i){
+            return (210 * ((i % 3))) + 150;
         })
-        .attr('width', rectWidth)
-        .attr('height', rectHeight);
+        .attr('cy', function(d, i){
+            return 150 * (Math.floor(i / 3)) + 80;
+        })
+        .attr('r', '80')
+        .attr('fill', function(d,i){
+           return color(familyToColorIndex[d[d.length - 1]]);
+        })
+        .attr('stroke', function(d,i){
+           return color(familyToColorIndex[d[d.length - 1]]);
+        })
+        .attr('stroke-width', 3);
     svg.selectAll("text.table").data(gotPosArray)
                         .enter()
                         .append("text")
@@ -143,44 +105,61 @@
                         .attr('class', 'table')
                         .ease(d3.easeLinear)
                         .duration(1000)
-                        .style("font-family", "Cormorant Unicase")
-                        .style("font-size", "13px")
-                        .style("font-weight", "bold")
+                        .style('font-size', '13px')
                         .attr('x', function(d){
                             return d.x;
                         })
                         .attr('y', function(d){
                            return d.y;
-                        }).text(function(d){
-                            return d.text.toLocaleUpperCase("tr-TR");
+                        }).text(function(d, i){
+                            var colIndex = i % 6;
+                            if(colIndex === 0){
+                                return d.text;
+                            } else if(colIndex === 5){
+                                return d.text;
+                            } else{
+                                return gotResultToProfileAttribute[colIndex - 1][d.text]
+                            }
                         });
+    svg.selectAll("circle.house_color").data(got)
+                            .enter()
+                            .append('circle')
+                            .call(d3.drag()
+                                .on("start", dragstarted)
+                                .on("drag", dragged)
+                                .on("end", dragended))
+                            .attr("class", "house_color")
+                            .transition()
+                            .duration(1000)
+                            .ease(d3.easeLinear)
+                            .attr('cx', 740)
+                            .attr('cy', function(d, i){
+                                return 53 * i + 70;
+                            })
+                            .attr('r', 20)
+                            .attr("stroke", "black")
+                            .attr('fill', function(d,i){
+                               return color(familyToColorIndex[d[d.length - 1]]);
+                            });
 
-    const color = d3.scaleOrdinal()
-        .range(d3.schemeCategory10);
-    svg.selectAll("circle.house_color")
-        .data(got)
-        .enter()
-        .append('circle')
-        .attr("class", "house_color")
-        .transition()
-        .duration(1000)
-        .ease(d3.easeLinear)
-        .attr('cx', 740)
-        .attr('cy', function(d, i){
-            return 53 * i + 70;
-        })
-        .attr('r', 20)
-        .attr('stroke', 'black')
-        .attr('fill', function(d,i){
-            console.log(i)
-           return color(familyToColorIndex[d[d.length - 1]]);
-        });
+    function dragstarted(d) {
+      d3.select(this).raise().classed("active", true);
+    }
+
+    function dragged(d, i) {
+      d3.select(this).attr("transform", "translate( " + (d3.event.x - 740) + "," + (d3.event.y - (60 * i + 40)) +" )");
+    }
+
+    function dragended(d) {
+        d3.select(this).attr("transform", "translate(0,0)");
+        d3.select(this).classed("active", false);
+    }
 
     svg.call(d3.liquidfillgauge, 50, {
-        circleColor: "rgb(153, 192, 255)",
-        textColor: "rgb(244, 247, 252)",
-        waveTextColor: "rgb(244, 247, 252)",
-        waveColor: "rgb(153, 192, 255)",
+        circleColor: "#FF7777",
+        textColor: "#FF4444",
+        waveTextColor: "#FFAAAA",
+        waveColor: "#FFDDDD",
         circleThickness: 0.2,
         textVertPosition: 0.2,
         waveAnimateTime: 1000,
@@ -188,13 +167,12 @@
         backgroundColor: "#e0e0e0",
         valueCountUpAtStart: false,
         waveRiseAtStart: false
-    }, gauge0Width, gauge0Height + 25, 0);
+    }, gauge0Width, gauge0Height, 0);
 
-    svg.call(d3.liquidfillgauge, 50, {
-        circleColor: "rgb(153, 192, 255)",
-        textColor: "rgb(244, 247, 252)",
-        waveTextColor: "rgb(244, 247, 252)",
-        waveColor: "rgb(153, 192, 255)",
+    svg.call(d3.liquidfillgauge, 50, {    circleColor: "#FF7777",
+        textColor: "#FF4444",
+        waveTextColor: "#FFAAAA",
+        waveColor: "#FFDDDD",
         circleThickness: 0.2,
         textVertPosition: 0.2,
         waveAnimateTime: 1000,
@@ -202,7 +180,7 @@
         backgroundColor: "#e0e0e0",
         valueCountUpAtStart: false,
         waveRiseAtStart: false
-    }, gauge1Width, gauge1Height + 25, 1);
+    }, gauge1Width, gauge1Height, 1);
     //circleThickness : 0.15, circleColor : "#808015", textColor : "#555500", waveTextColor : "#FFFFAA", waveColor : "#AAAA39", textVertPosition : 0.8, waveAnimateTime : 1000, waveHeight : 0.05, waveAnimate : true, waveRise : false, waveHeightScaling : false, waveOffset : 0.25, textSize : 0.75, waveCount : 3,
     let createQuestionIndex = 0;
     function changeColorRect(index) {
@@ -232,11 +210,11 @@
             var targetY;
             var targetX;
             if (isYes) {
-                targetX = gauge0Width + scaledRadius;
-                targetY = (gauge0Height) + scaledRadius;
+                targetX = innerWidth * 0.75 + 0.3 * 370;
+                targetY = innerHeight * 0.05 + 0.3 * 370;
             } else {
-                targetX = gauge1Width + scaledRadius;
-                targetY = (gauge1Height) + scaledRadius;
+                targetX = innerWidth * 0.75 + 0.3 * 370;
+                targetY = innerHeight * 0.45 + 0.3 * 370;
             }
             const currentY = 53 * index + 40;
             const currentX = 740;
@@ -252,29 +230,12 @@
             } else {
                 right.push(d);
             }
-
             const leftEntropy = calculateEntropy(left);
             const rightEntropy = calculateEntropy(right);
-            svg.on("valueChanged0")(leftEntropy.toFixed(2));
-            svg.on("valueChanged1")(rightEntropy.toFixed(2));
-
             svg.on("opacityChanged0")((leftEntropy + 1) / 2.5);
             svg.on("opacityChanged1")((rightEntropy + 1) / 2.5);
-
-            let result = "";
-            if (isYes) {
-                const dx2 = 15 * (a2++ + 1) + 110;
-                const dy2 = 0;
-                result = "translate(" + (dxs[index] + dx2) + "," + (dys[index] + dy2) + ")"
-            } else {
-                const dx2 = 15 * (b2++ + 1) + 110;
-                const dy2 = 0;
-                result = "translate(" + (dxs[index] + dx2) + "," + (dys[index] + dy2) + ")"
-            }
-            d3.select(this).transition().duration(500).delay(500).attr('transform', result).attr('r', "5")
         })
         .on('end', function(d){
-            /*
             let result = "";
             if (isYes) {
                 const dx2 = 15 * (a2++ + 1) + 110;
@@ -285,27 +246,23 @@
                 const dy2 = 0;
                 result = "translate(" + (dxs[index] + dx2) + "," + (dys[index] + dy2) + ")"
             }
-            d3.select(this).transition().duration(1000).attr('transform', result).attr('r', "5")*/
+            d3.select(this).transition().duration(1000).attr('transform', result).attr('r', "5")
         })
         .delay(function(d,i){return 500 * i});
     }
     svg.append('text')
-        .attr('x', (gauge0Width + scaledRadius) *0.97)
-        .attr('y', gauge0Height * 1.2)
-        .style("font-size", "40px")
+        .attr('x', (gauge0Width + scaledRadius) *0.97 )
+        .attr('y', gauge0Height * 0.9)
+        .style("font-size", "30px")
         .on("click", function(d) {
             seperate(true, createQuestionIndex++);
             changeColorRect(createQuestionIndex)
         })
-        .attr("fill", 'rgb(242, 247, 255)')
-        .attr("stroke", 'black')
         .text("Evet");
     svg.append('text')
-        .attr('x', (gauge1Width + scaledRadius) *0.956)
-        .attr('y', gauge1Height * 1.03)
-        .style("font-size", "40px")
-        .attr("fill", 'rgb(242, 247, 255)')
-        .attr("stroke", 'black')
+        .attr('x', (gauge1Width + scaledRadius) *0.97 )
+        .attr('y', gauge1Height * 0.98)
+        .style("font-size", "30px")
         .on("click", function(d) {
             seperate(false, createQuestionIndex++);
             changeColorRect(createQuestionIndex)
@@ -347,11 +304,11 @@
                                 var targetY;
                                 var targetX;
                                 if(isLeft) {
-                                    targetX = gauge0Width + scaledRadius;
-                                    targetY = gauge0Height + scaledRadius;
+                                    targetX = innerWidth * 0.75 + 0.3 * 370;
+                                    targetY = innerHeight * 0.05 + 0.3 * 370;
                                 } else {
-                                    targetX = gauge1Width + scaledRadius;
-                                    targetY = gauge1Height + scaledRadius;
+                                    targetX = innerWidth * 0.75 + 0.3 * 370;
+                                    targetY = innerHeight * 0.45 + 0.3 * 370;
                                 }
                                 const currentY =  53 * i + 40;
                                 const currentX = 740;
@@ -363,21 +320,23 @@
                             })
                             .on('start', function(d, i){
                                 const isLeft = d[questions[questionI].type] === questions[questionI].attribute;
-
                                 if(isLeft) {
                                     left.push(d);
+                                    svg.on("valueChanged0")(7.69230769 * ((a++) + 1));
                                 } else {
                                     right.push(d);
+                                    svg.on("valueChanged1")(7.69230769 * ((b++) + 1));
                                 }
                                 const leftEntropy = calculateEntropy(left);
                                 const rightEntropy = calculateEntropy(right);
-                                svg.on("valueChanged0")(leftEntropy.toFixed(2));
-                                svg.on("valueChanged1")(rightEntropy.toFixed(2));
-
-                                console.log('left', leftEntropy, 'right', rightEntropy)
                                 svg.on("opacityChanged0")((leftEntropy + 1) / 2.5);
                                 svg.on("opacityChanged1")((rightEntropy + 1) / 2.5);
 
+                            })
+                            .on('end', function(d, i){
+                                const isLeft = d[questions[questionI].type] === questions[questionI].attribute;
+
+                                console.log(dxs)
                                 var result = "";
                                 if(isLeft) {
                                     var dx2 = 15 * (a2++ + 1) + 110;
@@ -388,11 +347,8 @@
                                     var dy2 = 0;
                                     result = "translate(" + (dxs[i] + dx2) + "," + (dys[i] + dy2)+ ")"
                                 }
-                                d3.select(this).transition().duration(500).delay(500).attr('transform', result).attr('r', "5")
-                            })
-                            .on('end', function(d, i){
-                                //const isLeft = d[questions[questionI].type] === questions[questionI].attribute;
-
+                                console.log(result)
+                                d3.select(this).transition().duration(1000).attr('transform', result).attr('r', "5")
                             })
                             .delay(function(d,i){return 500 * i});
     }
@@ -400,22 +356,17 @@
         svg.selectAll("circle.house_color").transition()
             .duration(600)
             .attr('transform', "translate(0,0)").attr('r', "20");
-        svg.on("opacityChanged0")(1 / 2.5);
-        svg.on("opacityChanged1")(1 / 2.5);
-        svg.on("valueChanged0")("0.00");
-        svg.on("valueChanged1")("0.00");
+        svg.on("opacityChanged0")(1);
+        svg.on("opacityChanged1")(1);
+        //svg.on("valueChanged0")(0);
+        //svg.on("valueChanged1")(0);
         a = 0;
         b = 0;
-        createQuestionIndex = 0;
         a2 = 0;
         b2 = 0;
-        dxs.length = 0;
-        dys.length = 0;
-        left.length = 0;
-        right.length = 0;
 1    }
 </script>
-<div id="buttons" style="z-index: 999; display: block; width: 0; position: absolute; top: -40px; left: 710px;">
+<div id="buttons" style="z-index: 999; display: block; width: 0; position: absolute; top: 0; left: 710px;">
         <a></a>
         <button onclick='askQuestion(0)' style="transform: scale(0.6);"  class="button button--line button--effect-1">
             <span class="morph-shape"  data-morph-active="M286,113c0,0-68.8,6-136,6c-78.2,0-137-6-137-6S6,97.198,6,62.5C6,33.999,13,12,13,12s59-7,137-7c85,0,136,7,136,7s8,17.598,8,52C294,96.398,286,113,286,113z">
@@ -426,7 +377,7 @@
             <span class="button__text">Zengin mi?</span>
         </button>
 </div>
-<div id="buttons" style="z-index: 999; display: block; width: 0; position: absolute; top: -40px; left: 990px;">
+<div id="buttons" style="z-index: 999; display: block; width: 0; position: absolute; top: 0; left: 990px;">
         <a></a>
         <button onclick='askQuestion(2)' style="transform: scale(0.6);" class="button button--line button--effect-1">
             <span class="morph-shape"  data-morph-active="M286,113c0,0-68.8,6-136,6c-78.2,0-137-6-137-6S6,97.198,6,62.5C6,33.999,13,12,13,12s59-7,137-7c85,0,136,7,136,7s8,17.598,8,52C294,96.398,286,113,286,113z">
@@ -436,7 +387,7 @@
             </span>
             <span class="button__text">Ejderhasi var mı?</span>
         </button>
-</div><div id="buttons" style="z-index: 999; display: block; width: 0; position: absolute; top: -40px; left: 850px;">
+</div><div id="buttons" style="z-index: 999; display: block; width: 0; position: absolute; top: 0; left: 850px;">
         <a></a>
         <button onclick='askQuestion(3)' style="transform: scale(0.6);" class="button button--line button--effect-1">
             <span class="morph-shape"  data-morph-active="M286,113c0,0-68.8,6-136,6c-78.2,0-137-6-137-6S6,97.198,6,62.5C6,33.999,13,12,13,12s59-7,137-7c85,0,136,7,136,7s8,17.598,8,52C294,96.398,286,113,286,113z">
@@ -448,9 +399,9 @@
         </button>
 </div>
 
-<div id='buttons' style="z-index: 999; display: block; width: 0; position: absolute; bottom: 0; left: 850px;">
+<div id='buttons' style="z-index: 999; display: block; width: 0; position: absolute; bottom: 0; left: 800px;">
         <a></a>
-        <button onclick='createQuestion()'  style="transform: scale(0.6);" class="button button--line button--effect-1">
+        <button onclick='createQuestion()'  style="transform: scale(0.7);" class="button button--line button--effect-1">
             <span class="morph-shape"  data-morph-active="M286,113c0,0-68.8,6-136,6c-78.2,0-137-6-137-6S6,97.198,6,62.5C6,33.999,13,12,13,12s59-7,137-7c85,0,136,7,136,7s8,17.598,8,52C294,96.398,286,113,286,113z">
                 <svg width="100%" height="100%" viewBox="0 0 300 125" preserveAspectRatio="none">
                     <path d="M286.5,113c0,0-104,0-136.5,0c-35.75,0-136.5,0-136.5,0s0-39.417,0-52.5c0-12.167,0-48.5,0-48.5s101.833,0,136.5,0c33.583,0,136.5,0,136.5,0s0,35.917,0,48.5C286.5,73.167,286.5,113,286.5,113z"/>
@@ -459,9 +410,9 @@
             <span class="button__text">Kendi Sorunu Oluştur</span>
         </button>
 </div>
-<div id='buttons' style="z-index: 999; display: block; width: 0; position: absolute; bottom: 0; left: 990px;">
+<div id='buttons' style="z-index: 999; display: block; width: 0; position: absolute; bottom: 0; left: 1000px;">
         <a></a>
-        <button onclick='reset()'  style="transform: scale(0.6);" class="button button--line button--effect-1">
+        <button onclick='reset()'  style="transform: scale(0.7);" class="button button--line button--effect-1">
             <span class="morph-shape"  data-morph-active="M286,113c0,0-68.8,6-136,6c-78.2,0-137-6-137-6S6,97.198,6,62.5C6,33.999,13,12,13,12s59-7,137-7c85,0,136,7,136,7s8,17.598,8,52C294,96.398,286,113,286,113z">
                 <svg width="100%" height="100%" viewBox="0 0 300 125" preserveAspectRatio="none">
                     <path d="M286.5,113c0,0-104,0-136.5,0c-35.75,0-136.5,0-136.5,0s0-39.417,0-52.5c0-12.167,0-48.5,0-48.5s101.833,0,136.5,0c33.583,0,136.5,0,136.5,0s0,35.917,0,48.5C286.5,73.167,286.5,113,286.5,113z"/>

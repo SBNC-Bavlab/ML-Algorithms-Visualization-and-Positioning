@@ -249,15 +249,16 @@
                 };
                 animateWave();
             }
+            fillCircleGroup.style('opacity', 0.3 + '')
 
-            var transition = function(from, to, riseWave, animateText) {
+            var transition = function(from, to, riseWave, animateText, isFirst) {
                 // Update texts and animate
-                if (animateText) {
+                if (false) {
                     var textTween = function() {
                         var that = d3.select(this);
-                        var i = d3.interpolate(from, to);
+                        var i = d3.interpolate(to, to);
                         return function(t) {
-                            that.text(textRounder(i(t)) + percentText);
+                            that.text(i(t));
                         };
                     };
                     text1.transition()
@@ -267,15 +268,15 @@
                       .duration(config.get("waveRiseTime"))
                       .tween("text", textTween);
                 } else {
-                    text1.text(textRounder(to) + percentText);
-                    text2.text(textRounder(to) + percentText);
+                    text1.text((isFirst)? "0.00" : to);
+                    text2.text((isFirst)? "0.00" : to);
                 }
-
+                console.log(text1.text(), ":", text2.text())
                 // Update the wave
-                toPercent = Math.max(config.get("minValue"), Math.min(config.get("maxValue"), to)) / config.get("maxValue");
-                fromPercent = Math.max(config.get("minValue"), Math.min(config.get("maxValue"), from)) / config.get("maxValue");
+                toPercent = Math.max(config.get("minValue"), Math.min(config.get("maxValue"), textFinalValue)) / config.get("maxValue");
+                fromPercent = Math.max(config.get("minValue"), Math.min(config.get("maxValue"), textStartValue)) / config.get("maxValue");
 
-                if (riseWave) {
+                if (false) {
                     waveGroup.attr('transform', 'translate(' + waveGroupXPosition + ',' + waveRiseScale(fromPercent) + ')')
                       .transition()
                       .duration(config.get("waveRiseTime"))
@@ -289,19 +290,19 @@
               textStartValue,
               textFinalValue,
               config.get("waveRise") && config.get("waveRiseAtStart"),
-              config.get("valueCountUp") && config.get("valueCountUpAtStart")
+              config.get("valueCountUp") && config.get("valueCountUpAtStart"),
+                true
             );
 
             // Event to update the value
             gauge.on("valueChanged" + index, function(newValue) {
-                transition(value, newValue, config.get("waveRise"), config.get("valueCountUp"));
+                transition(value, newValue, config.get("waveRise"), config.get("valueCountUp"), false);
                 value = newValue;
             });
 
             gauge.on("opacityChanged" + index, function(newValue){
                 fillCircleGroup.style('opacity', newValue + '')
             });
-
             gauge.on("destroy", function() {
                 // Stop all the transitions
                 text1.interrupt().transition();
