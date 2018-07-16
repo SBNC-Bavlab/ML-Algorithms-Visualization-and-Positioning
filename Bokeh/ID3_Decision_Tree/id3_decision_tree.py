@@ -1,9 +1,9 @@
 import copy
 from queue import Queue
 import random
-from Bokeh.Plot.singleton import modify_new_values, get_new_values, get_test_set, get_train_set, set_active_attr
 from math import log
-
+from Bokeh.Plot.get_data import set_active_attr
+from Bokeh.Plot.instance import Instance
 
 class Node(object):
     """ Tree node """
@@ -122,7 +122,7 @@ def information(attribute_name_var, instances_var):
 
 def information_gain(attribute_name_var, instances_var):
     """ Calculate the information gain by subtracting node information from system entropy"""
-    global_distribution_list = classify_list("classAttr", instances_var)
+    global_distribution_list = classify_list(Instance().attr_list[-1], instances_var)
     entropy_value = entropy(global_distribution_list)
 
     information_value = information(attribute_name_var, instances_var)
@@ -299,7 +299,7 @@ def leaf_control(node_var):
     """
         Check if the node's instances distributed to certain value
     """
-    distributed_list = classify_list("classAttr", node_var.data)
+    distributed_list = classify_list(Instance().attr_list[-1], node_var.data)
     numbers_greater_than_zero = 0
     for p in distributed_list:
         if p > 0:
@@ -317,7 +317,7 @@ def determine_dominant_one(node_var):
         determine the decision by looking remaining instances label values
     """
     instances = node_var.data
-    distributed_list_on_class_attr = classify_list("classAttr", instances)
+    distributed_list_on_class_attr = classify_list(Instance().attr_list[-1], instances)
 
     max_occurrence = max(distributed_list_on_class_attr)
     max_indexes = []
@@ -339,7 +339,7 @@ def observe_from_siblings(node_var):
 
     siblings_distributions = [0] * len(classAttr)
     for sibling in siblings:
-        sibling_dist = classify_list("classAttr", sibling.data)
+        sibling_dist = classify_list(Instance().attr_list[-1], sibling.data)
         for i in range(len(sibling_dist)):
             siblings_distributions[i] += sibling_dist[i]
 
@@ -389,17 +389,17 @@ def tree_distribution(attribute_list_var, instances_var, methodology, set_root_a
             else:
                 q.put(child)
 
-    review_queue = Queue()
-    review_queue.put(root_node)
-    while not review_queue.empty():
-
-        node = review_queue.get()
-        for child in node.children:
-            review_queue.put(child)
-
-        # optimize for "noInfo" nodes
-        if len(node.data) == 0:
-            observe_from_siblings(node)
+    # review_queue = Queue()
+    # review_queue.put(root_node)
+    # while not review_queue.empty():
+    #
+    #     node = review_queue.get()
+    #     for child in node.children:
+    #         review_queue.put(child)
+    #
+    #     # optimize for "noInfo" nodes
+    #     if len(node.data) == 0:
+    #         observe_from_siblings(node)
 
     return root_node
 
@@ -448,7 +448,7 @@ def dataset_same(tmp_attr_names, attr_names_list):
         Check data set is new
     """
     for i in tmp_attr_names:
-        if i in attr_names_list and i != "classAttr":
+        if i in attr_names_list and i != Instance().attr_list[-1]:
             return True
     return False
 
@@ -458,14 +458,15 @@ def generate_tree(method, set_root_attribute, active_attr_list):
         Generate tree
     """
     global attrNamesList, attrDictionary, classAttr
-    attrNamesList = set_active_attr(active_attr_list)
-    tmp_attr_names = attrNamesList
-    attrNamesList, attrDictionary = get_new_values()
-    if dataset_same(tmp_attr_names, attrNamesList):
-        attrNamesList, attrDictionary = modify_new_values(tmp_attr_names, attrNamesList, attrDictionary)
-    new_att_name_list = copy.deepcopy(attrNamesList)
-    new_att_name_list.remove("classAttr")
-    test, classAttr = get_test_set()
-    train, classAttr = get_train_set()
+    tmp_attr_names = set_active_attr(active_attr_list)
+    attrNamesList, attrDictionary = Instance().attr_list, Instance().attr_dict
+    # CHECK THIS PART
+    # if dataset_same(tmp_attr_names, attrNamesList):
+    #     attrNamesList, attrDictionary = modify_new_values(tmp_attr_names, attrNamesList, attrDictionary)
+    attrNamesList, attrDictionary = Instance().attr_list, Instance().attr_dict
+    new_att_name_list = copy.deepcopy(Instance().attr_list)
+    new_att_name_list.remove(Instance().attr_list[-1])
+    test, classAttr = Instance().data, Instance().attr_values_dict[Instance().attr_list[-1]]
+    train, classAttr = Instance().data, Instance().attr_values_dict[Instance().attr_list[-1]]
     root_node = tree_distribution(new_att_name_list, train, method, set_root_attribute)
     return root_node, real_world_test(root_node, test)

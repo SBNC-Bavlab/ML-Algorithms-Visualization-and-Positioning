@@ -1,4 +1,4 @@
-from Bokeh.ID3_Decision_Tree.id3_decision_tree import generate_tree, set_active_attr
+from Bokeh.ID3_Decision_Tree.id3_decision_tree import generate_tree
 from Bokeh.ID3_Decision_Tree.bucheim import tree_layout
 
 
