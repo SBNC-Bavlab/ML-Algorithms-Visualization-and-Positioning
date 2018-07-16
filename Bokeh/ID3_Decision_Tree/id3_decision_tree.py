@@ -1,10 +1,10 @@
 import copy
 from queue import Queue
 import random
-from Bokeh.Plot.getChoice import get_choice
 from Bokeh.Plot.dictionaries import modify_new_values, get_new_values, get_class_attr, get_test_set, \
     get_train_set, set_active_attr
 from math import log
+
 attrNamesList = []
 attrDictionary = {}
 classAttr = get_class_attr()
@@ -32,6 +32,7 @@ class Node(object):
         self.order_number = 1
         self.change = 0
         self.shift = 0
+
 
 def entropy(distribution_list_var):
     """ Calculate uncertainty of the nodes instances"""
@@ -457,12 +458,12 @@ def dataset_same(tmp_attr_names, attr_names_list):
     return False
 
 
-def generate_tree(method, set_root_attribute, activeAttrList):
+def generate_tree(method, set_root_attribute, active_attr_list):
     """
         Generate tree
     """
     global test, train, attrNamesList, attrDictionary
-    attrNamesList = set_active_attr(activeAttrList)
+    attrNamesList = set_active_attr(active_attr_list)
     tmp_attr_names = attrNamesList
     attrNamesList, attrDictionary = get_new_values()
     if dataset_same(tmp_attr_names, attrNamesList):
