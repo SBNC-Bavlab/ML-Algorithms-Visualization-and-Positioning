@@ -102,7 +102,7 @@ function manipulateRectangleData(data){
     });
 
     Object.keys(radiusDict).forEach(function(d, i){
-        rectangleData.push({'x': 105 * i + 50, 'y': 10, 'label': d,'color': 'black'})
+        rectangleData.push({'x': 105 * i + 50, 'y': 10, 'label': d,'color': 'beige'})
     });
 }
 calculateFruitPlaces();
@@ -133,11 +133,11 @@ var rectangles = svgContainer.selectAll("rect")
                             .data(rectangleData)
                             .enter()
                             .append("rect")
-                            .attr("fill","grey")
+                            .attr("fill","beige")
                             .attr("x", function (d) { return d.x; })
                             .attr("y", function (d) { return d.y; })
                             .attr("width", function (d) { return 73; })
-                            .attr("height", function (d) { return 73; });
+                            .attr("height", function (d, i) { return rectHeight * radiusDict[Object.keys(radiusDict)[i]].length + 80});
 var texts = svgContainer.selectAll("text.label")
     .data(rectangleData)
     .enter()
@@ -149,7 +149,7 @@ var texts = svgContainer.selectAll("text.label")
     .attr('y', function (d) {
         return 55;
     })
-    .attr("fill", "#edf8b1")
+    .attr("fill", "grey")
     .text(function (d) {
         return d.label;
     })
@@ -234,31 +234,24 @@ function calculateTest(){
     d3.selectAll('.button__text').text("Yeni Model Kur")
     svgContainer.selectAll("rect")
                             .data(rectangleData)
+                            .attr("height", function (d, i) { return rectHeight * radiusDict[Object.keys(radiusDict)[i]].length + 80})
                             .attr('fill', function(d){return d.color})
                             .exit()
                                 .remove();
-    svgContainer.selectAll("text.label").data(rectangleData).text(function(d){return d.label}).attr('x', calculateXForText).exit().remove()
-    svgContainer.selectAll("image.fruit").data(fruitPlaces)
-                            .attr('x', function(d){
-                                return d.x;
-                            })
-                            .attr('y', function(d){
-                                return d.y;
-                            })
-                            .attr('width', rectWidth)
-                            .attr('height', rectHeight)
-                            .attr("xlink:href", function (d) {
-                                return "../icons/" + d.fruit_img;
-                            }).exit().remove();
+    svgContainer.selectAll("text.label").data(rectangleData).text(function(d){return d.label}).attr('x', calculateXForText).exit().remove();
+
+
 
     const accuracyResults = calculateAccuracy();
     const checkImgsData = accuracyResults[0];
     const accuracy = accuracyResults[1].toFixed(0);
+
     svgContainer.selectAll("image.tick").style('display', "block")
                             .data(checkImgsData)
                             .attr("xlink:href", function (d) {
                                 return "../icons/" + d.resultImg;
                             })
+                            .raise()
                             .enter()
                                 .append("svg:image")
                                 .classed('tick', true)
@@ -274,6 +267,19 @@ function calculateTest(){
                                 .attr("xlink:href", function (d) {
                                     return "../icons/" + d.resultImg;
                                 });
+
+    svgContainer.selectAll("image.fruit").data(fruitPlaces)
+                            .attr('x', function(d){
+                                return d.x;
+                            })
+                            .attr('y', function(d){
+                                return d.y;
+                            })
+                            .attr('width', rectWidth)
+                            .attr('height', rectHeight)
+                            .attr("xlink:href", function (d) {
+                                return "../icons/" + d.fruit_img;
+                            }).exit().remove();
 
     svgContainer.selectAll("text.accuracy").style('display',"block")
         .data([accuracy])
@@ -327,6 +333,10 @@ function againTrain(){
                                 .attr('width', rectWidth)
                                 .attr('height', rectHeight)
                                 .attr('fill', function(d){return d.color});
+    //Apply to both new-comers and old ones
+    svgContainer.selectAll("rect").data(rectangleData)
+        .attr("height", function (d, i) { return rectHeight * radiusDict[Object.keys(radiusDict)[i]].length + 80})
+    //    .lower();
     svgContainer.selectAll("text.label")
                 .data(rectangleData)
                 .text(function(d){return d.label})
@@ -350,6 +360,7 @@ function againTrain(){
                 .attr("xlink:href", function (d) {
                     return "../icons/" + d.fruit_img;
                 })
+                .raise()
                 .enter()
                     .append("svg:image")
                     .classed("fruit", true)
