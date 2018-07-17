@@ -1,5 +1,6 @@
 import pandas as pd
 from os.path import join, basename, getsize
+from sys import getsizeof
 import logging
 import base64
 from bokeh.plotting import figure
@@ -125,15 +126,15 @@ def create_figure():
     """Adapted from https://groups.google.com/a/continuum.io/d/msg/bokeh/EtuMtJI39qQ/ZWuXjBhaAgAJ"""
     """vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"""
     def new_upload_button(save_path,
-                          name="dataset.txt",
                           label="Veri Kümesi Yükleyin"):
         def file_callback(_attr, _old, _new):
-            if True:
-                raw_contents = file_source.data['contents'][0]
-                # remove the prefix that JS adds
-                prefix, b64_contents = raw_contents.split(",", 1)
-                file_contents = base64.b64decode(b64_contents)
-                fname = join(save_path, name)
+            raw_contents = file_source.data['contents'][0]
+            prefix, b64_contents = raw_contents.split(",", 1)
+            file_contents = base64.b64decode(b64_contents)
+            size = getsizeof(file_contents)
+            # remove the prefix that JS adds
+            if size < 10**7:
+                fname = join(save_path, file_source.data['name'][0])
                 with open(fname, "wb") as f:
                     f.write(file_contents)
 
