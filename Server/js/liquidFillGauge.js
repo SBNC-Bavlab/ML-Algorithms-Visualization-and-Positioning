@@ -54,7 +54,7 @@
         waveTextColor: "#A4DBf8", // The color of the value text when the wave overlaps it.
     };
 
-    d3.liquidfillgauge = function(g, value, settings, x, y, index) {
+    d3.liquidfillgauge = function(g, value, settings, x, y, index, scale) {
         // Handle configuration
         var config = d3.map(defaultConfig);
         d3.map(settings).each(function(val, key) {
@@ -146,7 +146,7 @@
 
             // Center the gauge within the parent
             var gaugeGroup = gauge.append("g")
-              .attr('transform', 'translate(' + locationX + ',' + locationY + ') scale(0.3)');
+              .attr('transform', 'translate(' + locationX + ',' + locationY + ') scale( ' + scale + ' )');
 
             // Draw the background circle
             if (config.get("backgroundColor")) {
@@ -249,7 +249,6 @@
                 };
                 animateWave();
             }
-            fillCircleGroup.style('opacity', 0.3 + '')
 
             var transition = function(from, to, riseWave, animateText, isFirst) {
                 // Update texts and animate
@@ -300,8 +299,8 @@
                 value = newValue;
             });
 
-            gauge.on("opacityChanged" + index, function(newValue){
-                fillCircleGroup.style('opacity', newValue + '')
+            gauge.on("opacityChanged" + index, function(newColor){
+                fillCircleGroup.style("fill", newColor);
             });
             gauge.on("destroy", function() {
                 // Stop all the transitions
