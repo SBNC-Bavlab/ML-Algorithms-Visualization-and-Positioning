@@ -1,13 +1,17 @@
 import pandas as pd
+from os.path import join, basename, getsize
+import logging
+import base64
 from bokeh.plotting import figure
 from bokeh.transform import dodge, factor_cmap
-from bokeh.models import ColumnDataSource, LabelSet, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs, Toggle
+from bokeh.models import ColumnDataSource, LabelSet, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs, Toggle, CustomJS, TapTool
 from bokeh.models.widgets import Button, Paragraph, Select, CheckboxGroup
 from bokeh.layouts import column, row
 from Bokeh.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 from math import atan
 from Bokeh.Plot.get_data import get_all_colors, set_dataset, set_new_dataset
 from Bokeh.Plot.instance import Instance
+
 
 TOOLTIPS = [
     ("Metod Değeri", "@{nonLeafNodes_stat}"),
@@ -27,7 +31,6 @@ plot_height = int(plot_width*950/1400)
 rect_width = 2
 rect_height = 0.5
 circle_radius = 5
-
 
 def get_new_data_source(df):
     """
@@ -116,8 +119,72 @@ def create_figure():
     tab2 = Panel(child=best_root_plot, title="İdeal ağaç")
     tree_tab = Tabs(tabs=[tab1, tab2])
 
+
+
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    """Adapted from https://groups.google.com/a/continuum.io/d/msg/bokeh/EtuMtJI39qQ/ZWuXjBhaAgAJ"""
+    """vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"""
+    def new_upload_button(save_path,
+                          name="dataset.txt",
+                          label="Veri Kümesi Yükleyin"):
+        def file_callback(_attr, _old, _new):
+            if getsize(file_source.data['name'][0]) < 10**7:
+                raw_contents = file_source.data['contents'][0]
+                # remove the prefix that JS adds
+                prefix, b64_contents = raw_contents.split(",", 1)
+                file_contents = base64.b64decode(b64_contents)
+                fname = join(save_path, name)
+                with open(fname, "wb") as f:
+                    f.write(file_contents)
+
+        file_source = ColumnDataSource({'contents': [], 'name': []})
+        file_source.on_change('data', file_callback)
+
+        file_button = Button(width=275, label=label, button_type="success")
+        file_button.callback = CustomJS(args=dict(source=file_source), code=_upload_js)
+        return file_button, file_source
+
+    _upload_js = """
+    function read_file(filename) {
+        var reader = new FileReader();
+        reader.onload = load_handler;
+        reader.onerror = error_handler;
+        // readAsDataURL represents the file's data as a base64 encoded string
+        reader.readAsDataURL(filename);
+    }
+
+    function load_handler(event) {
+        var b64string = event.target.result;
+        source.data = {'contents' : [b64string], 'name':[input.files[0].name]};
+        source.change.emit()
+    }
+
+    function error_handler(evt) {
+        if(evt.target.error.name == "NotReadableError") {
+            alert("Can't read file!");
+        }
+    }
+
+    var input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.onchange = function(){
+        if (window.FileReader) {
+            read_file(input.files[0]);
+        } else {
+            alert('FileReader is not supported in this browser');
+        }
+    }
+    input.click();
+    """
+    file_button, file_source = new_upload_button("../Bokeh/Data/")
+    """^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"""
+    """Adapted from https://groups.google.com/a/continuum.io/d/msg/bokeh/EtuMtJI39qQ/ZWuXjBhaAgAJ"""
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+
+
     main_frame = row(column(root_select, attr_info, attribute_checkbox, apply_changes_button,
-                            decision_button, arrow_button, dataset_select, tree_select), tree_tab)
+                            decision_button, arrow_button, dataset_select, tree_select, file_button), tree_tab)
 
     def update_method_type(_attr, _old, new):
         """
@@ -202,6 +269,31 @@ def create_figure():
             arrow_button.label = "Karar değerlerini gösterme"
     arrow_button.on_click(turn_arrow_labels_off)
 
+    def source_selected(_attr, _old, _new):
+        class_attrs = get_class_attr()
+        decision_indices = [[] for x in range(len(class_attrs))]
+        for i in range(len(data_source.data['x'])):
+            if data_source.data['decision'][i] != "-": # leaf node
+                decision_indices[class_attrs.index(data_source.data['decision'][i])]\
+                    .append([i, data_source.data['y'][i], data_source.data['x'][i]])
+        for i in class_attrs:
+            if data_source.data['decision'][data_source.selected.indices[0]] == i:
+                selected_class_index = class_attrs.index(i)
+        for i in range(len(decision_indices)):
+            if i != selected_class_index:
+                for j in range(len(decision_indices[i])):
+                    x = decision_indices[i][j][2]
+                    y = decision_indices[i][j][1]
+                    index = decision_indices[i][j][0]
+                    a = data_source.data['x'][index]
+                    b = data_source.data['y'][index]
+                    bool_val_x = a == x
+                    bool_val_y = b == y
+
+                    selected = p.select({})
+                    selected.visible=False
+    data_source.on_change('selected', source_selected)
+
     def update_root(_attr, _old, new):
         """
         change root attribute to be used for creating a new tree
@@ -272,8 +364,9 @@ def create_plot(width, level_width, groups, periods, data_source, is_previous=Fa
                               "(Seçtiğiniz Kök Nitelikli Hali)") + ("\t\t\t\tTahmin Başarısı (%): "
                                                                     + str(round(acc * 100, 1)) if acc else "")
     hover = HoverTool(names=["circles", "rectangles"])
+    tap = TapTool(names=["circles", "rectangles"])
     wheel = WheelZoomTool()
-    p = figure(title=title, toolbar_location="below", tools=[hover, wheel, ResetTool(), PanTool()],
+    p = figure(title=title, toolbar_location="below", tools=[hover, wheel, ResetTool(), PanTool(), tap],
                plot_width=plot_width, plot_height=plot_height, x_range=groups, y_range=list(periods), tooltips=TOOLTIPS)
     arrow_data_source, arrow, label = draw_arrow(data_source.data, p, width, len(periods), len(groups), level_width)
     p.toolbar.active_scroll = wheel
@@ -283,6 +376,7 @@ def create_plot(width, level_width, groups, periods, data_source, is_previous=Fa
              color=factor_cmap('attribute_type', palette=list(get_all_colors()), factors=Instance().attr_list))
     p.rect("y", "x", rect_width, rect_height, source=data_source, name="rectangles", legend="attribute_type",
            color=factor_cmap('attribute_type', palette=list(get_all_colors()), factors=Instance().attr_list))
+
     p.select(name="rectangles").visible = False
 
     # Drawing on the rectangles
