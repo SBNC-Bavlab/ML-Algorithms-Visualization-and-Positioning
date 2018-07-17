@@ -1,14 +1,14 @@
-Adı, Zengin mi?, Ejderhası var mı?, Tahtı istiyor mu?, Saç rengi, Ailesi
-Trion Lannister,Hayır,Yok,İstemiyor,Sarı,Lannister
-Daenerys Targaryen,Evet,Var,İstiyor,Beyaz,Targaryen
-John Snow,Hayır,Yok,İstemiyor,Siyah,Stark
-Cercei Lannister,Evet,Yok,İstiyor,Sarı,Lannister
-Night King,Hayır,Var,İstemiyor,Genel olarak Beyaz,White Walker
-Jamie Lannister,Evet,Yok,İstemiyor,Sarı,Lannister
-Arya Stark,Hayır,Yok,İstemiyor,Siyah,Stark
-Tywin Lannister,Evet,Yok,İstiyor,Sarı,Lannister
-Sansa Stark,Hayır,Yok,İstemiyor,Kızıl,Stark
-Lieutenant White Walkers,Hayır,Var,İstemiyor,Genel olarak Beyaz,White Walker
-Viserys Targaryen,Hayır,Yok,İstiyor,Beyaz,Targaryen
-Wights,Hayır,Yok,İstemiyor,Genel olarak Beyaz,White Walker
-Eddard Stark,Hayır,Yok,İstemiyor,Siyah,Stark
+Zengin mi?,Ejderhası var mı?,Tahtı istiyor mu?,Saç rengi,Ailesi
+Hayır,Yok,İstemiyor,Sarı,Lannister
+Evet,Var,İstiyor,Beyaz,Targaryen
+Hayır,Yok,İstemiyor,Siyah,Stark
+Evet,Yok,İstiyor,Sarı,Lannister
+Hayır,Var,İstemiyor,Genel olarak Beyaz,White Walker
+Evet,Yok,İstemiyor,Sarı,Lannister
+Hayır,Yok,İstemiyor,Siyah,Stark
+Evet,Yok,İstiyor,Sarı,Lannister
+Hayır,Yok,İstemiyor,Kızıl,Stark
+Hayır,Var,İstemiyor,Genel olarak Beyaz,White Walker
+Hayır,Yok,İstiyor,Beyaz,Targaryen
+Hayır,Yok,İstemiyor,Genel olarak Beyaz,White Walker
+Hayır,Yok,İstemiyor,Siyah,Stark

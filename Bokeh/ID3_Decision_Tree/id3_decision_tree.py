@@ -2,7 +2,7 @@ import copy
 from queue import Queue
 import random
 from math import log
-from Bokeh.Plot.get_data import set_active_attr
+from Bokeh.Plot.get_data import set_active_attr, modify_new_values
 from Bokeh.Plot.instance import Instance
 
 class Node(object):
@@ -459,12 +459,11 @@ def generate_tree(method, set_root_attribute, active_attr_list):
     """
     global attrNamesList, attrDictionary, classAttr
     tmp_attr_names = set_active_attr(active_attr_list)
-    attrNamesList, attrDictionary = Instance().attr_list, Instance().attr_dict
-    # CHECK THIS PART
-    # if dataset_same(tmp_attr_names, attrNamesList):
-    #     attrNamesList, attrDictionary = modify_new_values(tmp_attr_names, attrNamesList, attrDictionary)
-    attrNamesList, attrDictionary = Instance().attr_list, Instance().attr_dict
-    new_att_name_list = copy.deepcopy(Instance().attr_list)
+    attrNamesList, attrDictionary = copy.deepcopy(Instance().attr_list), copy.deepcopy(Instance().attr_dict)
+
+    if dataset_same(tmp_attr_names, attrNamesList):
+        attrNamesList, attrDictionary = modify_new_values(tmp_attr_names, attrNamesList, attrDictionary)
+    new_att_name_list = copy.deepcopy(attrNamesList)
     new_att_name_list.remove(Instance().attr_list[-1])
     test, classAttr = Instance().data, Instance().attr_values_dict[Instance().attr_list[-1]]
     train, classAttr = Instance().data, Instance().attr_values_dict[Instance().attr_list[-1]]

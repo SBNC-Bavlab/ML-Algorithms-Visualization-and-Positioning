@@ -18,6 +18,11 @@ class Singleton(type):
             cls._instance = super().__call__(*args, **kwargs)
         return cls._instance
 
+    @classmethod
+    def clear_instance(cls):
+        """ Delete the instance """
+        del cls._instance
+
 
 class Instance(metaclass=Singleton):
     """
@@ -31,12 +36,13 @@ class Instance(metaclass=Singleton):
         self.attr_dict = attr_dict
         self.cmap = cmap
 
-    def update(self, a):
-        """
-        :param a:
-        :return:
-        """
-        self.a = a
+    def update(self, data, attr_values, attr_list, attr_values_dict, attr_dict, cmap):
+        self.data = data
+        self.attr_values = attr_values
+        self.attr_list = attr_list
+        self.attr_values_dict = attr_values_dict
+        self.attr_dict = attr_dict
+        self.cmap = cmap
 
 
 

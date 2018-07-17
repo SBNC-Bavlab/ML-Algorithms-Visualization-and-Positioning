@@ -6,7 +6,7 @@ from bokeh.models.widgets import Button, Paragraph, Select, CheckboxGroup
 from bokeh.layouts import column, row
 from Bokeh.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 from math import atan
-from Bokeh.Plot.get_data import get_all_colors, set_dataset
+from Bokeh.Plot.get_data import get_all_colors, set_dataset, set_new_dataset
 from Bokeh.Plot.instance import Instance
 
 TOOLTIPS = [
@@ -101,7 +101,7 @@ def create_figure():
                          value="Hiçbiri")
     method_select = Select(title="Metodu seçiniz:", options=radio_button_labels, value="gini")
     tree_select = Select(title="Ağacın görünümünü seçiniz:", options=tree_mode_labels, value="Basit")
-    dataset_select = Select(title="Veri Kümesini Seç:", value="lens", options=["lens", "araba"])
+    dataset_select = Select(title="Veri Kümesini Seç:", value="lens", options=["lens", "car", "GoT"])
 
     p, arrow_data_source = create_plot(width, level_width, groups, periods, data_source, False, acc)
     p.axis.visible = False
@@ -226,14 +226,15 @@ def create_figure():
         """
         global selected_root
         if new == "lens":
-            set_dataset()
+            set_new_dataset(new, " ")
         else:
-            set_dataset()
+            set_new_dataset(new, ",")
         selected_root = ""
         apply_changes()
         attribute_checkbox.labels = [attr for attr in list(Instance().cmap.keys()) if attr != Instance().attr_list[-1]]
         attribute_checkbox.active = [i for i, attr in enumerate(list(Instance().cmap.keys()))]
         root_select.options = ['Hiçbiri'] + [attr for attr in list(Instance().cmap.keys())[:-1]]
+        # create_figure()
 
     dataset_select.on_change('value', change_dataset)
 
@@ -242,7 +243,6 @@ def create_figure():
         compute new data source to be used for the new tree. change values of several variables to be used before
         sending them to get_bokeh_data
         """
-
 
         modify_individual_plot(p, data_source, active_attributes_list, arrow_data_source, selected_root)
         modify_individual_plot(best_root_plot, best_root_plot_data_source, active_attributes_list,
@@ -340,7 +340,7 @@ def draw_arrow(source, p, width, periods_len, groups_len, level_width, mode="dra
         for j in range(level_width[i]):
             offset = sum(level_width[:i])
             if source["attribute_type"][offset + j] != Instance().attr_list[-1]:
-                children_names = Instance.attr_values_dict[source["attribute_type"][offset + j]]
+                children_names = Instance().attr_values_dict[source["attribute_type"][offset + j]]
                 number_of_children = len(children_names)
                 for index in range(number_of_children):
                     x_start = source["y"][offset + j]
