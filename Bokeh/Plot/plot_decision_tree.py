@@ -271,30 +271,30 @@ def create_figure():
             arrow_button.label = "Karar değerlerini gösterme"
     arrow_button.on_click(turn_arrow_labels_off)
 
-    def source_selected(_attr, _old, _new):
-        class_attrs = get_class_attr()
-        decision_indices = [[] for x in range(len(class_attrs))]
-        for i in range(len(data_source.data['x'])):
-            if data_source.data['decision'][i] != "-": # leaf node
-                decision_indices[class_attrs.index(data_source.data['decision'][i])]\
-                    .append([i, data_source.data['y'][i], data_source.data['x'][i]])
-        for i in class_attrs:
-            if data_source.data['decision'][data_source.selected.indices[0]] == i:
-                selected_class_index = class_attrs.index(i)
-        for i in range(len(decision_indices)):
-            if i != selected_class_index:
-                for j in range(len(decision_indices[i])):
-                    x = decision_indices[i][j][2]
-                    y = decision_indices[i][j][1]
-                    index = decision_indices[i][j][0]
-                    a = data_source.data['x'][index]
-                    b = data_source.data['y'][index]
-                    bool_val_x = a == x
-                    bool_val_y = b == y
-
-                    selected = p.select({})
-                    selected.visible=False
-    data_source.on_change('selected', source_selected)
+    # def source_selected(_attr, _old, _new):
+    #     class_attrs = get_class_attr()
+    #     decision_indices = [[] for x in range(len(class_attrs))]
+    #     for i in range(len(data_source.data['x'])):
+    #         if data_source.data['decision'][i] != "-": # leaf node
+    #             decision_indices[class_attrs.index(data_source.data['decision'][i])]\
+    #                 .append([i, data_source.data['y'][i], data_source.data['x'][i]])
+    #     for i in class_attrs:
+    #         if data_source.data['decision'][data_source.selected.indices[0]] == i:
+    #             selected_class_index = class_attrs.index(i)
+    #     for i in range(len(decision_indices)):
+    #         if i != selected_class_index:
+    #             for j in range(len(decision_indices[i])):
+    #                 x = decision_indices[i][j][2]
+    #                 y = decision_indices[i][j][1]
+    #                 index = decision_indices[i][j][0]
+    #                 a = data_source.data['x'][index]
+    #                 b = data_source.data['y'][index]
+    #                 bool_val_x = a == x
+    #                 bool_val_y = b == y
+    #
+    #                 selected = p.select({})
+    #                 selected.visible=False
+    # data_source.on_change('selected', source_selected)
 
     def update_root(_attr, _old, new):
         """
@@ -324,7 +324,7 @@ def create_figure():
         elif new == "car":
             set_new_dataset(new, ",")
         else:
-            set_new_dataset("dataset", ",")
+            set_new_dataset(new, ",")
         selected_root = ""
         apply_changes()
         attribute_checkbox.labels = [attr for attr in list(Instance().cmap.keys()) if attr != Instance().attr_list[-1]]

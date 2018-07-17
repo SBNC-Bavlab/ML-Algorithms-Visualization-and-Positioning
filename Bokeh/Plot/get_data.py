@@ -1,9 +1,12 @@
-import pickle
-from Bokeh.Plot.instance import Instance, Singleton
-
+from Bokeh.Plot.instance import Instance
+from random import randint
 
 all_attrs_list = []
-color = ["red", "yellow", "blue", "green", "brown", "black", "orange"]
+color = []
+
+for i in range(30):
+    color.append('#%06X' % randint(0, 0xFFFFFF))
+
 
 
 def set_dataset():
