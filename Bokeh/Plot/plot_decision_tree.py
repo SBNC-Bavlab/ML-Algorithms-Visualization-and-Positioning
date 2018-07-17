@@ -137,7 +137,7 @@ def create_figure():
                 fname = join(save_path, file_source.data['name'][0])
                 with open(fname, "wb") as f:
                     f.write(file_contents)
-            dataset_select.options.append(file_source.data['name'][0])
+            dataset_select.options = dataset_select.options + [file_source.data['name'][0]]
 
         file_source = ColumnDataSource({'contents': [], 'name': []})
         file_source.on_change('data', file_callback)
