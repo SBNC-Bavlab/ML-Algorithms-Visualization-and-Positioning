@@ -250,12 +250,12 @@ def child_generator(node_itself_var, methodology):
     parent_leaf_check = leaf_control(node_itself_var)
     if parent_leaf_check:
         return []
-
-    # leaf node
-    if remaining_attributes == [] and instances != []:
-        determine_dominant_one(node_itself_var)
-        node_itself_var.children = []
-        return []
+    #
+    # # leaf node
+    # if remaining_attributes == [] and instances != []:
+    #     determine_dominant_one(node_itself_var)
+    #     node_itself_var.children = []
+    #     return []
 
     # never happens, yet for safety concerns
     if instances is []:
@@ -270,11 +270,12 @@ def child_generator(node_itself_var, methodology):
         child_node.parentPointer = node_itself_var
         is_leaf = leaf_control(child_node)
 
-        if dataPart is []:
+        if not dataPart:
             child_node = Node(parent_name, "", dataPart, [], [], methodology)
             child_node.parentPointer = node_itself_var
+            determine_dominant_one(child_node)
 
-        elif is_leaf:
+        elif is_leaf or remaining_attributes == []:
             child_node = Node(parent_name, "", dataPart, [], [], methodology)
             child_node.parentPointer = node_itself_var
             determine_dominant_one(child_node)
@@ -384,22 +385,46 @@ def tree_distribution(attribute_list_var, instances_var, methodology, set_root_a
             continue
         child_list = child_generator(node, methodology)
         for child in child_list:
-            if leaf_control(child):
+            if child.decision != None:
                 continue
             else:
                 q.put(child)
 
-    # review_queue = Queue()
-    # review_queue.put(root_node)
-    # while not review_queue.empty():
-    #
-    #     node = review_queue.get()
-    #     for child in node.children:
-    #         review_queue.put(child)
-    #
-    #     # optimize for "noInfo" nodes
-    #     if len(node.data) == 0:
-    #         observe_from_siblings(node)
+    review_queue = Queue()
+    review_queue.put(root_node)
+    while not review_queue.empty():
+
+        node = review_queue.get()
+        for child in node.children:
+            review_queue.put(child)
+
+        # optimize for "noInfo" nodes
+        if len(node.data) == 0:
+            observe_from_siblings(node)
+
+    # observe to prune siblings with same decision
+    prune_queue = Queue()
+    prune_queue.put(root_node)
+    while not prune_queue.empty():
+
+        node = prune_queue.get()
+        if not node.decision:
+            siblings_decision = ""
+            all_leaf_flag = 1
+            for child in node.children:
+                if not child.decision:
+                    all_leaf_flag = 0
+                    prune_queue.put(child)
+                elif all_leaf_flag and child.decision and siblings_decision == "":
+                    siblings_decision = child.decision
+                elif all_leaf_flag and child.decision != siblings_decision:
+                    all_leaf_flag = 0
+            if all_leaf_flag:
+                node.decision = siblings_decision
+                node.name = ""
+                for child in node.children:
+                    del child
+                    node.children = []
 
     return root_node
 
@@ -468,4 +493,4 @@ def generate_tree(method, set_root_attribute, active_attr_list):
     test, classAttr = Instance().data, Instance().attr_values_dict[Instance().attr_list[-1]]
     train, classAttr = Instance().data, Instance().attr_values_dict[Instance().attr_list[-1]]
     root_node = tree_distribution(new_att_name_list, train, method, set_root_attribute)
-    return root_node, real_world_test(root_node, test)
+    return root_node, real_world_test(root_node, train)

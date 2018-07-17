@@ -1,5 +1,6 @@
 import pandas as pd
 from os.path import join, basename, getsize
+from sys import getsizeof
 import logging
 import base64
 from bokeh.plotting import figure
@@ -104,7 +105,7 @@ def create_figure():
                          value="Hiçbiri")
     method_select = Select(title="Metodu seçiniz:", options=radio_button_labels, value="gini")
     tree_select = Select(title="Ağacın görünümünü seçiniz:", options=tree_mode_labels, value="Basit")
-    dataset_select = Select(title="Veri Kümesini Seç:", value="lens", options=["lens", "car", "GoT"])
+    dataset_select = Select(title="Veri Kümesini Seç:", value="lens", options=["lens", "car"])
 
     p, arrow_data_source = create_plot(width, level_width, groups, periods, data_source, False, acc)
     p.axis.visible = False
@@ -125,17 +126,18 @@ def create_figure():
     """Adapted from https://groups.google.com/a/continuum.io/d/msg/bokeh/EtuMtJI39qQ/ZWuXjBhaAgAJ"""
     """vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"""
     def new_upload_button(save_path,
-                          name="dataset.txt",
                           label="Veri Kümesi Yükleyin"):
         def file_callback(_attr, _old, _new):
-            if True:
-                raw_contents = file_source.data['contents'][0]
-                # remove the prefix that JS adds
-                prefix, b64_contents = raw_contents.split(",", 1)
-                file_contents = base64.b64decode(b64_contents)
-                fname = join(save_path, name)
+            raw_contents = file_source.data['contents'][0]
+            prefix, b64_contents = raw_contents.split(",", 1)
+            file_contents = base64.b64decode(b64_contents)
+            size = getsizeof(file_contents)
+            # remove the prefix that JS adds
+            if size < 10**7:
+                fname = join(save_path, file_source.data['name'][0])
                 with open(fname, "wb") as f:
                     f.write(file_contents)
+            dataset_select.options = dataset_select.options + [file_source.data['name'][0]]
 
         file_source = ColumnDataSource({'contents': [], 'name': []})
         file_source.on_change('data', file_callback)
@@ -269,30 +271,30 @@ def create_figure():
             arrow_button.label = "Karar değerlerini gösterme"
     arrow_button.on_click(turn_arrow_labels_off)
 
-    def source_selected(_attr, _old, _new):
-        class_attrs = get_class_attr()
-        decision_indices = [[] for x in range(len(class_attrs))]
-        for i in range(len(data_source.data['x'])):
-            if data_source.data['decision'][i] != "-": # leaf node
-                decision_indices[class_attrs.index(data_source.data['decision'][i])]\
-                    .append([i, data_source.data['y'][i], data_source.data['x'][i]])
-        for i in class_attrs:
-            if data_source.data['decision'][data_source.selected.indices[0]] == i:
-                selected_class_index = class_attrs.index(i)
-        for i in range(len(decision_indices)):
-            if i != selected_class_index:
-                for j in range(len(decision_indices[i])):
-                    x = decision_indices[i][j][2]
-                    y = decision_indices[i][j][1]
-                    index = decision_indices[i][j][0]
-                    a = data_source.data['x'][index]
-                    b = data_source.data['y'][index]
-                    bool_val_x = a == x
-                    bool_val_y = b == y
-
-                    selected = p.select({})
-                    selected.visible=False
-    data_source.on_change('selected', source_selected)
+    # def source_selected(_attr, _old, _new):
+    #     class_attrs = get_class_attr()
+    #     decision_indices = [[] for x in range(len(class_attrs))]
+    #     for i in range(len(data_source.data['x'])):
+    #         if data_source.data['decision'][i] != "-": # leaf node
+    #             decision_indices[class_attrs.index(data_source.data['decision'][i])]\
+    #                 .append([i, data_source.data['y'][i], data_source.data['x'][i]])
+    #     for i in class_attrs:
+    #         if data_source.data['decision'][data_source.selected.indices[0]] == i:
+    #             selected_class_index = class_attrs.index(i)
+    #     for i in range(len(decision_indices)):
+    #         if i != selected_class_index:
+    #             for j in range(len(decision_indices[i])):
+    #                 x = decision_indices[i][j][2]
+    #                 y = decision_indices[i][j][1]
+    #                 index = decision_indices[i][j][0]
+    #                 a = data_source.data['x'][index]
+    #                 b = data_source.data['y'][index]
+    #                 bool_val_x = a == x
+    #                 bool_val_y = b == y
+    #
+    #                 selected = p.select({})
+    #                 selected.visible=False
+    # data_source.on_change('selected', source_selected)
 
     def update_root(_attr, _old, new):
         """
@@ -319,6 +321,8 @@ def create_figure():
         global selected_root
         if new == "lens":
             set_new_dataset(new, " ")
+        elif new == "car":
+            set_new_dataset(new, ",")
         else:
             set_new_dataset(new, ",")
         selected_root = ""
