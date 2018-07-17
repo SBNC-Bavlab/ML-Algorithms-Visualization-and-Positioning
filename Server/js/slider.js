@@ -10,6 +10,6 @@ var slider = d3.sliderHorizontal()
     update(theValue);
 });
 
-d3.select("svg").append("g").attr("class", "sliderAll").transition().duration(1000).delay(1400)
+d3.select("#section2").append("g").attr("class", "sliderAll").transition().duration(1000).delay(1400)
     .attr("transform", "translate(" + innerWidth * 0.95 + ",100) rotate(90)")
     .call(slider);
