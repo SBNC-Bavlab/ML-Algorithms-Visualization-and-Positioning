@@ -32,6 +32,7 @@ rect_width = 2
 rect_height = 0.5
 circle_radius = 5
 
+
 def get_new_data_source(df):
     """
     modular data source
@@ -104,7 +105,7 @@ def create_figure():
                          value="Hiçbiri")
     method_select = Select(title="Metodu seçiniz:", options=radio_button_labels, value="gini")
     tree_select = Select(title="Ağacın görünümünü seçiniz:", options=tree_mode_labels, value="Basit")
-    dataset_select = Select(title="Veri Kümesini Seç:", value="lens", options=["lens", "car", "GoT"])
+    dataset_select = Select(title="Veri Kümesini Seç:", value="lens", options=["lens", "car"])
 
     p, arrow_data_source = create_plot(width, level_width, groups, periods, data_source, False, acc)
     p.axis.visible = False
