@@ -61,10 +61,10 @@ def set_new_dataset(new, seperator):
     attr_values = []
     attr_list = []
     cmap = {}
-    if not new in ["car", "lens"]:
-        file = "../Bokeh/Data/" + new
-    else:
+    if new in ["car", "lens"]:
         file = "../Bokeh/Data/" + new + ".txt"
+    else:
+        file = "../Bokeh/Data/" + new
     for i, line in enumerate(open(file)):
         if i == 0:
             attr_list = line.split(seperator)
