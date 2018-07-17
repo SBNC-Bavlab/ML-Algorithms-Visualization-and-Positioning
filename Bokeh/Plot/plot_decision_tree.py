@@ -129,7 +129,7 @@ def create_figure():
                           name="dataset.txt",
                           label="Veri Kümesi Yükleyin"):
         def file_callback(_attr, _old, _new):
-            if getsize(file_source.data['name'][0]) < 10**7:
+            if True:
                 raw_contents = file_source.data['contents'][0]
                 # remove the prefix that JS adds
                 prefix, b64_contents = raw_contents.split(",", 1)
