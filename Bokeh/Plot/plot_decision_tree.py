@@ -321,8 +321,10 @@ def create_figure():
         global selected_root
         if new == "lens":
             set_new_dataset(new, " ")
-        else:
+        elif new == "car":
             set_new_dataset(new, ",")
+        else:
+            set_new_dataset("dataset", ",")
         selected_root = ""
         apply_changes()
         attribute_checkbox.labels = [attr for attr in list(Instance().cmap.keys()) if attr != Instance().attr_list[-1]]

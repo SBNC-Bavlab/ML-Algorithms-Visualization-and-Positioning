@@ -7,6 +7,9 @@ color = ["red", "yellow", "blue", "green", "brown", "black", "orange"]
 
 
 def set_dataset():
+    """
+        Set default lens data set
+    """
     data = []
     attr_values = []
     attr_list = []
@@ -58,7 +61,10 @@ def set_new_dataset(new, seperator):
     attr_values = []
     attr_list = []
     cmap = {}
-    file = "../Bokeh/Data/" + new + ".txt"
+    if not new in ["car", "lens"]:
+        file = "../Bokeh/Data/" + new
+    else:
+        file = "../Bokeh/Data/" + new + ".txt"
     for i, line in enumerate(open(file)):
         if i == 0:
             attr_list = line.split(seperator)
@@ -74,6 +80,7 @@ def set_new_dataset(new, seperator):
     attr_values_dict = dict((attr, list(attr_values[i])) for i, attr in enumerate(attr_list))
     attr_dict = dict((attr, (i, list(attr_values[i]))) for i, attr in enumerate(attr_list))
     instance = Instance().update(data, attr_values, attr_list, attr_values_dict, attr_dict, cmap)
+
 
 def get_all_colors():
     """
