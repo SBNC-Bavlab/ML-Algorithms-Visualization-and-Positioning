@@ -1,11 +1,12 @@
-from Bokeh.ID3_Decision_Tree.id3_decision_tree import generate_tree, set_active_attr
+from Bokeh.ID3_Decision_Tree.id3_decision_tree import generate_tree
 from Bokeh.ID3_Decision_Tree.bucheim import tree_layout
+from Bokeh.Plot.instance import Instance
 
 
 def get_depth(node, id_index, visited={}):
     """ Calculate depth of the tree """
-    if node.decision in ["unacc", "acc", "good", "vgood", "1", "2", "3"]:
-        node.name = "classAttr"
+    if node.decision in Instance().attr_values_dict[Instance().attr_list[-1]]:
+        node.name = Instance().attr_list[-1]
 
     if not node.children:
         node.depth = 1
@@ -92,7 +93,7 @@ def fill_source(source, node_list):
             source["leafNodes_y"].append(node.coord[1])
 
         if node.name == "":
-            source["attribute_type"].append("classAttr")
+            source["attribute_type"].append(Instance().attr_list[-1])
         else:
             source["attribute_type"].append(node.name)
 
