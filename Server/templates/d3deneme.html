@@ -136,6 +136,7 @@ var rectangles = svgContainer.selectAll("rect")
                             .attr("fill","beige")
                             .attr("x", function (d) { return d.x; })
                             .attr("y", function (d) { return d.y; })
+                            .attr("rx", 15)
                             .attr("width", function (d) { return 73; })
                             .attr("height", function (d, i) { return rectHeight * radiusDict[Object.keys(radiusDict)[i]].length + 80});
 var texts = svgContainer.selectAll("text.label")
@@ -149,7 +150,7 @@ var texts = svgContainer.selectAll("text.label")
     .attr('y', function (d) {
         return 55;
     })
-    .attr("fill", "grey")
+    .attr("fill", "black")
     .text(function (d) {
         return d.label;
     })
@@ -229,7 +230,7 @@ function calculateTest(){
     calculateFruitPlaces();
 
     //DANGEROUS HERE ANY OTHER g would be affected by that
-    d3.select('svg g').style('opacity','0');
+    d3.select('.sliderAll').style('opacity','0');
 
     d3.selectAll('.button__text').text("Yeni Model Kur")
     svgContainer.selectAll("rect")
@@ -321,8 +322,8 @@ function againTrain(){
     console.log(rectangleData);
 
     d3.selectAll('.button__text').text("Modeli Test Et");
-    svgContainer.selectAll(".tick").style('display','none');
-    svgContainer.select("g").style("opacity", '1');
+    svgContainer.selectAll("image.tick").style('display','none');
+    svgContainer.select(".sliderAll").style("opacity", '1');
     svgContainer.selectAll('text.accuracy').style('display', 'none');
     svgContainer.selectAll("rect")
                             .data(rectangleData)
@@ -346,7 +347,7 @@ function againTrain(){
                     .text(function(d){return d.label})
                     .attr('x', calculateXForText)
                     .attr('y', 55)
-                    .attr("fill", "#edf8b1")
+                    .attr("fill", "black")
                     .style("font-size", "30px");
 
     svgContainer.selectAll("image.fruit")
@@ -370,7 +371,7 @@ function againTrain(){
                     .attr('y', function(d){
                         return d.y;
                     })
-                    .attr('width', rectWidth)
+                    .attr('width', rectWidth / 2)
                     .attr('height', rectHeight)
                     .attr("xlink:href", function (d) {
                         return "../icons/" + d.fruit_img;

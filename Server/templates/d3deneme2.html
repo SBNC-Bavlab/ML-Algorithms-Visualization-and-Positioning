@@ -14,20 +14,35 @@
         font-family: "Got";
         src: url(../css/got.ttf) format("truetype");
     }
+    text.button_text{
+        cursor: pointer
+    }
+    rect.button_rect{
+        cursor: pointer
+    }
 </style>
 <body>
+<svg id = "section1"></svg>
 
 <script src="../js/liquidFillGauge.js"></script>
 <script>
-    const gauge0Width = innerWidth * 0.75;
-    const gauge0Height = innerHeight * 0.1 + 10;
-    const gauge1Width = innerWidth * 0.75;
-    const gauge1Height = innerHeight * 0.5 + 10;
-    const scaledRadius = 0.3 * 370;
+
+    const s1ScaledRadius = 0.7 * 370;
+    const s2ScaledRadius = 0.3 * 370;
+
+    const s2Gauge0Width = innerWidth * 0.8;
+    const s2Gauge0Height = innerHeight * 0.1 + 10;
+    const s2Gauge1Width = innerWidth * 0.8;
+    const s2Gauge1Height = innerHeight * 0.5 + 10;
+
+    const s1Gauge0Width = innerWidth / 2 - s1ScaledRadius;
+    const s1Gauge0Height = innerHeight / 2 - s1ScaledRadius + 50;
+    var circleX = 1000;
     const questions = [{name: "Zengin mi?", attribute: "Evet", type: 1},
         {name: "Beyaz saçlı mı?", attribute: "Beyaz", type: 4},
         {name: "Ejderhası var mı?", attribute: "Var", type: 2},
         {name: "Tahtı istiyor mu?", attribute: "Evet", type: 3}];
+
     const got = [
               ["Trion Lannister", "Hayır", "Yok", "Hayır", "Sarı", "Lannıster"],
               ["Daenerys Targaryen", "Evet", "Var", "Evet", "Beyaz", "Targaryen"],
@@ -38,11 +53,41 @@
               ["Arya Stark", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
               ["Tywin Lannister", "Evet", "Yok", "Evet",  "Sarı", "Lannıster"],
               ["Sansa Stark", "Hayır", "Yok", "Hayır", "Kızıl", "Stark"],
-              ["Lieutenant Whıte Walker", "Hayır", "Var", "Hayır", "Beyaz", "Whıte Walker"],
+              ["Lieutenant W. Walker", "Hayır", "Var", "Hayır", "Beyaz", "Whıte Walker"],
               ["Viserys Targaryen", "Hayır", "Yok",  "Evet", "Beyaz", "Targaryen"],
               ["Wights", "Hayır", "Yok", "Hayır", "Beyaz", "Whıte Walker"],
               ["Eddard Stark", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
             ];
+    var mix = function(color_1, color_2, weight) {
+      function d2h(d) { return d.toString(16); }  // convert a decimal value to hex
+      function h2d(h) { return parseInt(h, 16); } // convert a hex value to decimal
+
+      weight = (typeof(weight) !== 'undefined') ? weight : 50; // set the weight to 50%, if that argument is omitted
+
+      var color = "#";
+
+      for(var i = 0; i <= 5; i += 2) { // loop through each of the 3 hex pairs—red, green, and blue
+        var v1 = h2d(color_1.substr(i, 2)), // extract the current pairs
+            v2 = h2d(color_2.substr(i, 2)),
+
+            // combine the current pairs from each source color, according to the specified weight
+            val = d2h(Math.floor(v2 + (v1 - v2) * (weight / 100.0)));
+
+        while(val.length < 2) { val = '0' + val; } // prepend a '0' if val results in a single digit
+
+        color += val; // concatenate val to our new color string
+      }
+
+      return color; // PROFIT!
+    };
+    var rgb2hex = function(rgb) {
+      // A very ugly regex that parses a string such as 'rgb(191, 0, 46)' and produces an array
+      rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d\.]+))?\)$/);
+
+      function hex(x) { return ("0" + parseInt(x).toString(16)).slice(-2); } // another way to convert a decimal to hex
+
+      return (hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3])).toUpperCase(); // concatenate the pairs and return them upper cased
+    };
     /*const got = [
               ["Trion", "Hayır", "Yok", "Hayır", "Sarı", "Lannister"],
               ["Daenerys", "Evet", "Var", "Evet", "Beyaz", "Targaryen"],
@@ -58,48 +103,156 @@
               ["Wights", "Hayır", "Yok", "Hayır", "Beyaz", "White Walker"],
               ["Eddard", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
             ];*/
-    const rowNames = ['İSİM', 'ZENGİN Mİ?', 'EJDERHA?', 'TAHTI İSTİYOR?', 'SAÇ RENGİ', 'HANESİ'];
+    const rowNames = ['İsim', 'Zengin mi?', 'Ejderha?', 'Tahtı istiyor?', 'Saç rengi', 'Hanesi'];
     got.sort(function(a, b){
         const str1 = a[a.length - 1];
         const str2 = b[b.length - 1];
-        return str1 < str2 ? -1 : str1 > str2; ;
+        return str1 < str2 ? -1 : str1 > str2;
     });
-    const familyToColorIndex = {'Lannister': 2,'Targaryen': 1,'Stark': 0,'Whıte Walker': 3}
-    const svg = d3.select("body")
-                            .append("svg")
-                            .attr('id', 'gauge')
-                            .attr("width", innerWidth)
-                            .attr("height", innerHeight);
+    const familyToColorIndex = {'Lannister': 2,'Targaryen': 1,'Stark': 0,'Whıte Walker': 3};
     const gotPosArray = [];
+    let color = d3.scaleOrdinal()
+                    .range(d3.schemeCategory10);
+
 
     for(let i = 0; i < got.length; i++){
         for(let j = 0; j < got[0].length; j++) {
-            if (j == 1) {
-                gotPosArray.push({'x': 200 * j + 80, 'y': 53 * i + 75, 'text': got[i][j]})
+            if (j === 1) {
+                gotPosArray.push({'x': 200 * j + 330, 'y': 53 * i + 75, 'text': got[i][j]})
             } else if(j > 1){
-                gotPosArray.push({'x': 80 * j + 200, 'y': 53 * i + 75, 'text': got[i][j]})
+                gotPosArray.push({'x': 80 * j + 450, 'y': 53 * i + 75, 'text': got[i][j]})
             }else {
-                gotPosArray.push({'x': 100 * j + 100, 'y': 53 * i + 75, 'text': got[i][j]})
+                gotPosArray.push({'x': 100 * j + 360, 'y': 53 * i + 75, 'text': got[i][j]})
             }
         }
     }
+
+    const buttonsPos = [{x: 30, y: 100, text: "Zengin mi?", click: () => {askQuestion(0)}},
+                        {x: 30, y: 200, text: "Ejderhasi var mi?", click: () => {askQuestion(2)}},
+                        {x: 30, y: 300, text: "Tahti istiyor mu?", click: () => {askQuestion(3)}},
+                        {x: 30, y: 500, text: "Kendi sorunu oluştur", click: () => {createQuestion()}},
+                        {x: 30, y: 600, text: "Reset", click: () => {reset()}} ]
+
+    //Below is for section 1
+
+    const infoTextPost = [{x: 30, y: 200, text: "Her bir daire Game of Thrones dizisindeki bir karakteri, her bir renk ise üyesi oldukları haneyi temsil etmektedir"},
+                        {x: innerWidth * 0.67, y: 200, text: "Renkleri bir suda karıştırdığımızda suyun koyuluk oranı elimizde ki verilerin entropi (karmaşıklık) oranını vermektedir"}];
+
+    const generalEntropy = calculateEntropy(got);
+    const svgSection1 = d3.select("#section1")
+                            .attr("width", innerWidth)
+                            .attr("height", innerHeight);
+    svgSection1.selectAll("text.infoText")
+        .data(infoTextPost)
+        .enter()
+        .append("foreignObject")
+        .attr("width", 480)
+        .attr("height", 500)
+        .attr("x", (d)=>{
+           return d.x;
+        })
+        .attr("y", (d)=>{
+            return d.y;
+        })
+        .append("xhtml:body")
+        .style("font", "30px 'Arial'")
+        .html((d)=>{
+            return d.text;
+        });
+    var soFarColor = "000000";
+    function mixAllColor(){
+        for (var i = 0; i < 2; i++){
+            soFarColor = mix(color(i).slice(1), soFarColor, 50).slice(1);
+        }
+    }
+    mixAllColor()
+
+    color = d3.scaleOrdinal()
+                .range(d3.schemeCategory10);
+
+    svgSection1.selectAll("circle.s1circle")
+                .data(got)
+                .enter()
+                    .append("circle")
+                    .attr("class", "s1circle")
+                    .attr("cx", (d , i) => {
+                        return 60 * i + 400;
+                    })
+                    .attr("cy", 50)
+                    .attr("r", 25)
+                .attr("fill", (d, i)=>{
+                    return color(familyToColorIndex[d[d.length - 1]]);
+                });
+
+    svgSection1.selectAll("circle.s1circle")
+                .data(got)
+                .transition()
+                .attr("transform", (d, i)=>{
+                    const targetX = s1Gauge0Width + s1ScaledRadius
+                    const targetY = s1Gauge0Height + s1ScaledRadius
+                    const currentX = 60 * i + 400;
+                    const currentY = 50;
+                    const dx = targetX - currentX;
+                    const dy = targetY - currentY;
+                    return "translate( " + dx + "," + dy + ")";
+                })
+                .on('start', function(d){
+                    setTimeout(()=> {
+                        svgSection1.on("valueChanged0")(generalEntropy.toFixed(2));
+                        svgSection1.on("opacityChanged0")(soFarColor);
+                    }, 1200);
+                })
+                .delay(1000)
+                .duration(2000);
+    svgSection1.call(d3.liquidfillgauge, 50, {
+      circleThickness: 0.15,
+      circleColor: "#1CA3EC",
+      textColor: "#1CA3EC",
+      waveTextColor: "#FFFFAA",
+      waveColor: "1CA3EC",
+        backgroundColor: "white",
+      textVertPosition: 0.8,
+      waveAnimateTime: 1000,
+      waveHeight: 0.05,
+      waveAnimate: true,
+      waveRise: false,
+      waveOffset: 0.25,
+      textSize: 0.75,
+      waveCount: 3
+    }, s1Gauge0Width, s1Gauge0Height, 0, 0.7);
+
+
+
+
+
+
+
+    //Below is for section2
+    const svg = d3.select("body")
+                            .append("svg")
+                            .attr('id', 'section2')
+                            .attr("width", innerWidth)
+                            .attr("height", innerHeight);
     const rectWidth = 600;
     const rectHeight = 40;
+    const buttonWidth = 160;
+    const buttonHeight = 50;
     const rectColor = "rgb(245, 245, 220)";
     svg.selectAll('text.header').data(rowNames)
-        .enter().append('text')
+                        .enter()
+                        .append('text')
                         .attr("class", "header")
                         .attr('x', function(d, i){
                             if (i == 0){
-                                return 100 * i + 100;
+                                return 100 * i + 400;
                             } else if (i === 1) {
-                                return 200 * i + 65;
+                                return 200 * i + 315;
                             } else if(i === 3){
-                                return 80 * i + 178;
+                                return 80 * i + 438;
                             } else if(i === 5){
-                                return 80 * i + 195;
+                                return 80 * i + 445;
                             } else if(i > 1){
-                                return 80 * i + 190;
+                                return 80 * i + 440;
                             }
                         })
                         .attr('y', function(d, i){
@@ -108,19 +261,51 @@
                         .text(function (d) {
                             return d;
                         })
-                        .style("font-family", "Cormorant Unicase")
-                        .style("font-size", "11px")
-                        .style("font-weight", "bold");
+                        .style("font-size", "14px")
+        .attr("fill", "#e6f598");
+    svg.selectAll("rect.button_rect")
+        .data(buttonsPos)
+        .enter()
+        .append("rect")
+        .attr('x', (d) => {return d.x})
+        .attr('y', (d) => {return d.y})
+        .attr('width', buttonWidth)
+        .attr('height', buttonHeight)
+        .attr("fill", "green")
+        .attr('class', "button_rect")
+        .attr('rx', 15)
+        .attr('ry', 15)
+        .on('click', (d)=>{
+            d.click();
+        });
+
     svg.append('rect').lower()
         .transition()
         .ease(d3.easeLinear)
         .duration(1000)
         .attr('border', 1)
-        .attr('fill', 'red')
-        .attr('x', 100)
+        .attr('fill', '#d7191c')
+        .attr('x', 350)
         .attr('y', 0)
+        .attr('rx', 15)
+        .attr('ry', 15)
         .attr('width', rectWidth)
         .attr('height', rectHeight);
+    svg.selectAll("text.button_text")
+        .data(buttonsPos)
+        .enter()
+        .append("text")
+        .attr('x', (d) => {return d.x + buttonWidth / 2})
+        .attr('y', (d) => {return d.y + buttonHeight / 2})
+        .attr("fill", "white")
+        .attr("alignment-baseline", "middle")
+        .attr("text-anchor", "middle")
+        .attr('class', "button_text")
+        .text((d) => {return d.text})
+        .on('click', (d)=>{
+            d.click();
+        });
+
     svg.selectAll("rect.item").data(got)
         .enter()
         .append("rect")
@@ -129,8 +314,10 @@
         .ease(d3.easeLinear)
         .duration(1000)
         .attr('border', 1)
-        .attr('fill', rectColor)
-        .attr('x', 100)
+        .attr('rx', 15)
+        .attr('ry', 15)
+        .attr('fill', "#fc8d59")
+        .attr('x', 350)
         .attr('y', function(d, i){
             return 53 * i + 50;
         })
@@ -143,9 +330,8 @@
                         .attr('class', 'table')
                         .ease(d3.easeLinear)
                         .duration(1000)
-                        .style("font-family", "Cormorant Unicase")
-                        .style("font-size", "13px")
-                        .style("font-weight", "bold")
+                        .style("font-size", "12px")
+                        .attr("fill", "black")
                         .attr('x', function(d){
                             return d.x;
                         })
@@ -154,9 +340,6 @@
                         }).text(function(d){
                             return d.text.toLocaleUpperCase("tr-TR");
                         });
-
-    const color = d3.scaleOrdinal()
-        .range(d3.schemeCategory10);
     svg.selectAll("circle.house_color")
         .data(got)
         .enter()
@@ -165,7 +348,7 @@
         .transition()
         .duration(1000)
         .ease(d3.easeLinear)
-        .attr('cx', 740)
+        .attr('cx', circleX)
         .attr('cy', function(d, i){
             return 53 * i + 70;
         })
@@ -177,10 +360,10 @@
         });
 
     svg.call(d3.liquidfillgauge, 50, {
-        circleColor: "rgb(153, 192, 255)",
+        circleColor: "#fee08b",
         textColor: "rgb(244, 247, 252)",
         waveTextColor: "rgb(244, 247, 252)",
-        waveColor: "rgb(153, 192, 255)",
+        waveColor: "#fee08b",
         circleThickness: 0.2,
         textVertPosition: 0.2,
         waveAnimateTime: 1000,
@@ -188,13 +371,13 @@
         backgroundColor: "#e0e0e0",
         valueCountUpAtStart: false,
         waveRiseAtStart: false
-    }, gauge0Width, gauge0Height + 25, 0);
+    }, s2Gauge0Width, s2Gauge0Height + 25, 1, 0.3);
 
     svg.call(d3.liquidfillgauge, 50, {
-        circleColor: "rgb(153, 192, 255)",
+        circleColor: "#fee08b",
         textColor: "rgb(244, 247, 252)",
         waveTextColor: "rgb(244, 247, 252)",
-        waveColor: "rgb(153, 192, 255)",
+        waveColor: "#fee08b",
         circleThickness: 0.2,
         textVertPosition: 0.2,
         waveAnimateTime: 1000,
@@ -202,7 +385,7 @@
         backgroundColor: "#e0e0e0",
         valueCountUpAtStart: false,
         waveRiseAtStart: false
-    }, gauge1Width, gauge1Height + 25, 1);
+    }, s2Gauge1Width, s2Gauge1Height + 25, 1, 0.3);
     //circleThickness : 0.15, circleColor : "#808015", textColor : "#555500", waveTextColor : "#FFFFAA", waveColor : "#AAAA39", textVertPosition : 0.8, waveAnimateTime : 1000, waveHeight : 0.05, waveAnimate : true, waveRise : false, waveHeightScaling : false, waveOffset : 0.25, textSize : 0.75, waveCount : 3,
     let createQuestionIndex = 0;
     function changeColorRect(index) {
@@ -232,14 +415,14 @@
             var targetY;
             var targetX;
             if (isYes) {
-                targetX = gauge0Width + scaledRadius;
-                targetY = (gauge0Height) + scaledRadius;
+                targetX = s2Gauge0Width + s2ScaledRadius;
+                targetY = (s2Gauge0Height) + s2ScaledRadius;
             } else {
-                targetX = gauge1Width + scaledRadius;
-                targetY = (gauge1Height) + scaledRadius;
+                targetX = s2Gauge1Width + s2ScaledRadius;
+                targetY = (s2Gauge1Height) + s2ScaledRadius;
             }
             const currentY = 53 * index + 40;
-            const currentX = 740;
+            const currentX = circleX;
             const dx = targetX - currentX;
             const dy = targetY - currentY;
             dxs.push(dx);
@@ -258,8 +441,8 @@
             svg.on("valueChanged0")(leftEntropy.toFixed(2));
             svg.on("valueChanged1")(rightEntropy.toFixed(2));
 
-            svg.on("opacityChanged0")((leftEntropy + 1) / 2.5);
-            svg.on("opacityChanged1")((rightEntropy + 1) / 2.5);
+            //svg.on("opacityChanged0")((leftEntropy + 1) / 2.5);
+            //svg.on("opacityChanged1")((rightEntropy + 1) / 2.5);
 
             let result = "";
             if (isYes) {
@@ -273,25 +456,11 @@
             }
             d3.select(this).transition().duration(500).delay(500).attr('transform', result).attr('r', "5")
         })
-        .on('end', function(d){
-            /*
-            let result = "";
-            if (isYes) {
-                const dx2 = 15 * (a2++ + 1) + 110;
-                const dy2 = 0;
-                result = "translate(" + (dxs[index] + dx2) + "," + (dys[index] + dy2) + ")"
-            } else {
-                const dx2 = 15 * (b2++ + 1) + 110;
-                const dy2 = 0;
-                result = "translate(" + (dxs[index] + dx2) + "," + (dys[index] + dy2) + ")"
-            }
-            d3.select(this).transition().duration(1000).attr('transform', result).attr('r', "5")*/
-        })
         .delay(function(d,i){return 500 * i});
     }
     svg.append('text')
-        .attr('x', (gauge0Width + scaledRadius) *0.97)
-        .attr('y', gauge0Height * 1.2)
+        .attr('x', (s2Gauge0Width + s2ScaledRadius) *0.97)
+        .attr('y', s2Gauge0Height * 1.2)
         .style("font-size", "40px")
         .on("click", function(d) {
             seperate(true, createQuestionIndex++);
@@ -301,8 +470,8 @@
         .attr("stroke", 'black')
         .text("Evet");
     svg.append('text')
-        .attr('x', (gauge1Width + scaledRadius) *0.956)
-        .attr('y', gauge1Height * 1.03)
+        .attr('x', (s2Gauge1Width + s2ScaledRadius) *0.956)
+        .attr('y', s2Gauge1Height * 1.03)
         .style("font-size", "40px")
         .attr("fill", 'rgb(242, 247, 255)')
         .attr("stroke", 'black')
@@ -347,14 +516,14 @@
                                 var targetY;
                                 var targetX;
                                 if(isLeft) {
-                                    targetX = gauge0Width + scaledRadius;
-                                    targetY = gauge0Height + scaledRadius;
+                                    targetX = s2Gauge0Width + s2ScaledRadius;
+                                    targetY = s2Gauge0Height + s2ScaledRadius;
                                 } else {
-                                    targetX = gauge1Width + scaledRadius;
-                                    targetY = gauge1Height + scaledRadius;
+                                    targetX = s2Gauge1Width + s2ScaledRadius;
+                                    targetY = s2Gauge1Height + s2ScaledRadius;
                                 }
                                 const currentY =  53 * i + 40;
-                                const currentX = 740;
+                                const currentX = circleX;
                                 const dx = targetX - currentX;
                                 const dy = targetY - currentY;
                                 dxs.push(dx);
@@ -375,8 +544,8 @@
                                 svg.on("valueChanged1")(rightEntropy.toFixed(2));
 
                                 console.log('left', leftEntropy, 'right', rightEntropy)
-                                svg.on("opacityChanged0")((leftEntropy + 1) / 2.5);
-                                svg.on("opacityChanged1")((rightEntropy + 1) / 2.5);
+                                //svg.on("opacityChanged0")((leftEntropy + 1) / 2.5);
+                                //svg.on("opacityChanged1")((rightEntropy + 1) / 2.5);
 
                                 var result = "";
                                 if(isLeft) {
@@ -400,8 +569,8 @@
         svg.selectAll("circle.house_color").transition()
             .duration(600)
             .attr('transform', "translate(0,0)").attr('r', "20");
-        svg.on("opacityChanged0")(1 / 2.5);
-        svg.on("opacityChanged1")(1 / 2.5);
+        //svg.on("opacityChanged0")(1 / 2.5);
+        //svg.on("opacityChanged1")(1 / 2.5);
         svg.on("valueChanged0")("0.00");
         svg.on("valueChanged1")("0.00");
         a = 0;
@@ -413,65 +582,7 @@
         dys.length = 0;
         left.length = 0;
         right.length = 0;
-1    }
+    }
 </script>
-<div id="buttons" style="z-index: 999; display: block; width: 0; position: absolute; top: -40px; left: 710px;">
-        <a></a>
-        <button onclick='askQuestion(0)' style="transform: scale(0.6);"  class="button button--line button--effect-1">
-            <span class="morph-shape"  data-morph-active="M286,113c0,0-68.8,6-136,6c-78.2,0-137-6-137-6S6,97.198,6,62.5C6,33.999,13,12,13,12s59-7,137-7c85,0,136,7,136,7s8,17.598,8,52C294,96.398,286,113,286,113z">
-                <svg width="100%" height="100%" viewBox="0 0 300 125" preserveAspectRatio="none">
-                    <path d="M286.5,113c0,0-104,0-136.5,0c-35.75,0-136.5,0-136.5,0s0-39.417,0-52.5c0-12.167,0-48.5,0-48.5s101.833,0,136.5,0c33.583,0,136.5,0,136.5,0s0,35.917,0,48.5C286.5,73.167,286.5,113,286.5,113z"/>
-                </svg>
-            </span>
-            <span class="button__text">Zengin mi?</span>
-        </button>
-</div>
-<div id="buttons" style="z-index: 999; display: block; width: 0; position: absolute; top: -40px; left: 990px;">
-        <a></a>
-        <button onclick='askQuestion(2)' style="transform: scale(0.6);" class="button button--line button--effect-1">
-            <span class="morph-shape"  data-morph-active="M286,113c0,0-68.8,6-136,6c-78.2,0-137-6-137-6S6,97.198,6,62.5C6,33.999,13,12,13,12s59-7,137-7c85,0,136,7,136,7s8,17.598,8,52C294,96.398,286,113,286,113z">
-                <svg width="100%" height="100%" viewBox="0 0 300 125" preserveAspectRatio="none">
-                    <path d="M286.5,113c0,0-104,0-136.5,0c-35.75,0-136.5,0-136.5,0s0-39.417,0-52.5c0-12.167,0-48.5,0-48.5s101.833,0,136.5,0c33.583,0,136.5,0,136.5,0s0,35.917,0,48.5C286.5,73.167,286.5,113,286.5,113z"/>
-                </svg>
-            </span>
-            <span class="button__text">Ejderhasi var mı?</span>
-        </button>
-</div><div id="buttons" style="z-index: 999; display: block; width: 0; position: absolute; top: -40px; left: 850px;">
-        <a></a>
-        <button onclick='askQuestion(3)' style="transform: scale(0.6);" class="button button--line button--effect-1">
-            <span class="morph-shape"  data-morph-active="M286,113c0,0-68.8,6-136,6c-78.2,0-137-6-137-6S6,97.198,6,62.5C6,33.999,13,12,13,12s59-7,137-7c85,0,136,7,136,7s8,17.598,8,52C294,96.398,286,113,286,113z">
-                <svg width="100%" height="100%" viewBox="0 0 300 125" preserveAspectRatio="none">
-                    <path d="M286.5,113c0,0-104,0-136.5,0c-35.75,0-136.5,0-136.5,0s0-39.417,0-52.5c0-12.167,0-48.5,0-48.5s101.833,0,136.5,0c33.583,0,136.5,0,136.5,0s0,35.917,0,48.5C286.5,73.167,286.5,113,286.5,113z"/>
-                </svg>
-            </span>
-            <span class="button__text">Tahtı istiyor mu?</span>
-        </button>
-</div>
-
-<div id='buttons' style="z-index: 999; display: block; width: 0; position: absolute; bottom: 0; left: 850px;">
-        <a></a>
-        <button onclick='createQuestion()'  style="transform: scale(0.6);" class="button button--line button--effect-1">
-            <span class="morph-shape"  data-morph-active="M286,113c0,0-68.8,6-136,6c-78.2,0-137-6-137-6S6,97.198,6,62.5C6,33.999,13,12,13,12s59-7,137-7c85,0,136,7,136,7s8,17.598,8,52C294,96.398,286,113,286,113z">
-                <svg width="100%" height="100%" viewBox="0 0 300 125" preserveAspectRatio="none">
-                    <path d="M286.5,113c0,0-104,0-136.5,0c-35.75,0-136.5,0-136.5,0s0-39.417,0-52.5c0-12.167,0-48.5,0-48.5s101.833,0,136.5,0c33.583,0,136.5,0,136.5,0s0,35.917,0,48.5C286.5,73.167,286.5,113,286.5,113z"/>
-                </svg>
-            </span>
-            <span class="button__text">Kendi Sorunu Oluştur</span>
-        </button>
-</div>
-<div id='buttons' style="z-index: 999; display: block; width: 0; position: absolute; bottom: 0; left: 990px;">
-        <a></a>
-        <button onclick='reset()'  style="transform: scale(0.6);" class="button button--line button--effect-1">
-            <span class="morph-shape"  data-morph-active="M286,113c0,0-68.8,6-136,6c-78.2,0-137-6-137-6S6,97.198,6,62.5C6,33.999,13,12,13,12s59-7,137-7c85,0,136,7,136,7s8,17.598,8,52C294,96.398,286,113,286,113z">
-                <svg width="100%" height="100%" viewBox="0 0 300 125" preserveAspectRatio="none">
-                    <path d="M286.5,113c0,0-104,0-136.5,0c-35.75,0-136.5,0-136.5,0s0-39.417,0-52.5c0-12.167,0-48.5,0-48.5s101.833,0,136.5,0c33.583,0,136.5,0,136.5,0s0,35.917,0,48.5C286.5,73.167,286.5,113,286.5,113z"/>
-                </svg>
-            </span>
-            <span class="button__text">Reset</span>
-        </button>
-</div>
-<script src="../js/classie.js"></script>
-<script src="../js/button.js"></script>
-
 </body>
 </html>
