@@ -1,19 +1,22 @@
 import pandas as pd
+from os.path import join, basename, getsize
+import logging
+import base64
 from bokeh.plotting import figure
 from bokeh.transform import dodge, factor_cmap
-from bokeh.models import ColumnDataSource, LabelSet, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs, Toggle
+from bokeh.models import ColumnDataSource, LabelSet, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs, Toggle, CustomJS, TapTool
 from bokeh.models.widgets import Button, Paragraph, Select, CheckboxGroup
 from bokeh.layouts import column, row
 from Bokeh.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 from math import atan
-from Bokeh.Plot.singleton import get_dictionaries, get_all_colors, get_choice, set_choice
+from Bokeh.Plot.get_data import get_all_colors, set_dataset, set_new_dataset
+from Bokeh.Plot.instance import Instance
 
-cmap, label_to_tr, attr_to_turkish, attr_to_children, all_attrs_list = get_dictionaries(get_choice())
 
 TOOLTIPS = [
     ("Metod Değeri", "@{nonLeafNodes_stat}"),
     ("Örnek Sayısı", "@{instances}"),
-    ("Sonuç", "@{decision_tr}")
+    ("Sonuç", "@{decision}")
 ]
 
 radio_button_labels = ["gini", "gainRatio"]
@@ -29,7 +32,6 @@ rect_width = 2
 rect_height = 0.5
 circle_radius = 5
 
-
 def get_new_data_source(df):
     """
     modular data source
@@ -42,15 +44,13 @@ def get_new_data_source(df):
     df['decision'] = [decision if decision else "-" for decision in df['decision']]
     df["nonLeafNodes_stat"] = df["nonLeafNodes_stat"].fillna(0)
     df["decision"] = ["" + x for x in df["decision"]]
-    df["decision_tr"] = [label_to_tr["classAttr"]["" + x]for x in df["decision"]]
-    df['attribute_type_tr'] = [attr_to_turkish[attr] for attr in df['attribute_type']]
 
 
 def modify_individual_plot(p, data_source, active_attributes_list, arrow_data_source, root):
     """
     modular plot
     """
-    data, width, depth, level_width, acc = get_bokeh_data(current_label, active_attributes_list + ["classAttr"],
+    data, width, depth, level_width, acc = get_bokeh_data(current_label, active_attributes_list + [Instance().attr_list[-1]],
                                                           root)
     data = pd.DataFrame.from_dict(data)
     get_new_data_source(data)
@@ -75,8 +75,9 @@ def create_figure():
     Position the widgets and figures according to rows and columns
     :return: send layout of widgets and plots back to Bokeh
     """
-    active_attributes_list = [attr for attr in cmap.keys() if attr != "classAttr"]
-    source, width, depth, level_width, acc = get_bokeh_data("gini", active_attributes_list + ["classAttr"],
+    set_dataset()
+    active_attributes_list = [attr for attr in Instance().cmap.keys() if attr != Instance().attr_list[-1]]
+    source, width, depth, level_width, acc = get_bokeh_data("gini", active_attributes_list + [Instance().attr_list[-1]],
                                                             selected_root)
     source["nonLeafNodes_stat"] = [str(x) for x in source["nonLeafNodes_stat"]]
     elements = pd.DataFrame.from_dict(source)
@@ -92,18 +93,18 @@ def create_figure():
     attr_info = Paragraph(text="""
        Nitelikleri seçiniz:
     """, width=200)
-    attribute_checkbox = CheckboxGroup(labels=[attr_to_turkish[attr] for attr in list(cmap.keys())
-                                               if attr != "classAttr"],
-                                       active=[i for i, attr in enumerate(list(cmap.keys()))])
+    attribute_checkbox = CheckboxGroup(labels=[attr for attr in list(Instance().cmap.keys())
+                                               if attr != Instance().attr_list[-1]],
+                                       active=[i for i, attr in enumerate(list(Instance().cmap.keys()))])
     apply_changes_button = Button(width=275, label="Değişiklikleri Uygula", button_type="success")
     decision_button = Toggle(width=275, label="Sonuç gösterme", button_type="warning")
     arrow_button = Toggle(width=275, label="Karar değerlerini gösterme", button_type="warning")
     root_select = Select(title="Kök niteliği seçiniz:",
-                         options=['Hiçbiri'] + [attr_to_turkish[attr] for attr in list(cmap.keys())[:-1]],
+                         options=['Hiçbiri'] + [attr for attr in list(Instance().cmap.keys())[:-1]],
                          value="Hiçbiri")
     method_select = Select(title="Metodu seçiniz:", options=radio_button_labels, value="gini")
     tree_select = Select(title="Ağacın görünümünü seçiniz:", options=tree_mode_labels, value="Basit")
-    dataset_select = Select(title="Veri Kümesini Seç:", value="lens", options=["lens", "araba"])
+    dataset_select = Select(title="Veri Kümesini Seç:", value="lens", options=["lens", "car", "GoT"])
 
     p, arrow_data_source = create_plot(width, level_width, groups, periods, data_source, False, acc)
     p.axis.visible = False
@@ -118,8 +119,72 @@ def create_figure():
     tab2 = Panel(child=best_root_plot, title="İdeal ağaç")
     tree_tab = Tabs(tabs=[tab1, tab2])
 
+
+
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    """Adapted from https://groups.google.com/a/continuum.io/d/msg/bokeh/EtuMtJI39qQ/ZWuXjBhaAgAJ"""
+    """vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"""
+    def new_upload_button(save_path,
+                          name="dataset.txt",
+                          label="Veri Kümesi Yükleyin"):
+        def file_callback(_attr, _old, _new):
+            if True:
+                raw_contents = file_source.data['contents'][0]
+                # remove the prefix that JS adds
+                prefix, b64_contents = raw_contents.split(",", 1)
+                file_contents = base64.b64decode(b64_contents)
+                fname = join(save_path, name)
+                with open(fname, "wb") as f:
+                    f.write(file_contents)
+
+        file_source = ColumnDataSource({'contents': [], 'name': []})
+        file_source.on_change('data', file_callback)
+
+        file_button = Button(width=275, label=label, button_type="success")
+        file_button.callback = CustomJS(args=dict(source=file_source), code=_upload_js)
+        return file_button, file_source
+
+    _upload_js = """
+    function read_file(filename) {
+        var reader = new FileReader();
+        reader.onload = load_handler;
+        reader.onerror = error_handler;
+        // readAsDataURL represents the file's data as a base64 encoded string
+        reader.readAsDataURL(filename);
+    }
+
+    function load_handler(event) {
+        var b64string = event.target.result;
+        source.data = {'contents' : [b64string], 'name':[input.files[0].name]};
+        source.change.emit()
+    }
+
+    function error_handler(evt) {
+        if(evt.target.error.name == "NotReadableError") {
+            alert("Can't read file!");
+        }
+    }
+
+    var input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.onchange = function(){
+        if (window.FileReader) {
+            read_file(input.files[0]);
+        } else {
+            alert('FileReader is not supported in this browser');
+        }
+    }
+    input.click();
+    """
+    file_button, file_source = new_upload_button("../Bokeh/Data/")
+    """^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"""
+    """Adapted from https://groups.google.com/a/continuum.io/d/msg/bokeh/EtuMtJI39qQ/ZWuXjBhaAgAJ"""
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+
+
     main_frame = row(column(root_select, attr_info, attribute_checkbox, apply_changes_button,
-                            decision_button, arrow_button, dataset_select, tree_select), tree_tab)
+                            decision_button, arrow_button, dataset_select, tree_select, file_button), tree_tab)
 
     def update_method_type(_attr, _old, new):
         """
@@ -140,7 +205,7 @@ def create_figure():
         global selected_root
         active_attributes_list[:] = []
         for i in new:
-            active_attributes_list.append(list(cmap.keys())[i])
+            active_attributes_list.append(list(Instance().cmap.keys())[i])
         if selected_root != '' and selected_root not in active_attributes_list:
             apply_changes_button.disabled = True
         else:
@@ -204,13 +269,38 @@ def create_figure():
             arrow_button.label = "Karar değerlerini gösterme"
     arrow_button.on_click(turn_arrow_labels_off)
 
+    def source_selected(_attr, _old, _new):
+        class_attrs = get_class_attr()
+        decision_indices = [[] for x in range(len(class_attrs))]
+        for i in range(len(data_source.data['x'])):
+            if data_source.data['decision'][i] != "-": # leaf node
+                decision_indices[class_attrs.index(data_source.data['decision'][i])]\
+                    .append([i, data_source.data['y'][i], data_source.data['x'][i]])
+        for i in class_attrs:
+            if data_source.data['decision'][data_source.selected.indices[0]] == i:
+                selected_class_index = class_attrs.index(i)
+        for i in range(len(decision_indices)):
+            if i != selected_class_index:
+                for j in range(len(decision_indices[i])):
+                    x = decision_indices[i][j][2]
+                    y = decision_indices[i][j][1]
+                    index = decision_indices[i][j][0]
+                    a = data_source.data['x'][index]
+                    b = data_source.data['y'][index]
+                    bool_val_x = a == x
+                    bool_val_y = b == y
+
+                    selected = p.select({})
+                    selected.visible=False
+    data_source.on_change('selected', source_selected)
+
     def update_root(_attr, _old, new):
         """
         change root attribute to be used for creating a new tree
         """
         global selected_root
         new = root_select.options.index(new)
-        method_type_selected = list(cmap.keys())[new - 1]
+        method_type_selected = list(Instance().cmap.keys())[new - 1]
         if new == 0:
             selected_root = ''
             apply_changes_button.disabled = False
@@ -228,14 +318,15 @@ def create_figure():
         """
         global selected_root
         if new == "lens":
-            set_choice("lens")
+            set_new_dataset(new, " ")
         else:
-            set_choice("cars")
+            set_new_dataset(new, ",")
         selected_root = ""
         apply_changes()
-        attribute_checkbox.labels = [attr_to_turkish[attr] for attr in list(cmap.keys()) if attr != "classAttr"]
-        attribute_checkbox.active = [i for i, attr in enumerate(list(cmap.keys()))]
-        root_select.options = ['Hiçbiri'] + [attr_to_turkish[attr] for attr in list(cmap.keys())[:-1]]
+        attribute_checkbox.labels = [attr for attr in list(Instance().cmap.keys()) if attr != Instance().attr_list[-1]]
+        attribute_checkbox.active = [i for i, attr in enumerate(list(Instance().cmap.keys()))]
+        root_select.options = ['Hiçbiri'] + [attr for attr in list(Instance().cmap.keys())[:-1]]
+        # create_figure()
 
     dataset_select.on_change('value', change_dataset)
 
@@ -244,8 +335,6 @@ def create_figure():
         compute new data source to be used for the new tree. change values of several variables to be used before
         sending them to get_bokeh_data
         """
-        global cmap, label_to_tr, attr_to_turkish, attr_to_children, all_attrs_list
-        cmap, label_to_tr, attr_to_turkish, attr_to_children, all_attrs_list = get_dictionaries(get_choice())
 
         modify_individual_plot(p, data_source, active_attributes_list, arrow_data_source, selected_root)
         modify_individual_plot(best_root_plot, best_root_plot_data_source, active_attributes_list,
@@ -275,17 +364,19 @@ def create_plot(width, level_width, groups, periods, data_source, is_previous=Fa
                               "(Seçtiğiniz Kök Nitelikli Hali)") + ("\t\t\t\tTahmin Başarısı (%): "
                                                                     + str(round(acc * 100, 1)) if acc else "")
     hover = HoverTool(names=["circles", "rectangles"])
+    tap = TapTool(names=["circles", "rectangles"])
     wheel = WheelZoomTool()
-    p = figure(title=title, toolbar_location="below", tools=[hover, wheel, ResetTool(), PanTool()],
+    p = figure(title=title, toolbar_location="below", tools=[hover, wheel, ResetTool(), PanTool(), tap],
                plot_width=plot_width, plot_height=plot_height, x_range=groups, y_range=list(periods), tooltips=TOOLTIPS)
     arrow_data_source, arrow, label = draw_arrow(data_source.data, p, width, len(periods), len(groups), level_width)
     p.toolbar.active_scroll = wheel
     p.add_layout(label)
     p.circle("y", "x", radius=circle_radius, radius_units='screen', source=data_source,
-             name="circles", legend="attribute_type_tr",
-             color=factor_cmap('attribute_type', palette=list(get_all_colors()), factors=all_attrs_list))
-    p.rect("y", "x", rect_width, rect_height, source=data_source, name="rectangles", legend="attribute_type_tr",
-           color=factor_cmap('attribute_type', palette=list(get_all_colors()), factors=all_attrs_list))
+             name="circles", legend="attribute_type",
+             color=factor_cmap('attribute_type', palette=list(get_all_colors()), factors=Instance().attr_list))
+    p.rect("y", "x", rect_width, rect_height, source=data_source, name="rectangles", legend="attribute_type",
+           color=factor_cmap('attribute_type', palette=list(get_all_colors()), factors=Instance().attr_list))
+
     p.select(name="rectangles").visible = False
 
     # Drawing on the rectangles
@@ -297,19 +388,19 @@ def create_plot(width, level_width, groups, periods, data_source, is_previous=Fa
                **text_props)
     r.glyph.text_font_size = "7pt"
 
-    r = p.text(x="y", y=dodge("x", 0.3, range=p.x_range), name="detailed_text", text="attribute_type_tr", **text_props)
+    r = p.text(x="y", y=dodge("x", 0.3, range=p.x_range), name="detailed_text", text="attribute_type", **text_props)
     r.glyph.text_font_style = "bold"
     r.glyph.text_font_size = "8pt"
 
     r = p.text(x="y", y=dodge("x", -0.3, range=p.x_range), name="detailed_text", text="instances", **text_props)
     r.glyph.text_font_size = "8pt"
-    r = p.text(x="leafNodes_y", y="leafNodes_x", name="detailed_text", text="decision_tr", **text_props)
+    r = p.text(x="leafNodes_y", y="leafNodes_x", name="detailed_text", text="decision", **text_props)
     r.glyph.text_font_size = "8pt"
 
     p.select(name="detailed_text").visible = False
 
     r = p.text(x="leafNodes_y", text_color="orange", y=dodge("leafNodes_x", -0.4),
-               name="decision_text", text="decision_tr", **text_props)
+               name="decision_text", text="decision", **text_props)
     r.glyph.text_font_size = "8pt"
 
     # Final settings
@@ -336,14 +427,14 @@ def draw_arrow(source, p, width, periods_len, groups_len, level_width, mode="dra
     :return: returns arrow data source, arrows and labels
     """
     arrow_coordinates = {"x_start": [], "x_end": [], "y_start": [], "y_end": [], "x_avg": [], "y_avg": [],
-                         "label_name": [], "instances": [], "angle": [], "xs": [], "ys": [], "label_name_tr": []}
+                         "label_name": [], "instances": [], "angle": [], "xs": [], "ys": []}
     arrow = []
     for i in range(width):
         x_offset = 0
         for j in range(level_width[i]):
             offset = sum(level_width[:i])
-            if source["attribute_type"][offset + j] != "classAttr":
-                children_names = attr_to_children[source["attribute_type"][offset + j]]
+            if source["attribute_type"][offset + j] != Instance().attr_list[-1]:
+                children_names = Instance().attr_values_dict[source["attribute_type"][offset + j]]
                 number_of_children = len(children_names)
                 for index in range(number_of_children):
                     x_start = source["y"][offset + j]
@@ -360,8 +451,6 @@ def draw_arrow(source, p, width, periods_len, groups_len, level_width, mode="dra
                     arrow_coordinates["angle"].append(angle)
                     arrow_coordinates["y_avg"].append((y_start + y_end) / 2)
                     arrow_coordinates["label_name"].append(children_names[index])
-                    arrow_coordinates["label_name_tr"].append(label_to_tr[source['attribute_type'][offset + j]]
-                                                              [children_names[index]])
                     arrow_coordinates["instances"].append(source["instances"][index + sum(level_width[: i + 1])])
                 x_offset += number_of_children
 
@@ -382,6 +471,6 @@ def draw_arrow(source, p, width, periods_len, groups_len, level_width, mode="dra
         arrow = p.multi_line(line_width="instances", line_alpha=0.7, line_color="darkgray",
                              xs="xs", ys="ys", source=arrow_data_source)
     label = LabelSet(x='x_avg', y='y_avg', angle="angle",
-                     name="arrowLabels", text="label_name_tr",
+                     name="arrowLabels", text="label_name",
                      text_font_size="8pt", text_color="darkgray", source=arrow_data_source)
     return arrow_data_source, arrow, label
