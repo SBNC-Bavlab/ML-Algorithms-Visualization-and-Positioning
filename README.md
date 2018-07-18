@@ -1,4 +1,4 @@
-# Decision-Tree-Visualization-and-Positioning 
+# ML Algorithms Visualization and Positioning 
 
 Pure(Program for Undergraduate Research) summer project at Sabancı University.
 
