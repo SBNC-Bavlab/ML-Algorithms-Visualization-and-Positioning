@@ -52,11 +52,11 @@ class Instance(metaclass=Singleton):
         """
             Updated uploaded data set and remove previous one
         """
-        if not self.data_set:
+        if not self.data_set and file_name not in ["car", "lens"]:
             self.data_set = file_name
         else:
             if self.data_set not in ["car", "lens"]:
                 cwd = os.getcwd()
                 file_path = cwd + "/../Bokeh/Data/" + self.data_set
                 os.remove(file_path)
-            self.data_set = file_name
+                self.data_set = file_name

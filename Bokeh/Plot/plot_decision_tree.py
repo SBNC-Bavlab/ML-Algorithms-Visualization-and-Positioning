@@ -142,7 +142,10 @@ def create_figure():
                 with open(fname, "wb") as f:
                     f.write(file_contents)
             dataset_select.options = dataset_select.options + [file_source.data['name'][0]]
-
+            if Instance().data_set:
+                dataset_select.options = [item for item in dataset_select.options if item != Instance().data_set]
+            Instance().update_data_set(file_source.data['name'][0])
+            dataset_select.value = Instance().data_set
         file_source = ColumnDataSource({'contents': [], 'name': []})
         file_source.on_change('data', file_callback)
 
@@ -275,31 +278,6 @@ def create_figure():
             arrow_button.label = "Karar değerlerini gösterme"
     arrow_button.on_click(turn_arrow_labels_off)
 
-    # def source_selected(_attr, _old, _new):
-    #     class_attrs = get_class_attr()
-    #     decision_indices = [[] for x in range(len(class_attrs))]
-    #     for i in range(len(data_source.data['x'])):
-    #         if data_source.data['decision'][i] != "-": # leaf node
-    #             decision_indices[class_attrs.index(data_source.data['decision'][i])]\
-    #                 .append([i, data_source.data['y'][i], data_source.data['x'][i]])
-    #     for i in class_attrs:
-    #         if data_source.data['decision'][data_source.selected.indices[0]] == i:
-    #             selected_class_index = class_attrs.index(i)
-    #     for i in range(len(decision_indices)):
-    #         if i != selected_class_index:
-    #             for j in range(len(decision_indices[i])):
-    #                 x = decision_indices[i][j][2]
-    #                 y = decision_indices[i][j][1]
-    #                 index = decision_indices[i][j][0]
-    #                 a = data_source.data['x'][index]
-    #                 b = data_source.data['y'][index]
-    #                 bool_val_x = a == x
-    #                 bool_val_y = b == y
-    #
-    #                 selected = p.select({})
-    #                 selected.visible=False
-    # data_source.on_change('selected', source_selected)
-
     def update_root(_attr, _old, new):
         """
         change root attribute to be used for creating a new tree
@@ -326,7 +304,6 @@ def create_figure():
         set_new_dataset(new, ",")
         selected_root = ""
         apply_changes()
-        Instance().update_data_set(new)
         attribute_checkbox.labels = [attr for attr in list(Instance().cmap.keys()) if attr != Instance().attr_list[-1]]
         attribute_checkbox.active = [i for i, attr in enumerate(list(Instance().cmap.keys()))]
         root_select.options = ['Hiçbiri'] + [attr for attr in list(Instance().cmap.keys())[:-1]]
@@ -350,30 +327,30 @@ def create_figure():
         p.select(name="arrowLabels").visible=False
         p.select(name="decision_text").visible=False
 
-        p.legend.visible=False
+        p.legend.visible = False
         circles = p.circle("y", "x", radius=circle_radius, radius_units='screen', source=data_source,
                            name="circles", legend="attribute_type",
                            color=factor_cmap('attribute_type', palette=list(get_all_colors()),
                                              factors=Instance().attr_list))
-        circles.visible=False
+        circles.visible = False
         rectangles = p.rect("y", "x", rect_width, rect_height, source=data_source, name="rectangles",
                             legend="attribute_type",
                             color=factor_cmap('attribute_type', palette=list(get_all_colors()),
                                               factors=Instance().attr_list))
-        rectangles.visible=False
-        best_circles = best_root_plot.circle("y", "x", radius=circle_radius, radius_units='screen', source=data_source,
-                           name="circles", legend="attribute_type",
-                           color=factor_cmap('attribute_type', palette=list(get_all_colors()),
+        rectangles.visible = False
+        best_circles = best_root_plot.circle("y", "x", radius=circle_radius, radius_units='screen',
+                                             source=best_root_plot_data_source, name="circles", legend="attribute_type",
+                                             color=factor_cmap('attribute_type', palette=list(get_all_colors()),
                                              factors=Instance().attr_list))
-        best_circles.visible=False
-        best_rectangles = best_root_plot.rect("y", "x", rect_width, rect_height, source=data_source, name="rectangles",
-                            legend="attribute_type",
-                            color=factor_cmap('attribute_type', palette=list(get_all_colors()),
+        best_circles.visible = False
+        best_rectangles = best_root_plot.rect("y", "x", rect_width, rect_height, source=best_root_plot_data_source,
+                                              name="rectangles", legend="attribute_type",
+                                              color=factor_cmap('attribute_type', palette=list(get_all_colors()),
                                               factors=Instance().attr_list))
-        best_rectangles.visible=False
+        best_rectangles.visible = False
 
-        circles.visible=True
-        best_circles.visible=True
+        circles.visible = True
+        best_circles.visible = True
         modify_individual_plot(p, data_source, active_attributes_list, arrow_data_source, selected_root)
         modify_individual_plot(best_root_plot, best_root_plot_data_source, active_attributes_list,
                                best_arrow_data_source, "")
