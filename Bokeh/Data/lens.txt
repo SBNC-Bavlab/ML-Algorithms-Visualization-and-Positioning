@@ -1,25 +1,25 @@
-Yaş Göz_Bozukluğu Astigmat Göz_Yaşı_Üretimi Sonuç
-Genç Miyop Yok Az Lens_Takamaz
-Genç Miyop Yok Normal Yumuşak_Lens
-Genç Miyop Var Az Lens_Takamaz
-Genç Miyop Var Normal Sert_Lens
-Genç Hipermetrop Yok Az Lens_Takamaz
-Genç Hipermetrop Yok Normal Yumuşak_Lens
-Genç Hipermetrop Var Az Lens_Takamaz
-Genç Hipermetrop Var Normal Sert_Lens
-Orta Miyop Yok Az Lens_Takamaz
-Orta Miyop Yok Normal Yumuşak_Lens
-Orta Miyop Var Az Lens_Takamaz
-Orta Miyop Var Normal Sert_Lens
-Orta Hipermetrop Yok Az Lens_Takamaz
-Orta Hipermetrop Yok Normal Yumuşak_Lens
-Orta Hipermetrop Var Az Lens_Takamaz
-Orta Hipermetrop Var Normal Lens_Takamaz
-Yaşlı Miyop Yok Az Lens_Takamaz
-Yaşlı Miyop Yok Normal Lens_Takamaz
-Yaşlı Miyop Var Az Lens_Takamaz
-Yaşlı Miyop Var Normal Sert_Lens
-Yaşlı Hipermetrop Yok Az Lens_Takamaz
-Yaşlı Hipermetrop Yok Normal Yumuşak_Lens
-Yaşlı Hipermetrop Var Az Lens_Takamaz
-Yaşlı Hipermetrop Var Normal Lens_Takamaz
+Yaş,Göz Bozukluğu,Astigmat,Göz Yaşı Üretimi,Sonuç
+Genç,Miyop,Yok,Az,Lens Takamaz
+Genç,Miyop,Yok,Normal,Yumuşak Lens
+Genç,Miyop,Var,Az,Lens Takamaz
+Genç,Miyop,Var,Normal,Sert Lens
+Genç,Hipermetrop,Yok,Az,Lens Takamaz
+Genç,Hipermetrop,Yok,Normal,Yumuşak Lens
+Genç,Hipermetrop,Var,Az,Lens Takamaz
+Genç,Hipermetrop,Var,Normal,Sert Lens
+Orta,Miyop,Yok,Az,Lens Takamaz
+Orta,Miyop,Yok,Normal,Yumuşak Lens
+Orta,Miyop,Var,Az,Lens Takamaz
+Orta,Miyop,Var,Normal,Sert Lens
+Orta,Hipermetrop,Yok,Az,Lens Takamaz
+Orta,Hipermetrop,Yok,Normal,Yumuşak Lens
+Orta,Hipermetrop,Var,Az,Lens Takamaz
+Orta,Hipermetrop,Var,Normal,Lens Takamaz
+Yaşlı,Miyop,Yok,Az,Lens Takamaz
+Yaşlı,Miyop,Yok,Normal,Lens Takamaz
+Yaşlı,Miyop,Var,Az,Lens Takamaz
+Yaşlı,Miyop,Var,Normal,Sert Lens
+Yaşlı,Hipermetrop,Yok,Az,Lens Takamaz
+Yaşlı,Hipermetrop,Yok,Normal,Yumuşak Lens
+Yaşlı,Hipermetrop,Var,Az,Lens Takamaz
+Yaşlı,Hipermetrop,Var,Normal,Lens Takamaz

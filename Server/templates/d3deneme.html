@@ -13,7 +13,9 @@
 .ticks {
   font: 10px sans-serif;
 }
-
+rect.button_rect{
+    cursor: pointer;
+}
 .track,
 .track-inset,
 .track-overlay {
@@ -80,16 +82,20 @@ const test_data = [["Sarı", 3, "Kavun"], ["Sarı", 4, "Kavun"], ["Sarı", 5, "K
   ["Yeşil", 9, "Karpuz"], ["Yeşil", 9, "Karpuz"], ["Yeşil", 11, "Karpuz"],
   ["Yeşil", 12, "Karpuz"], ["Yeşil", 12, "Karpuz"], ["Yeşil", 13, "Karpuz"]];
 
+const buttonWidth = 180;
+const buttonHeight = 60;
 const  maxFrequency = 8;
 const rectWidth = 70;
 const rectHeight = 70;
 const maxDiameter = 14;
+const buttonX = innerWidth * 0.65;
+const buttonY = innerHeight * 0.84;
+
 let fruitPlaces = [];
 let validDiameterIndex = 1;
 let radiusDict = {};
 let rectangleData = [];
 let isDatasetTraining = true;
-manipulateRectangleData(train_data);
 function manipulateRectangleData(data){
     radiusDict = {};
     rectangleData = [];
@@ -105,7 +111,6 @@ function manipulateRectangleData(data){
         rectangleData.push({'x': 105 * i + 50, 'y': 10, 'label': d,'color': 'beige'})
     });
 }
-calculateFruitPlaces();
 function calculateFruitPlaces(){
     fruitPlaces = []
     for(let i = 0; i < maxFrequency; i++){
@@ -125,21 +130,102 @@ function calculateFruitPlaces(){
     }
 }
 
-var svgContainer = d3.select("body").append("svg")
-                                 .attr("width", innerWidth)
-                                 .attr("height", innerHeight * 84 / 100);
+//Section 0
+const s0svg = d3.select("body").append("svg")
+                                .style("background-color", "blue")
+                                .attr("width", innerWidth)
+                                .attr("id", "section0")
+                                .attr("height", innerHeight);
+//Section 1
 
-var rectangles = svgContainer.selectAll("rect")
+const s1svg = d3.select("body").append("svg")
+                                .style("background-color", "blue")
+                                .attr("width", innerWidth)
+                                .attr("id", "section1")
+                                .attr("height", innerHeight);
+const infoTextPost = [{x : innerWidth / 8, y : 50, text: "Elimizde Mehmet ve Ahmet'in tezgahlarındaki karpuz ve kavunların çap bilgileri var." +
+    "<br><br>Amacımız karpuz ve kavunları birbirinden ayıran bir çap değeri bulmak." +
+    "<br><br>Yani öyle bir çap değeri bulmalıyız ki onun üstündekilere karpuz altındakilere kavun diyebilelim"}] //'Faruk reistir'
+
+s1svg.selectAll("text.infoText")
+        .data(infoTextPost)
+        .enter()
+        .append("foreignObject")
+        .attr("width", innerWidth / 1.5)
+        .attr("height", 500)
+        .attr("x", (d)=>{
+           return d.x;
+        })
+        .attr("y", (d)=>{
+            return d.y;
+        })
+        .append("xhtml:body")
+        .style("font", "50px 'Arial'")
+        .style("color", "white")
+        .html((d)=>{
+            return d.text;
+        });
+
+
+
+
+
+
+//Initial settings
+manipulateRectangleData(train_data);
+calculateFruitPlaces();
+
+const s2svg = d3.select("body").append("svg")
+                                .attr("width", innerWidth)
+                                .attr("id", "section2")
+                                .attr("height", innerHeight);
+
+s2svg.append("text")
+    .attr("x", innerWidth / 2.1)
+    .attr("y", innerHeight * 0.9)
+    .attr("baseline-alignment", "middle")
+    .attr("text-anchor", "middle")
+    .attr("font-size", 50)
+    .attr("class", "tezgah_name")
+    .text("Mehmet'in Tezgahı");
+
+s2svg.append("rect")
+        .attr('x', buttonX)
+        .attr('y', buttonY)
+        .attr('width', buttonWidth)
+        .attr('height', buttonHeight)
+        .attr("fill", "green")
+        .attr('class', "button_rect")
+        .attr('rx', 15)
+        .attr('ry', 15)
+        .on('click', ()=>{
+            (isDatasetTraining)? calculateTest() : againTrain()
+        });
+
+s2svg.append("text")
+    .attr("x", buttonX + buttonWidth / 2)
+    .attr("y", buttonY + buttonHeight / 2)
+    .attr("alignment-baseline", "middle")
+    .attr("text-anchor", "middle")
+    .attr("font-size", 18)
+    .attr("class", "button_text")
+    .attr("fill", "white")
+    .on('click', () =>{ (isDatasetTraining)? calculateTest() : againTrain() })
+    .text("Modeli Test Et");
+
+
+var rectangles = s2svg.selectAll("rect.palette")
                             .data(rectangleData)
                             .enter()
                             .append("rect")
                             .attr("fill","beige")
+                            .attr("class", "palette")
                             .attr("x", function (d) { return d.x; })
                             .attr("y", function (d) { return d.y; })
                             .attr("rx", 15)
                             .attr("width", function (d) { return 73; })
                             .attr("height", function (d, i) { return rectHeight * radiusDict[Object.keys(radiusDict)[i]].length + 80});
-var texts = svgContainer.selectAll("text.label")
+var texts = s2svg.selectAll("text.label")
     .data(rectangleData)
     .enter()
     .append('text')
@@ -155,7 +241,7 @@ var texts = svgContainer.selectAll("text.label")
         return d.label;
     })
     .style("font-size", "30px");
-svgContainer.selectAll("image").data(fruitPlaces).enter().append("svg:image").classed('fruit', true)
+s2svg.selectAll("image").data(fruitPlaces).enter().append("svg:image").classed('fruit', true)
                             .transition().delay(1000).ease(d3.easeElastic).duration(2000)
                             .attr('x', function(d){
                                 return d.x;
@@ -186,7 +272,7 @@ function paintRectangles(){
 }
 function update(theValue){
     paintRectangles();
-    svgContainer.selectAll("rect")
+    s2svg.selectAll("rect.palette")
                             .data(rectangleData)
                             .transition()
                             .attr('fill', function (d) {
@@ -228,18 +314,20 @@ function calculateTest(){
     manipulateRectangleData(test_data);
     paintRectangles();
     calculateFruitPlaces();
+    d3.select("text.button_text").text("Yeni Model Kur")
+    d3.select("text.tezgah_name").text("Ahmet'in Tezgahı")
 
     //DANGEROUS HERE ANY OTHER g would be affected by that
     d3.select('.sliderAll').style('opacity','0');
 
     d3.selectAll('.button__text').text("Yeni Model Kur")
-    svgContainer.selectAll("rect")
+    s2svg.selectAll("rect.palette")
                             .data(rectangleData)
                             .attr("height", function (d, i) { return rectHeight * radiusDict[Object.keys(radiusDict)[i]].length + 80})
                             .attr('fill', function(d){return d.color})
                             .exit()
                                 .remove();
-    svgContainer.selectAll("text.label").data(rectangleData).text(function(d){return d.label}).attr('x', calculateXForText).exit().remove();
+    s2svg.selectAll("text.label").data(rectangleData).text(function(d){return d.label}).attr('x', calculateXForText).exit().remove();
 
 
 
@@ -247,7 +335,7 @@ function calculateTest(){
     const checkImgsData = accuracyResults[0];
     const accuracy = accuracyResults[1].toFixed(0);
 
-    svgContainer.selectAll("image.tick").style('display', "block")
+    s2svg.selectAll("image.tick").style('display', "block")
                             .data(checkImgsData)
                             .attr("xlink:href", function (d) {
                                 return "../icons/" + d.resultImg;
@@ -269,7 +357,7 @@ function calculateTest(){
                                     return "../icons/" + d.resultImg;
                                 });
 
-    svgContainer.selectAll("image.fruit").data(fruitPlaces)
+    s2svg.selectAll("image.fruit").data(fruitPlaces)
                             .attr('x', function(d){
                                 return d.x;
                             })
@@ -282,7 +370,7 @@ function calculateTest(){
                                 return "../icons/" + d.fruit_img;
                             }).exit().remove();
 
-    svgContainer.selectAll("text.accuracy").style('display',"block")
+    s2svg.selectAll("text.accuracy").style('display',"block")
         .data([accuracy])
         .text("Başarı oranı: %" + 0)
         .enter()
@@ -295,7 +383,7 @@ function calculateTest(){
         .attr("x", innerWidth * 0.7)
         .attr("y", innerHeight / 2);
 
-    svgContainer.selectAll("text.accuracy")
+    s2svg.selectAll("text.accuracy")
         .data([accuracy])
         .style("font-size", "30px")
         .transition()
@@ -321,24 +409,27 @@ function againTrain(){
     console.log(radiusDict);
     console.log(rectangleData);
 
-    d3.selectAll('.button__text').text("Modeli Test Et");
-    svgContainer.selectAll("image.tick").style('display','none');
-    svgContainer.select(".sliderAll").style("opacity", '1');
-    svgContainer.selectAll('text.accuracy').style('display', 'none');
-    svgContainer.selectAll("rect")
+    d3.selectAll('text.button_text').text("Modeli Test Et");
+    d3.selectAll('text.tezgah_name').text("Mustafa'nın Tezgahı");
+    s2svg.selectAll("image.tick").style('display','none');
+    s2svg.select(".sliderAll").style("opacity", '1');
+    s2svg.selectAll('text.accuracy').style('display', 'none');
+    s2svg.selectAll("rect.palette")
                             .data(rectangleData)
                             .enter()
                                 .append("rect")
                                 .attr('x', function(d) {return d.x})
                                 .attr('y', function(d) {return d.y})
+                                .attr("class", "palette")
                                 .attr('width', rectWidth)
+                                .attr("rx", 15)
                                 .attr('height', rectHeight)
                                 .attr('fill', function(d){return d.color});
     //Apply to both new-comers and old ones
-    svgContainer.selectAll("rect").data(rectangleData)
+    s2svg.selectAll("rect.palette").data(rectangleData)
         .attr("height", function (d, i) { return rectHeight * radiusDict[Object.keys(radiusDict)[i]].length + 80})
     //    .lower();
-    svgContainer.selectAll("text.label")
+    s2svg.selectAll("text.label")
                 .data(rectangleData)
                 .text(function(d){return d.label})
                 .enter()
@@ -350,7 +441,7 @@ function againTrain(){
                     .attr("fill", "black")
                     .style("font-size", "30px");
 
-    svgContainer.selectAll("image.fruit")
+    s2svg.selectAll("image.fruit")
                 .data(fruitPlaces)
                 .attr('x', function(d){
                     return d.x;
@@ -371,7 +462,8 @@ function againTrain(){
                     .attr('y', function(d){
                         return d.y;
                     })
-                    .attr('width', rectWidth / 2)
+                        .attr("rx", 15)
+                    .attr('width', rectWidth)
                     .attr('height', rectHeight)
                     .attr("xlink:href", function (d) {
                         return "../icons/" + d.fruit_img;
@@ -379,29 +471,7 @@ function againTrain(){
 }
 
 </script>
-    <div class="button-wrap">
-        <button class="button button--line button--effect-1" disabled="true" style="display:none; margin-top: 0">
-            <span class="morph-shape" data-morph-active="M286,113c0,0-68.8,6-136,6c-78.2,0-137-6-137-6S6,97.198,6,62.5C6,33.999,13,12,13,12s59-7,137-7c85,0,136,7,136,7s8,17.598,8,52C294,96.398,286,113,286,113z">
-                <svg width="100%" height="100%" viewBox="0 0 300 125" preserveAspectRatio="none">
-                    <path d="M286.5,113c0,0-104,0-136.5,0c-35.75,0-136.5,0-136.5,0s0-39.417,0-52.5c0-12.167,0-48.5,0-48.5s101.833,0,136.5,0c33.583,0,136.5,0,136.5,0s0,35.917,0,48.5C286.5,73.167,286.5,113,286.5,113z"/>
-                </svg>
-                <span class="button__text"> asdf</span>
-            </span>
-        </button>
-        <button onclick="(isDatasetTraining)? calculateTest() : againTrain()" class="button button--line button--effect-1" style="margin-top: 0">
-            <span class="morph-shape" data-morph-active="M286,113c0,0-68.8,6-136,6c-78.2,0-137-6-137-6S6,97.198,6,62.5C6,33.999,13,12,13,12s59-7,137-7c85,0,136,7,136,7s8,17.598,8,52C294,96.398,286,113,286,113z">
-                <svg width="100%" height="100%" viewBox="0 0 300 125" preserveAspectRatio="none">
-                    <path d="M286.5,113c0,0-104,0-136.5,0c-35.75,0-136.5,0-136.5,0s0-39.417,0-52.5c0-12.167,0-48.5,0-48.5s101.833,0,136.5,0c33.583,0,136.5,0,136.5,0s0,35.917,0,48.5C286.5,73.167,286.5,113,286.5,113z"/>
-                </svg>
-            </span>
-            <span class="button__text">Modeli Test Et</span>
-        </button>
-    </div>
-
     <script src="../js/slider.js"></script>
-    <script src="../js/classie.js"></script>
-    <script src="../js/button.js"></script>
-
 </body>
 
 </html>
