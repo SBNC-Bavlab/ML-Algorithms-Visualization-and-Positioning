@@ -1,7 +1,7 @@
 """
 Singleton class for data set and its information
 """
-
+import os
 
 class Singleton(type):
     """
@@ -35,8 +35,12 @@ class Instance(metaclass=Singleton):
         self.attr_values_dict = attr_values_dict
         self.attr_dict = attr_dict
         self.cmap = cmap
+        self.data_set = None
 
     def update(self, data, attr_values, attr_list, attr_values_dict, attr_dict, cmap):
+        """
+            Update Singleton instance values
+        """
         self.data = data
         self.attr_values = attr_values
         self.attr_list = attr_list
@@ -44,5 +48,15 @@ class Instance(metaclass=Singleton):
         self.attr_dict = attr_dict
         self.cmap = cmap
 
-
-
+    def update_data_set(self, file_name):
+        """
+            Updated uploaded data set and remove previous one
+        """
+        if not self.data_set:
+            self.data_set = file_name
+        else:
+            if self.data_set not in ["car", "lens"]:
+                cwd = os.getcwd()
+                file_path = cwd + "/../Bokeh/Data/" + self.data_set
+                os.remove(file_path)
+            self.data_set = file_name
