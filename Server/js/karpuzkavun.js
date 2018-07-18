@@ -1,58 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <script src="//d3js.org/d3.v4.min.js"></script>
-    <script src="../js/snap.svg-min.js"></script>
-    <script src="../js/d3-simple-slider.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="../css/button.css">
-    <link rel="stylesheet" type="text/css" href="../css/normalize.css" />
-    <title>Title</title>
-    <style>
 
-.ticks {
-  font: 10px sans-serif;
-}
-rect.button_rect{
-    cursor: pointer;
-}
-.track,
-.track-inset,
-.track-overlay {
-  stroke-linecap: round;
-}
-
-.track {
-  stroke: #000;
-  stroke-opacity: 0.3;
-  stroke-width: 10px;
-}
-
-.track-inset {
-  stroke: #ddd;
-  stroke-width: 8px;
-}
-
-.track-overlay {
-  pointer-events: stroke;
-  stroke-width: 50px;
-  stroke: transparent;
-  cursor: crosshair;
-}
-
-.handle {
-  fill: #fff;
-  stroke: #000;
-  stroke-opacity: 0.5;
-  stroke-width: 1.25px;
-}
-
-</style>
-</head>
-<body>
-
-
-<script>
 const train_data = [
   ["Sarı", 1, "Kavun"], ["Sarı", 1, "Kavun"], ["Sarı", 1, "Kavun"],  ["Sarı", 1, "Kavun"], ["Sarı", 1, "Kavun"],
   ["Sarı", 2, "Kavun"], ["Sarı", 2, "Kavun"], ["Sarı", 2, "Kavun"], ["Sarı", 2, "Kavun"], ["Sarı", 2, "Kavun"],
@@ -470,8 +416,3 @@ function againTrain(){
                     });
 }
 
-</script>
-    <script src="../js/slider.js"></script>
-</body>
-
-</html>

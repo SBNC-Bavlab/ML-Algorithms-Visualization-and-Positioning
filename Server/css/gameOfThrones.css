@@ -1,0 +1,14 @@
+@font-face {
+    font-family: "Got";
+    src: url(../css/got.ttf) format("truetype");
+}
+text.button_text{
+    cursor: pointer
+}
+rect.button_rect{
+    cursor: pointer
+}
+svg .s1circle > text {
+    alignment-baseline: middle;
+    text-anchor: middle
+}
