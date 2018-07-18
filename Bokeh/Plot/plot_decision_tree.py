@@ -319,6 +319,7 @@ def create_figure():
         use selected dataset for the tree
         """
         global selected_root
+        Instance().update_data_set(new)
         if new == "lens":
             set_new_dataset(new, " ")
         elif new == "car":
