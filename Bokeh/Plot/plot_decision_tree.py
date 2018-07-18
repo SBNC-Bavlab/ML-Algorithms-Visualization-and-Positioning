@@ -5,7 +5,7 @@ import logging
 import base64
 from bokeh.plotting import figure
 from bokeh.transform import dodge, factor_cmap
-from bokeh.models import ColumnDataSource, LabelSet, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs, Toggle, CustomJS, TapTool
+from bokeh.models import ColumnDataSource, LabelSet, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs, Toggle, CustomJS
 from bokeh.models.widgets import Button, Paragraph, Select, CheckboxGroup
 from bokeh.layouts import column, row
 from Bokeh.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
@@ -349,29 +349,43 @@ def create_figure():
         best_root_plot.renderers.remove(best_rectangles)
         p.legend[0].items.pop(0)
         best_root_plot.legend[0].items.pop(0)
+        p.select(name="multi_lines").visible=False
+        p.select(name="arrowLabels").visible=False
+        p.select(name="decision_text").visible=False
+
+        p.legend.visible=False
         circles = p.circle("y", "x", radius=circle_radius, radius_units='screen', source=data_source,
                            name="circles", legend="attribute_type",
                            color=factor_cmap('attribute_type', palette=list(get_all_colors()),
                                              factors=Instance().attr_list))
+        circles.visible=False
         rectangles = p.rect("y", "x", rect_width, rect_height, source=data_source, name="rectangles",
                             legend="attribute_type",
                             color=factor_cmap('attribute_type', palette=list(get_all_colors()),
                                               factors=Instance().attr_list))
+        rectangles.visible=False
         best_circles = best_root_plot.circle("y", "x", radius=circle_radius, radius_units='screen', source=data_source,
                            name="circles", legend="attribute_type",
                            color=factor_cmap('attribute_type', palette=list(get_all_colors()),
                                              factors=Instance().attr_list))
+        best_circles.visible=False
         best_rectangles = best_root_plot.rect("y", "x", rect_width, rect_height, source=data_source, name="rectangles",
                             legend="attribute_type",
                             color=factor_cmap('attribute_type', palette=list(get_all_colors()),
                                               factors=Instance().attr_list))
-
-        rectangles.visible=False
         best_rectangles.visible=False
 
+        circles.visible=True
+        best_circles.visible=True
         modify_individual_plot(p, data_source, active_attributes_list, arrow_data_source, selected_root)
         modify_individual_plot(best_root_plot, best_root_plot_data_source, active_attributes_list,
                                best_arrow_data_source, "")
+        p.legend.visible=True
+        if(decision_button.label == "Sonuç gösterme"):
+            p.select(name="decision_text").visible=True
+        if(arrow_button.label == "Karar değerlerini gösterme"):
+            p.select(name="arrowLabels").visible=True
+        p.select(name="multi_lines").visible=True
 
         apply_changes_button.disabled = False
 
@@ -397,9 +411,8 @@ def create_plot(width, level_width, groups, periods, data_source, is_previous=Fa
                               "(Seçtiğiniz Kök Nitelikli Hali)") + ("\t\t\t\tTahmin Başarısı (%): "
                                                                     + str(round(acc * 100, 1)) if acc else "")
     hover = HoverTool(names=["circles", "rectangles"])
-    tap = TapTool(names=["circles", "rectangles"])
     wheel = WheelZoomTool()
-    p = figure(title=title, toolbar_location="below", tools=[hover, wheel, ResetTool(), PanTool(), tap],
+    p = figure(title=title, toolbar_location="below", tools=[hover, wheel, ResetTool(), PanTool()],
                plot_width=plot_width, plot_height=plot_height, x_range=groups, y_range=list(periods), tooltips=TOOLTIPS)
     arrow_data_source, arrow, label = draw_arrow(data_source.data, p, width, len(periods), len(groups), level_width)
     p.toolbar.active_scroll = wheel
@@ -501,6 +514,7 @@ def draw_arrow(source, p, width, periods_len, groups_len, level_width, mode="dra
     arrow_data_source = ColumnDataSource(data=pd.DataFrame.from_dict(arrow_coordinates))
     if mode == "draw":
         arrow = p.multi_line(line_width="instances", line_alpha=0.7, line_color="darkgray",
+                             name="multi_lines",
                              xs="xs", ys="ys", source=arrow_data_source)
     label = LabelSet(x='x_avg', y='y_avg', angle="angle",
                      name="arrowLabels", text="label_name",
