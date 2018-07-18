@@ -1,35 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <script src="//d3js.org/d3.v4.min.js"></script>
-    <script src="../js/snap.svg-min.js"></script>
-    <link rel="stylesheet" type="text/css" href="../css/button.css">
-    <link rel="stylesheet" type="text/css" href="../css/normalize.css" />
-    <link href="https://fonts.googleapis.com/css?family=Chela+One|Cormorant+Unicase&subset=latin,latin-ext" rel="stylesheet">
-    <title>Title</title>
-</head>
-<style>
-    @font-face {
-        font-family: "Got";
-        src: url(../css/got.ttf) format("truetype");
-    }
-    text.button_text{
-        cursor: pointer
-    }
-    rect.button_rect{
-        cursor: pointer
-    }
-    svg .s1circle > text {
-        alignment-baseline: middle;
-        text-anchor: middle
-    }
-</style>
-<body>
-<svg id = "section1"></svg>
 
-<script src="../js/liquidFillGauge.js"></script>
-<script>
 
     const s1ScaledRadius = 0.7 * 370;
     const s2ScaledRadius = 0.3 * 370;
@@ -687,10 +656,11 @@
                     .data(scoreTextPos)
                     .text((d)=>{return d.text})
                     const text = "Sistemin tüm entropisi " + generalEntropy.toFixed(2) + " idi.<br><br> Sorduğunuz soru sonunda 'Evet' ve 'Hayir' havuzlarinin agirlikli" +
-                                " ortalama entropisi " + averageEntropy.toFixed(2) + " oldu.<br><br> Bu sorunun karmaşıklığı azaltma miktarı yani skoru " + (generalEntropy - averageEntropy).toFixed(2);
-                    svgSection3.select(".text_itself")
-                                .html(text)
-
+                                " ortalama entropisi " + averageEntropy.toFixed(2) + " oldu.<br><br> Sorunun karmaşıklığı azaltma miktarı yani skoru tüm entropi ile ortalama entropinin farkıdır:   " + (generalEntropy - averageEntropy).toFixed(2);
+                svgSection3.select(".text_itself")
+                            .html(text)
+                svgSection3.select(".equals_sign")
+                    .text("= " + gain.toFixed(2))
                 svgSection3.on('valueChanged1')(leftEntropy.toFixed(2));
                 svgSection3.on('opacityChanged1')("hsla(193, 100%, " + (56 - 15 * leftEntropy) + "%, 1)");
 
@@ -713,32 +683,32 @@
                             .attr("width", innerWidth)
                             .attr("height", innerHeight);
     const text = "Sistemin tüm entropisi " + generalEntropy.toFixed(2) + " idi.<br><br> Sorduğunuz soru sonunda 'Evet' ve 'Hayir' havuzlarinin agirlikli" +
-        " ortalama entropisi " + averageEntropy.toFixed(2) + " oldu.<br><br> Bu sorunun karmaşıklığı azaltma miktarı yani skoru " + (generalEntropy - averageEntropy).toFixed(2);
+        " ortalama entropisi " + averageEntropy.toFixed(2) + " oldu.<br><br>Sorunun karmaşıklığı azaltma miktarı yani skoru tüm entropi ile ortalama entropinin farkıdır: " + (generalEntropy - averageEntropy).toFixed(2);
     svgSection3.append("foreignObject")
         .attr("class", "info_text")
-        .attr("width", innerWidth * 0.4)
+        .attr("width", innerWidth)
         .attr("height", 500)
-        .attr("x", innerWidth * 0.59)
-        .attr("y", 50)
+        .attr("x", innerWidth * 0.05)
+        .attr("y", innerHeight * 0.7)
         .append("xhtml:body")
         .attr("class", "text_itself")
         .style("color", "white")
-        .style("font", "40px 'Arial'")
+        .style("font", "30px 'Arial'")
         .html(text);
     svgSection3.append("text")
         .attr("class","minus_sign")
-        .attr("x", innerWidth * 0.38)
-        .attr("y", innerHeight * 0.56)
+        .attr("x", innerWidth * 0.335)
+        .attr("y", innerHeight * 0.45)
         .attr("font-size", "200px")
         .attr("fill", "white")
         .text("-");
     svgSection3.append("text")
         .attr("class","equals_sign")
-        .attr("x", innerWidth * 0.6)
-        .attr("y", innerHeight * 0.56)
+        .attr("x", innerWidth * 0.55)
+        .attr("y", innerHeight * 0.47)
         .attr("font-size", "200px")
         .attr("fill", "white")
-        .text("=");
+        .text("= ?");
     svgSection3.call(d3.liquidfillgauge, 50, {
       circleThickness: 0.15,
       circleColor: "hsla(193, 100%, 56%, 1)",
@@ -754,7 +724,7 @@
       waveOffset: 0.25,
       textSize: 0.75,
       waveCount: 3
-    }, innerWidth * 0.07, innerHeight * 0.27, 0, 0.48);
+    }, innerWidth * 0.05, innerHeight * 0.12, 0, 0.48);
 
     svgSection3.on('valueChanged0')(generalEntropy.toFixed(2));
     svgSection3.on('opacityChanged0')("hsla(193, 100%, " + (56 - 15 * generalEntropy) + "%, 1)");
@@ -774,7 +744,7 @@
       waveOffset: 0.25,
       textSize: 0.75,
       waveCount: 3
-    }, innerWidth * 0.48, innerHeight * 0.2, 1, 0.2);
+    }, innerWidth * 0.43, innerHeight * 0.10, 1, 0.2);
     const leftEntropy = calculateEntropy(left);
     const rightEntropy = calculateEntropy(right);
     svgSection3.on('valueChanged1')(leftEntropy.toFixed(2));
@@ -795,9 +765,6 @@
       waveOffset: 0.25,
       textSize: 0.75,
       waveCount: 3
-    }, innerWidth * 0.48, innerHeight * 0.6, 2, 0.2);
+    }, innerWidth * 0.43, innerHeight * 0.48, 2, 0.2);
     svgSection3.on('valueChanged2')(rightEntropy.toFixed(2));
     svgSection3.on('opacityChanged2')("hsla(193, 100%, " + (56 - 15 * rightEntropy) + "%, 1)");
-</script>
-</body>
-</html>
