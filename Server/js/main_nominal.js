@@ -134,7 +134,6 @@ function recalculateLeftRight(){
     let rightEntropy = calculateEntropyById("#right tbody tr");
     $("#leftEntropy").html("Karmaşıklık: " + leftEntropy.toFixed(2));
     $("#rightEntropy").html("Karmaşıklık: " + rightEntropy.toFixed(2));
-    console.log("Left: ", leftEntropy, "Right: ", rightEntropy);
 }
 //This function is called when the Document is loaded
 $( function() {
@@ -204,10 +203,10 @@ $( function() {
             }
             const totalNumber = mainData.length;//left
             const leftEntropy = calculateEntropyById("#left tbody tr");
-            const leftSize = $("#left tbody tr").length - 1;
+            const leftSize = $("#left tbody tr").length;
             //right
             const rightEntropy = calculateEntropyById("#right tbody tr");
-            const rightSize = $("#right tbody tr").length - 1;
+            const rightSize = $("#right tbody tr").length;
             const averageEntropy = (leftSize / totalNumber) * leftEntropy + (rightSize / totalNumber) * rightEntropy;
             $("#averageEntropy").html("Ortalama Entropi: " + averageEntropy.toFixed(2));
             const gain = mainEntropy - averageEntropy;
@@ -300,14 +299,15 @@ $( function() {
             if(validSplit) {
                 let totalNumber = mainData.length;
                 const leftEntropy = calculateEntropyById("#left tbody tr");
-                const leftSize = $("#left tbody tr").length - 1;
+                const leftSize = $("#left tbody tr").length;
                 //right
                 const rightEntropy = calculateEntropyById("#right tbody tr");
-                const rightSize = $("#right tbody tr").length - 1;
+                const rightSize = $("#right tbody tr").length;
                 let averageEntropy = (leftSize / totalNumber) * leftEntropy + (rightSize / totalNumber) * rightEntropy;
                 $("#averageEntropy").html("Ortalama Entropi: " + averageEntropy.toFixed(2));
                 let gain = mainEntropy - averageEntropy;
                 $("#totalGain").html("Bu sorunun skoru: " + gain.toFixed(2))
+                console.log("sa", leftSize, rightSize)
             }  else {
                 $error.html("Verilerinizi herhangi bir soruya veya ortak özelliğe göre bölmediniz bu yüzden skor hesaplanamadı.");
                 $error.slideDown().delay(5000).slideUp();

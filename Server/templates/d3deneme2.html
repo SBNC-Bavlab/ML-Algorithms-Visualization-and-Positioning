@@ -34,17 +34,17 @@
     const s1ScaledRadius = 0.7 * 370;
     const s2ScaledRadius = 0.3 * 370;
 
-    const s2Gauge0Width = innerWidth * 0.73;
-    const s2Gauge0Height = innerHeight * 0.1 + 10;
-    const s2Gauge1Width = innerWidth * 0.73;
-    const s2Gauge1Height = innerHeight * 0.5 + 10;
+    const s2Gauge0Width = innerWidth * 0.75;
+    const s2Gauge0Height = innerHeight * 0.05 + 10;
+    const s2Gauge1Width = innerWidth * 0.75;
+    const s2Gauge1Height = innerHeight * 0.6 + 10;
 
     const buttonWidth = 160;
     const buttonHeight = 50;
 
     const s1Gauge0Width = innerWidth / 2 - s1ScaledRadius;
     const s1Gauge0Height = innerHeight / 2 - s1ScaledRadius + 50;
-    var circleX = 1000;
+    var circleX = 970;
     const questions = [{name: "Zengin mi?", attribute: "Evet", type: 1},
         {name: "Beyaz saçlı mı?", attribute: "Beyaz", type: 4},
         {name: "Ejderhası var mı?", attribute: "Var", type: 2},
@@ -98,11 +98,11 @@
     for(let i = 0; i < got.length; i++){
         for(let j = 0; j < got[0].length; j++) {
             if (j === 1) {
-                gotPosArray.push({'x': 200 * j + 330, 'y': 53 * i + 75, 'text': got[i][j]})
+                gotPosArray.push({'x': 200 * j + 300, 'y': 53 * i + 75, 'text': got[i][j]})
             } else if(j > 1){
-                gotPosArray.push({'x': 80 * j + 450, 'y': 53 * i + 75, 'text': got[i][j]})
+                gotPosArray.push({'x': 80 * j + 420, 'y': 53 * i + 75, 'text': got[i][j]})
             }else {
-                gotPosArray.push({'x': 100 * j + 360, 'y': 53 * i + 75, 'text': got[i][j]})
+                gotPosArray.push({'x': 100 * j + 330, 'y': 53 * i + 75, 'text': got[i][j]})
             }
         }
     }
@@ -112,6 +112,7 @@
                         {x: innerWidth * 0.67, y: 200, text: "Renkleri bir suda karıştırdığımızda suyun koyuluk oranı elimizde ki verilerin entropi (karmaşıklık) miktarını göstermektedir"}];
 
     const generalEntropy = calculateEntropy(got);
+    let averageEntropy = 0
     const svgSection1 = d3.select("#section1")
                             .attr("width", innerWidth)
                             .attr("height", innerHeight);
@@ -201,18 +202,20 @@
                     })
                     .delay(2000)
                     .duration(2000);
-    //Below is for section2
+    //Below is for section 2
+    const scoreTextPos = [{x: innerWidth * 0.75, y: innerHeight / 2, text: "Ortalama Entropi: -"}];
+    const buttonsPos = [{x: 60, y: 100, text: "Zengin mi?", click: () => {askQuestion(0)}},
+                        {x: 60, y: 170, text: "Ejderhasi var mi?", click: () => {askQuestion(2)}},
+                        {x: 60, y: 240, text: "Tahti istiyor mu?", click: () => {askQuestion(3)}},
+                        {x: 60, y: 500, text: "Kendi sorunu oluştur", click: () => {createQuestion()}},
+                        {x: 60, y: 570, text: "Reset", click: () => {reset()}}];
+
     const svg = d3.select("body")
                             .append("svg")
                             .attr('id', 'section2')
                             .attr("width", innerWidth)
                             .attr("height", innerHeight);
 
-    const buttonsPos = [{x: 60, y: 100, text: "Zengin mi?", click: () => {askQuestion(0)}},
-                        {x: 60, y: 170, text: "Ejderhasi var mi?", click: () => {askQuestion(2)}},
-                        {x: 60, y: 240, text: "Tahti istiyor mu?", click: () => {askQuestion(3)}},
-                        {x: 60, y: 500, text: "Kendi sorunu oluştur", click: () => {createQuestion()}},
-                        {x: 60, y: 570, text: "Reset", click: () => {reset()}}];
     svg.selectAll("rect.yes_no")
         .data([{x: 250, y: 495, text: "Evet", click: () => {reset()}},
             {x: 250, y: 535, text: "Hayır", click: () => {reset()}}])
@@ -223,7 +226,16 @@
             .attr("y", (d) => {return d.y})
             .attr("width", buttonWidth / 2)
             .attr("height", buttonHeight / 2)
-            .attr("fill", "green")
+            .attr("fill", "white")
+    svg.selectAll("text.score_text")
+        .data(scoreTextPos)
+        .enter()
+        .append("text")
+        .attr("class", "score_text")
+        .attr("font-size", "30px")
+        .attr("x", (d)=>{return d.x})
+        .attr("y", (d)=>{return d.y})
+        .text((d)=>{return d.text});
     svg.append("rect")
         .attr("class", "button_wrapper")
         .attr('x', 50)
@@ -261,15 +273,15 @@
                         .attr("class", "header")
                         .attr('x', function(d, i){
                             if (i == 0){
-                                return 100 * i + 400;
+                                return 100 * i + 370;
                             } else if (i === 1) {
-                                return 200 * i + 315;
+                                return 200 * i + 285;
                             } else if(i === 3){
-                                return 80 * i + 438;
+                                return 80 * i + 408;
                             } else if(i === 5){
-                                return 80 * i + 445;
+                                return 80 * i + 415;
                             } else if(i > 1){
-                                return 80 * i + 440;
+                                return 80 * i + 410;
                             }
                         })
                         .attr('y', function(d, i){
@@ -300,9 +312,8 @@
         .transition()
         .ease(d3.easeLinear)
         .duration(1000)
-        .attr('border', 1)
         .attr('fill', '#d7191c')
-        .attr('x', 350)
+        .attr('x', 320)
         .attr('y', 0)
         .attr('rx', 15)
         .attr('ry', 15)
@@ -334,7 +345,7 @@
         .attr('rx', 15)
         .attr('ry', 15)
         .attr('fill', "#fc8d59")
-        .attr('x', 350)
+        .attr('x', 320)
         .attr('y', function(d, i){
             return 53 * i + 50;
         })
@@ -459,6 +470,7 @@
             } else {
                 right.push(d);
             }
+            console.log(left, right)
 
             const leftEntropy = calculateEntropy(left);
             const rightEntropy = calculateEntropy(right);
@@ -478,6 +490,11 @@
                 const dy2 = 0;
                 result = "translate(" + (dxs[index] + dx2) + "," + (dys[index] + dy2) + ")"
             }
+
+            if(createQuestionIndex === got.length - 1)
+                calculateScore();
+            createQuestionIndex++;
+            changeColorRect(createQuestionIndex)
             d3.select(this).transition().duration(500).delay(500).attr('transform', result).attr('r', "5")
         })
         .delay(function(d,i){return 500 * i});
@@ -487,8 +504,7 @@
         .attr('y', s2Gauge0Height * 1.2)
         .style("font-size", "40px")
         .on("click", function(d) {
-            seperate(true, createQuestionIndex++);
-            changeColorRect(createQuestionIndex)
+            seperate(true, createQuestionIndex);
         })
         .attr("fill", 'rgb(242, 247, 255)')
         .attr("stroke", 'black')
@@ -500,10 +516,13 @@
         .attr("fill", 'rgb(242, 247, 255)')
         .attr("stroke", 'black')
         .on("click", function(d) {
-            seperate(false, createQuestionIndex++);
-            changeColorRect(createQuestionIndex)
+            seperate(false, createQuestionIndex);
         })
         .text("Hayır");
+
+
+
+
     let a = 0;
     let b = 0;
     let a2 = 0;
@@ -529,7 +548,7 @@
       return entropy
     }
     function askQuestion(questionI){
-        reset()
+        reset();
         svg.selectAll("circle.house_color").transition()
                             .duration(600)
                             .attr("transform", function(d,i){
@@ -577,8 +596,8 @@
                                     var dy2 = 0;
                                     result = "translate(" + (dxs[i] + dx2) + "," + (dys[i] + dy2)+ ")"
                                 }
-                                console.log("here-at-the-end")
-                                calculateScore()
+                                if(createQuestionIndex === got.length - 1)
+                                    calculateScore();
                                 createQuestionIndex++;
                                 d3.select(this).transition().duration(500).delay(500).attr('transform', result).attr('r', "5")
                             })
@@ -600,7 +619,11 @@
         b = 0;
         svg.selectAll("rect.item")
             .transition()
-            .attr('fill', "#fc8d59")
+            .attr('fill', "#fc8d59");
+        scoreTextPos[0].text = "Ortalama Entropi: -";
+        svg.selectAll("text.score_text")
+            .data(scoreTextPos)
+            .text((d)=>{return d.text})
         createQuestionIndex = 0;
         a2 = 0;
         b2 = 0;
@@ -609,7 +632,6 @@
         left.length = 0;
         right.length = 0;
     }
-
     function calculateScore(){
         if (createQuestionIndex === got.length - 1) {
             const featuresMatrix = [];
@@ -657,10 +679,23 @@
                 //right
                 const rightEntropy = calculateEntropy(right);
                 const rightSize = right.length;
-                const averageEntropy = (leftSize / totalNumber) * leftEntropy + (rightSize / totalNumber) * rightEntropy;
+                averageEntropy = (leftSize / totalNumber) * leftEntropy + (rightSize / totalNumber) * rightEntropy;
                 console.log(leftSize, rightSize, totalNumber)
                 const gain = generalEntropy - averageEntropy;
-                console.log("selam", averageEntropy, gain)
+                scoreTextPos[0].text = "Ortalama Entropi: " + averageEntropy.toFixed(2);
+                svg.selectAll("text.score_text")
+                    .data(scoreTextPos)
+                    .text((d)=>{return d.text})
+                    const text = "Sistemin tüm entropisi " + generalEntropy.toFixed(2) + " idi.<br><br> Sorduğunuz soru sonunda 'Evet' ve 'Hayir' havuzlarinin agirlikli" +
+                                " ortalama entropisi " + averageEntropy.toFixed(2) + " oldu.<br><br> Bu sorunun karmaşıklığı azaltma miktarı yani skoru " + (generalEntropy - averageEntropy).toFixed(2);
+                    svgSection3.select(".text_itself")
+                                .html(text)
+
+                svgSection3.on('valueChanged1')(leftEntropy.toFixed(2));
+                svgSection3.on('opacityChanged1')("hsla(193, 100%, " + (56 - 15 * leftEntropy) + "%, 1)");
+
+                svgSection3.on('valueChanged2')(rightEntropy.toFixed(2));
+                svgSection3.on('opacityChanged2')("hsla(193, 100%, " + (56 - 15 * rightEntropy) + "%, 1)");
             }  else {
                 console.log("Verilerinizi herhangi bir soruya veya ortak özelliğe göre bölmediniz bu yüzden skor hesaplanamadı.");
                 //$error.slideDown().delay(5000).slideUp();
@@ -670,6 +705,99 @@
             //$error.slideDown().delay(5000).slideUp();
         }
     }
+    //Section 3
+    const svgSection3 = d3.select("body")
+                            .append("svg")
+                            .attr("id", "section3")
+                            .style("background-color", "orange")
+                            .attr("width", innerWidth)
+                            .attr("height", innerHeight);
+    const text = "Sistemin tüm entropisi " + generalEntropy.toFixed(2) + " idi.<br><br> Sorduğunuz soru sonunda 'Evet' ve 'Hayir' havuzlarinin agirlikli" +
+        " ortalama entropisi " + averageEntropy.toFixed(2) + " oldu.<br><br> Bu sorunun karmaşıklığı azaltma miktarı yani skoru " + (generalEntropy - averageEntropy).toFixed(2);
+    svgSection3.append("foreignObject")
+        .attr("class", "info_text")
+        .attr("width", innerWidth * 0.4)
+        .attr("height", 500)
+        .attr("x", innerWidth * 0.59)
+        .attr("y", 50)
+        .append("xhtml:body")
+        .attr("class", "text_itself")
+        .style("color", "white")
+        .style("font", "40px 'Arial'")
+        .html(text);
+    svgSection3.append("text")
+        .attr("class","minus_sign")
+        .attr("x", innerWidth * 0.38)
+        .attr("y", innerHeight * 0.56)
+        .attr("font-size", "200px")
+        .attr("fill", "white")
+        .text("-");
+    svgSection3.append("text")
+        .attr("class","equals_sign")
+        .attr("x", innerWidth * 0.6)
+        .attr("y", innerHeight * 0.56)
+        .attr("font-size", "200px")
+        .attr("fill", "white")
+        .text("=");
+    svgSection3.call(d3.liquidfillgauge, 50, {
+      circleThickness: 0.15,
+      circleColor: "hsla(193, 100%, 56%, 1)",
+      textColor: "hsla(193, 100%, 56%, 1)",
+      waveTextColor: "#FFFFAA",
+      waveColor: "hsla(193, 100%, 56%, 1)",
+        backgroundColor: "white",
+      textVertPosition: 0.8,
+      waveAnimateTime: 1000,
+      waveHeight: 0.05,
+      waveAnimate: true,
+      waveRise: false,
+      waveOffset: 0.25,
+      textSize: 0.75,
+      waveCount: 3
+    }, innerWidth * 0.07, innerHeight * 0.27, 0, 0.48);
+
+    svgSection3.on('valueChanged0')(generalEntropy.toFixed(2));
+    svgSection3.on('opacityChanged0')("hsla(193, 100%, " + (56 - 15 * generalEntropy) + "%, 1)");
+
+    svgSection3.call(d3.liquidfillgauge, 50, {
+      circleThickness: 0.15,
+      circleColor: "hsla(193, 100%, 56%, 1)",
+      textColor: "hsla(193, 100%, 56%, 1)",
+      waveTextColor: "#FFFFAA",
+      waveColor: "hsla(193, 100%, 56%, 1)",
+        backgroundColor: "white",
+      textVertPosition: 0.8,
+      waveAnimateTime: 1000,
+      waveHeight: 0.05,
+      waveAnimate: true,
+      waveRise: false,
+      waveOffset: 0.25,
+      textSize: 0.75,
+      waveCount: 3
+    }, innerWidth * 0.48, innerHeight * 0.2, 1, 0.2);
+    const leftEntropy = calculateEntropy(left);
+    const rightEntropy = calculateEntropy(right);
+    svgSection3.on('valueChanged1')(leftEntropy.toFixed(2));
+    svgSection3.on('opacityChanged1')("hsla(193, 100%, " + (56 - 15 * leftEntropy) + "%, 1)");
+
+    svgSection3.call(d3.liquidfillgauge, 50, {
+      circleThickness: 0.15,
+      circleColor: "hsla(193, 100%, 56%, 1)",
+      textColor: "hsla(193, 100%, 56%, 1)",
+      waveTextColor: "#FFFFAA",
+      waveColor: "hsla(193, 100%, 56%, 1)",
+        backgroundColor: "white",
+      textVertPosition: 0.8,
+      waveAnimateTime: 1000,
+      waveHeight: 0.05,
+      waveAnimate: true,
+      waveRise: false,
+      waveOffset: 0.25,
+      textSize: 0.75,
+      waveCount: 3
+    }, innerWidth * 0.48, innerHeight * 0.6, 2, 0.2);
+    svgSection3.on('valueChanged2')(rightEntropy.toFixed(2));
+    svgSection3.on('opacityChanged2')("hsla(193, 100%, " + (56 - 15 * rightEntropy) + "%, 1)");
 </script>
 </body>
 </html>
