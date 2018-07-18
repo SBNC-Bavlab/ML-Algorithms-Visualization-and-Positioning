@@ -1,7 +1,6 @@
 import pandas as pd
-from os.path import join, basename, getsize
+from os.path import join
 from sys import getsizeof
-import logging
 import base64
 from bokeh.plotting import figure
 from bokeh.transform import dodge, factor_cmap
@@ -35,6 +34,7 @@ plot_height = int(plot_width*950/1400)
 rect_width = 2
 rect_height = 0.5
 circle_radius = 5
+
 
 def get_new_data_source(df):
     """
