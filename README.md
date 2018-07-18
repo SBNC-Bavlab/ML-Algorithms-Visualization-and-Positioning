@@ -1,3 +1,5 @@
-# Pure 
+# Decision-Tree-Visualization-and-Positioning 
 
-Pure summer project at Sabancı University
+Pure(Program for Undergraduate Research) summer project at Sabancı University.
+
+In this project the main goal is to design and develop visual techniques to explain a small set of popular ML algorithms.
