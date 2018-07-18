@@ -326,6 +326,7 @@ def create_figure():
         set_new_dataset(new, ",")
         selected_root = ""
         apply_changes()
+        Instance().update_data_set(new)
         attribute_checkbox.labels = [attr for attr in list(Instance().cmap.keys()) if attr != Instance().attr_list[-1]]
         attribute_checkbox.active = [i for i, attr in enumerate(list(Instance().cmap.keys()))]
         root_select.options = ['Hiçbiri'] + [attr for attr in list(Instance().cmap.keys())[:-1]]
