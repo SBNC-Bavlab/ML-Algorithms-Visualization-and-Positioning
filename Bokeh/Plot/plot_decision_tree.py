@@ -142,6 +142,10 @@ def create_figure():
                 with open(fname, "wb") as f:
                     f.write(file_contents)
             dataset_select.options = dataset_select.options + [file_source.data['name'][0]]
+            if Instance().data_set:
+                dataset_select.options.remove(Instance().data_set)
+                dataset_select.options = dataset_select.options
+            Instance().update_data_set(file_source.data['name'][0])
 
         file_source = ColumnDataSource({'contents': [], 'name': []})
         file_source.on_change('data', file_callback)
@@ -326,7 +330,6 @@ def create_figure():
         set_new_dataset(new, ",")
         selected_root = ""
         apply_changes()
-        Instance().update_data_set(new)
         attribute_checkbox.labels = [attr for attr in list(Instance().cmap.keys()) if attr != Instance().attr_list[-1]]
         attribute_checkbox.active = [i for i, attr in enumerate(list(Instance().cmap.keys()))]
         root_select.options = ['Hiçbiri'] + [attr for attr in list(Instance().cmap.keys())[:-1]]
