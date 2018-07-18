@@ -19,12 +19,12 @@ def set_dataset():
     cmap = {}
     for i, line in enumerate(open('../Bokeh/Data/lens.txt')):
         if i == 0:
-            attr_list = line.split(" ")
+            attr_list = line.split(",")
             attr_list[-1] = attr_list[-1].strip()
             cmap = {attr: color[j] for j, attr in enumerate(attr_list)}
             attr_values = [set() for _ in attr_list]
         else:
-            datum = line.split(" ")
+            datum = line.split(",")
             datum[-1] = datum[-1].strip()
             data.append(datum)
             for j, val in enumerate(data[-1]):
