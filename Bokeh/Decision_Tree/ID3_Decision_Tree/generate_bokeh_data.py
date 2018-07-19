@@ -80,7 +80,7 @@ def fill_source(source, node_list):
         if node.children:
             source["nonLeafNodes_x"].append(node.coord[0])
             source["nonLeafNodes_y"].append(node.coord[1])
-            source["nonLeafNodes_stat"].append(node.value)
+            source["nonLeafNodes_stat"].append(str(node.value))
             source["nonLeafNodes_decision"].append(node.decision)
             source["leafNodes_x"].append(None)
             source["leafNodes_y"].append(None)

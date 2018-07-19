@@ -1,11 +1,37 @@
 from Bokeh.Decision_Tree.Plot.instance import Instance
-from random import randint
+from random import randint, shuffle
 
 all_attrs_list = []
 color = []
 
 for i in range(30):
     color.append('#%06X' % randint(0, 0xFFFFFF))
+
+
+def set_dataset():
+    """
+        Set default lens data set
+    """
+    data = []
+    attr_values = []
+    attr_list = []
+    cmap = {}
+    for i, line in enumerate(open('../Bokeh/Data/lens.txt')):
+        if i == 0:
+            attr_list = line.split(",")
+            attr_list[-1] = attr_list[-1].strip()
+            cmap = {attr: color[j] for j, attr in enumerate(attr_list)}
+            attr_values = [set() for _ in attr_list]
+        else:
+            datum = line.split(",")
+            datum[-1] = datum[-1].strip()
+            data.append(datum)
+            for j, val in enumerate(data[-1]):
+                attr_values[j].add(val)
+    attr_values_dict = dict((attr, list(attr_values[i])) for i, attr in enumerate(attr_list))
+    attr_dict = dict((attr, (i, list(attr_values[i]))) for i, attr in enumerate(attr_list))
+    shuffle(data)
+    instance = Instance(data, attr_values, attr_list, attr_values_dict, attr_dict, cmap)
 
 
 def set_active_attr(active_attr_list):
@@ -56,6 +82,7 @@ def set_new_dataset(new):
                 attr_values[j].add(val)
     attr_values_dict = dict((attr, list(attr_values[i])) for i, attr in enumerate(attr_list))
     attr_dict = dict((attr, (i, list(attr_values[i]))) for i, attr in enumerate(attr_list))
+    shuffle(data)
     try:
         instance = Instance().update(data, attr_values, attr_list, attr_values_dict, attr_dict, cmap,
                                      Instance().test_percentage)
