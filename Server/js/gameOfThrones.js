@@ -163,14 +163,16 @@
                         const dy = targetY - currentY;
                         return "translate( " + dx + "," + dy + ")";
                     })
-                    .on('start', function(d){
+                    .on('start', function(d, i){
                         setTimeout(()=> {
-                            svgSection1.on("valueChanged0")(generalEntropy.toFixed(2));
-                            svgSection1.on("opacityChanged0")("hsla(193, 100%, " + (56 - 15 * generalEntropy) + "%, 1)");
-                        }, 1200);
+                            const tempGot = got.slice(0, i + 1);
+                            const entropySoFar = calculateEntropy(tempGot)
+                            svgSection1.on("valueChanged0")(entropySoFar.toFixed(2));
+                            svgSection1.on("opacityChanged0")("hsla(193, 100%, " + (56 - 15 * entropySoFar) + "%, 1)");
+                        }, 500);
                     })
-                    .delay(2000)
-                    .duration(2000);
+                    .delay((d, i) => {return 1000 * i + 500})
+                    .duration(1000);
     //Below is for section 2
     const scoreTextPos = [{x: innerWidth * 0.75, y: innerHeight / 2, text: "Ortalama Entropi: -"}];
     const buttonsPos = [{x: 60, y: 100, text: "Zengin mi?", click: () => {askQuestion(0)}},
