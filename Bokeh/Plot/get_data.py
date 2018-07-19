@@ -1,12 +1,11 @@
 from Bokeh.Plot.instance import Instance
-from random import randint
+from random import randint, shuffle
 
 all_attrs_list = []
 color = []
 
 for i in range(30):
     color.append('#%06X' % randint(0, 0xFFFFFF))
-
 
 
 def set_dataset():
@@ -31,6 +30,7 @@ def set_dataset():
                 attr_values[j].add(val)
     attr_values_dict = dict((attr, list(attr_values[i])) for i, attr in enumerate(attr_list))
     attr_dict = dict((attr, (i, list(attr_values[i]))) for i, attr in enumerate(attr_list))
+    shuffle(data)
     instance = Instance(data, attr_values, attr_list, attr_values_dict, attr_dict, cmap)
 
 
@@ -82,7 +82,8 @@ def set_new_dataset(new, seperator):
                 attr_values[j].add(val)
     attr_values_dict = dict((attr, list(attr_values[i])) for i, attr in enumerate(attr_list))
     attr_dict = dict((attr, (i, list(attr_values[i]))) for i, attr in enumerate(attr_list))
-    instance = Instance().update(data, attr_values, attr_list, attr_values_dict, attr_dict, cmap, Instance().test_percentage)
+    shuffle(data)
+    Instance().update(data, attr_values, attr_list, attr_values_dict, attr_dict, cmap, Instance().test_percentage)
 
 
 def get_all_colors():
