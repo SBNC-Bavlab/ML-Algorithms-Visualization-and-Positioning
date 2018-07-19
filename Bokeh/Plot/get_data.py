@@ -82,7 +82,7 @@ def set_new_dataset(new, seperator):
                 attr_values[j].add(val)
     attr_values_dict = dict((attr, list(attr_values[i])) for i, attr in enumerate(attr_list))
     attr_dict = dict((attr, (i, list(attr_values[i]))) for i, attr in enumerate(attr_list))
-    instance = Instance().update(data, attr_values, attr_list, attr_values_dict, attr_dict, cmap)
+    instance = Instance().update(data, attr_values, attr_list, attr_values_dict, attr_dict, cmap, Instance().test_percentage)
 
 
 def get_all_colors():
