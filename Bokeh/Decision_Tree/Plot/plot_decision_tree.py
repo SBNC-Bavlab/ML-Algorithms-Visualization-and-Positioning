@@ -26,7 +26,7 @@ circles = rectangles = best_circles = best_rectangles = active_attributes_list =
 attr_info = Paragraph(text="""
    Nitelikleri seçiniz:
 """, width=200)
-set_dataset()
+set_new_dataset("lens")
 radio_button_labels = ["gini", "gainRatio"]
 tree_mode_labels = ["Basit", "Detaylı"]
 arrow_list = {"current": [], "previous": []}
@@ -311,18 +311,18 @@ def update_root(_attr, _old, new):
 
 root_select.on_change('value', update_root)
 
-    def change_dataset(_attr, _old, new):
-        """
-        use selected dataset for the tree
-        """
-        global selected_root
-        set_new_dataset(new)
-        selected_root = ""
-        apply_changes()
-        attribute_checkbox.labels = [attr for attr in list(Instance().cmap.keys()) if attr != Instance().attr_list[-1]]
-        attribute_checkbox.active = [i for i, attr in enumerate(list(Instance().cmap.keys()))]
-        root_select.options = ['Hiçbiri'] + [attr for attr in list(Instance().cmap.keys())[:-1]]
-        # create_figure()
+
+def change_dataset(_attr, _old, new):
+    """
+    use selected dataset for the tree
+    """
+    global selected_root
+    set_new_dataset(new)
+    selected_root = ""
+    apply_changes()
+    attribute_checkbox.labels = [attr for attr in list(Instance().cmap.keys()) if attr != Instance().attr_list[-1]]
+    attribute_checkbox.active = [i for i, attr in enumerate(list(Instance().cmap.keys()))]
+    root_select.options = ['Hiçbiri'] + [attr for attr in list(Instance().cmap.keys())[:-1]]
 
 
 dataset_select.on_change('value', change_dataset)
@@ -391,7 +391,7 @@ def file_callback(_attr, _old, _new):
     file_contents = base64.b64decode(b64_contents)
     size = getsizeof(file_contents)
     if size < 10**7:
-        fname = join("../Bokeh/Data/", file_source.data['name'][0])
+        fname = join("../Bokeh/Decision_Tree/Data/", file_source.data['name'][0])
         with open(fname, "wb") as f:
             f.write(file_contents)
     dataset_select.options = dataset_select.options + [file_source.data['name'][0]]
