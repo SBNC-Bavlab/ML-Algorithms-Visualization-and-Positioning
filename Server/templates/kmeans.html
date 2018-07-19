@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <script src="//d3js.org/d3.v4.min.js"></script>
     <title>Title</title>
+    <style>
+        .assign_button, .assign_button_text{
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 
@@ -15,14 +20,14 @@
                     .attr("height", innerHeight);
     const childPos = [];
     //captain 0: not a captain; 1: captain of team A; 2: captain of team B
-    for(let i = 0; i < 12; i++){
-        childPos.push({x: d3.randomNormal()() * 50 + 300, y: d3.randomNormal()() * 50 + 300, image: "boy.png", captain: 0, team: 0})
+    for(let i = 0; i < 15; i++){
+        childPos.push({x: Math.abs(d3.randomNormal()() * 300) + 300, y: Math.abs(d3.randomNormal()() * 150) + 120, image: "boy.png", captain: 0, team: 0})
     }
-    for(let i = 0; i < 12; i++){
-        childPos.push({x: d3.randomNormal()() * 50 + 550, y: d3.randomNormal()() * 50 + 300, image: "boy.png", captain: 0, team: 0})
+    for(let i = 0; i < 15; i++){
+        childPos.push({x: Math.abs(d3.randomNormal()() * 300) + 300, y: Math.abs(d3.randomNormal()() * 150) + 120, image: "boy.png", captain: 0, team: 0})
     }
-    childPos.push({x: 500, y: 30, image: "boy_team_captain_a.png", captain: 1, team: 1});
-    childPos.push({x: 530, y: 30, image: "boy_team_captain_b.png", captain: 2, team: 2});
+    childPos.push({x: innerWidth * 0.84, y: innerHeight * 0.4, image: "boy_team_captain_a.png", captain: 1, team: 1});
+    childPos.push({x: innerWidth * 0.84, y: innerHeight * 0.6, image: "boy_team_captain_b.png", captain: 2, team: 2});
 
     const captainA = childPos[childPos.length - 2];
     const captainB = childPos[childPos.length - 1];
@@ -32,44 +37,81 @@
         .append("svg:image")
         .attr("x", (d)=>{return d.x;})
         .attr("y", (d)=>{return d.y;})
-        .attr("width", 50)
-        .attr("height", 50)
+        .attr("width", 80)
+        .attr("height", 80)
         .attr("class", "children")
         .attr("xlink:href", (d)=>{
             return "../icons/" + d.image;
         });
+    svg.selectAll("image.pitch")
+        .data([{x: 40, y: 30, image: "pitch.png"}])
+        .enter()
+        .append("svg:image")
+        .attr("x", (d)=>{return d.x;})
+        .attr("y", (d)=>{return d.y;})
+        .attr("class", "pitch")
+        .attr("xlink:href", (d)=>{
+            return "../icons/" + d.image;
+        }).lower();
     svg.selectAll("image.children")
         .data(childPos)
         .filter((d, i) => {
             return i > childPos.length - 3 //last two elements are the captains
         })
-        .attr("width", 50)
-        .attr("height", 50)
+        .attr("width", 80)
+        .attr("height", 80)
         .call(d3.drag()
         .on("start", dragstarted)
         .on("drag", dragged)
         .on("end", dragended));
-
-    svg.append("rect")
-        .attr("class", "button")
-        .attr("x", 100)
-        .attr("y", 100)
-        .attr("class", "assign")
-        .attr("width", 150)
-        .attr("height", 50)
-        .attr("fill", "red")
-        .on('click', ()=>{
+    let isAssignment = true;
+    const button_click_listener = ()=>{
+        let newButtonText = "";
+        if(isAssignment) {
             assignChildrenToTeam();
-        });
-    svg.append("rect")
-        .attr("class", "button")
-        .attr("x", 300)
-        .attr("y", 100)
-        .attr("class", "calculate_Center")
-        .attr("width", 150)
-        .attr("height", 50)
+            newButtonText = "Kaptanı Ortala";
+        } else {
+            calculateNewCenters();
+            newButtonText = "Oyuncu Seç";
+        }
+        buttonTextPos[0].text = newButtonText
+        isAssignment = !isAssignment;
+        d3.selectAll("image.children").on("mousedown.drag", null);
+        d3.selectAll("text.assign_button_text")
+            .data(buttonTextPos)
+            .text((d) => {return d.text;});
+    };
+
+    const buttonTextPos = [{x: innerWidth * 0.8, y: innerHeight * 0.2, text: "Oyuncu Seç", click: button_click_listener}];
+    const buttonGroup = svg.selectAll("g.button_and_text")
+                            .data(buttonTextPos)
+                            .enter()
+                            .append("g");
+    const buttonWidth = 200;
+    const buttonHeight = 80;
+
+    buttonGroup
+        .append("rect")
+        .attr("class", "assign_button")
+        .attr("x", (d) => {return d.x})
+        .attr("y", (d) => {return d.y})
+        .attr("width", buttonWidth)
+        .attr("height", buttonHeight)
         .attr("fill", "red")
-        .on('click', ()=> {
+        .on('click', (d) => {d.click();});
+    buttonGroup.append("text")
+        .attr("class", "assign_button_text")
+        .attr("alignment-baseline", "middle")
+        .attr("text-anchor", "middle")
+        .attr("x", (d) => {return d.x + buttonWidth / 2})
+        .attr("y", (d) => {return d.y + buttonHeight / 2})
+        .attr("fill", "white")
+        .attr("font-size", 30)
+        .text((d) => {return d.text})
+        .on('click', (d) => {d.click();});
+
+    function calculateNewCenters(){
+
             let sumXA = 0;
             let sumYA = 0;
             let countA = 0;
@@ -91,8 +133,8 @@
                 }
             }
 
-            const teamANewCenter = {x: sumXA / countA, y: sumYA / countA};
-            const teamBNewCenter = {x: sumXB / countB, y: sumYB / countB};
+            const teamANewCenter = {x: (countA > 0) ? sumXA / countA : captainA.x, y: (countA > 0) ? sumYA / countA : captainA.y};
+            const teamBNewCenter = {x: (countB > 0) ? sumXB / countB : captainB.x, y: (countB > 0) ? sumYB / countB : captainB.y};
 
             captainA.x = teamANewCenter.x;
             captainA.y = teamANewCenter.y;
@@ -102,14 +144,16 @@
 
             d3.selectAll("image.children")
                 .data(childPos)
+                .transition()
                 .attr("x", (d) => {
                     return d.x;
                 })
                 .attr("y", (d) => {
                     return d.y;
                 });
-        });
+    }
     function assignChildrenToTeam(){
+        console.log(childPos)
         //proced with center calculation
         for(let i = 0; i < childPos.length; i++){
             const player = childPos[i];
