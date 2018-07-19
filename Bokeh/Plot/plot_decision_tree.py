@@ -1,12 +1,11 @@
 import pandas as pd
-from os.path import join, basename, getsize
+from os.path import join
 from sys import getsizeof
-import logging
 import base64
 from bokeh.plotting import figure
 from bokeh.transform import dodge, factor_cmap
 from bokeh.models import ColumnDataSource, LabelSet, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs, Toggle, CustomJS
-from bokeh.models.widgets import Button, Paragraph, Select, CheckboxGroup
+from bokeh.models.widgets import Button, Paragraph, Select, CheckboxGroup, Slider
 from bokeh.layouts import column, row
 from Bokeh.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 from math import atan
@@ -35,6 +34,7 @@ plot_height = int(plot_width*950/1400)
 rect_width = 2
 rect_height = 0.5
 circle_radius = 5
+
 
 def get_new_data_source(df):
     """
@@ -110,6 +110,7 @@ def create_figure():
     method_select = Select(title="Metodu seçiniz:", options=radio_button_labels, value="gini")
     tree_select = Select(title="Ağacın görünümünü seçiniz:", options=tree_mode_labels, value="Basit")
     dataset_select = Select(title="Veri Kümesini Seç:", value="lens", options=["lens", "car"])
+    dataset_slider = Slider(start=0, end=50, value=0, step=1, title="Testing data percentage")
 
     p, arrow_data_source, circles, rectangles = create_plot(width, level_width, groups, periods, data_source, False, acc)
     p.axis.visible = False
@@ -123,8 +124,6 @@ def create_figure():
     tab1 = Panel(child=p, title="Yeni ağacınız")
     tab2 = Panel(child=best_root_plot, title="İdeal ağaç")
     tree_tab = Tabs(tabs=[tab1, tab2])
-
-
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     """Adapted from https://groups.google.com/a/continuum.io/d/msg/bokeh/EtuMtJI39qQ/ZWuXjBhaAgAJ"""
@@ -192,7 +191,7 @@ def create_figure():
 
 
 
-    main_frame = row(column(root_select, attr_info, attribute_checkbox, apply_changes_button,
+    main_frame = row(column(root_select, attr_info, attribute_checkbox, dataset_slider, apply_changes_button,
                             decision_button, arrow_button, dataset_select, tree_select, file_button), tree_tab)
 
     def update_method_type(_attr, _old, new):
@@ -220,6 +219,12 @@ def create_figure():
         else:
             apply_changes_button.disabled = False
     attribute_checkbox.on_click(update_attributes)
+
+    def modify_test_percentage(_attr, _old, new):
+        Instance().update(Instance().data, Instance().attr_values, Instance().attr_list,
+                        Instance().attr_values_dict, Instance().attr_dict, Instance().cmap,
+                        new)
+    dataset_slider.on_change('value', modify_test_percentage)
 
     def toggle_mode_set(new):
         """
@@ -362,6 +367,8 @@ def create_figure():
         p.select(name="multi_lines").visible=True
 
         apply_changes_button.disabled = False
+
+
 
     apply_changes_button.on_click(apply_changes)
 
