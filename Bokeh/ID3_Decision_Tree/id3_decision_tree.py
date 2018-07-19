@@ -490,7 +490,14 @@ def generate_tree(method, set_root_attribute, active_attr_list):
         attrNamesList, attrDictionary = modify_new_values(tmp_attr_names, attrNamesList, attrDictionary)
     new_att_name_list = copy.deepcopy(attrNamesList)
     new_att_name_list.remove(Instance().attr_list[-1])
-    test, classAttr = Instance().data, Instance().attr_values_dict[Instance().attr_list[-1]]
-    train, classAttr = Instance().data, Instance().attr_values_dict[Instance().attr_list[-1]]
+    percentage = Instance().test_percentage
+    test_index = int(len(Instance().data)*percentage/100)
+    if 0<percentage<100:
+        test_data = Instance().data[:test_index]
+        train_data = Instance().data[test_index:]
+    else:
+        test_data = train_data = Instance().data
+    test, classAttr = test_data, Instance().attr_values_dict[Instance().attr_list[-1]]
+    train, classAttr = train_data, Instance().attr_values_dict[Instance().attr_list[-1]]
     root_node = tree_distribution(new_att_name_list, train, method, set_root_attribute)
-    return root_node, real_world_test(root_node, train)
+    return root_node, real_world_test(root_node, test)

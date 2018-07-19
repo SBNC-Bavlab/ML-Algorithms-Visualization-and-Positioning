@@ -36,8 +36,9 @@ class Instance(metaclass=Singleton):
         self.attr_dict = attr_dict
         self.cmap = cmap
         self.data_set = None
+        self.test_percentage = 0
 
-    def update(self, data, attr_values, attr_list, attr_values_dict, attr_dict, cmap):
+    def update(self, data, attr_values, attr_list, attr_values_dict, attr_dict, cmap, test_percentage):
         """
             Update Singleton instance values
         """
@@ -47,6 +48,7 @@ class Instance(metaclass=Singleton):
         self.attr_values_dict = attr_values_dict
         self.attr_dict = attr_dict
         self.cmap = cmap
+        self.test_percentage = test_percentage
 
     def update_data_set(self, file_name):
         """
