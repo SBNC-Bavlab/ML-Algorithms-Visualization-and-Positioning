@@ -2,7 +2,6 @@ import pandas as pd
 from os.path import join
 from sys import getsizeof
 import base64
-import sys
 from bokeh.io import show
 from bokeh.plotting import figure
 from bokeh.transform import dodge, factor_cmap
@@ -13,7 +12,6 @@ from Bokeh.Decision_Tree.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_
 from math import atan
 from Bokeh.Decision_Tree.Plot.get_data import get_all_colors, set_new_dataset
 from Bokeh.Decision_Tree.Plot.instance import Instance
-sys.path.append('../..')
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""GLOBAL VARIABLES START"""""""""""""""""""""""""""""""""
@@ -35,7 +33,7 @@ selected_root = ""
 attribute_checkbox = CheckboxGroup(labels=[attr for attr in list(Instance().cmap.keys())
                                            if attr != Instance().attr_list[-1]],
                                    active=[i for i, attr in enumerate(list(Instance().cmap.keys()))])
-apply_changes_button = Button(width=275, label="Değişiklikleri Uygula", button_type="success")
+apply_changes_button = Button(width=275, label="Değişiklikleri uygula", button_type="success")
 decision_button = Toggle(width=275, label="Sonuç gösterme", button_type="warning")
 arrow_button = Toggle(width=275, label="Karar değerlerini gösterme", button_type="warning")
 root_select = Select(title="Kök niteliği seçiniz:",
@@ -43,8 +41,8 @@ root_select = Select(title="Kök niteliği seçiniz:",
                      value="Hiçbiri")
 method_select = Select(title="Metodu seçiniz:", options=radio_button_labels, value="gini")
 tree_select = Select(title="Ağacın görünümünü seçiniz:", options=tree_mode_labels, value="Basit")
-dataset_select = Select(title="Veri Kümesini Seç:", value="lens", options=["lens", "car"])
-dataset_slider = Slider(start=0, end=50, value=0, step=1, title="Testing data percentage")
+dataset_select = Select(title="Veri kümesini seç:", value="lens", options=["lens", "car"])
+dataset_slider = Slider(start=0, end=50, value=0, step=1, title="Test verisi oranı")
 plot_width = 1000
 plot_height = int(plot_width * 950 / 1400)
 rect_width = 2
@@ -59,7 +57,7 @@ TOOLTIPS = [
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """Adapted from https://groups.google.com/a/continuum.io/d/msg/bokeh/EtuMtJI39qQ/ZWuXjBhaAgAJ"""
 """vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"""
-file_button = Button(width=275, label="Veri Kümesi Yükleyin", button_type="success")
+file_button = Button(width=275, label="Veri kümesi yükleyin", button_type="success")
 file_source = ColumnDataSource({'contents': [], 'name': []})
 _upload_js = """
 function read_file(filename) {
