@@ -110,7 +110,7 @@ def create_figure():
     method_select = Select(title="Metodu seçiniz:", options=radio_button_labels, value="gini")
     tree_select = Select(title="Ağacın görünümünü seçiniz:", options=tree_mode_labels, value="Basit")
     dataset_select = Select(title="Veri Kümesini Seç:", value="lens", options=["lens", "car"])
-    dataset_slider = Slider(start=0, end=100, value=0, step=1, title="Testing data percentage")
+    dataset_slider = Slider(start=0, end=50, value=0, step=1, title="Testing data percentage")
 
     p, arrow_data_source, circles, rectangles = create_plot(width, level_width, groups, periods, data_source, False, acc)
     p.axis.visible = False
