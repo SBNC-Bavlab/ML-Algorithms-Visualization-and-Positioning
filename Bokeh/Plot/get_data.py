@@ -56,7 +56,7 @@ def modify_new_values(tmp_attr_names, attr_names_list, attr_dictionary):
     return attr_names_list, attr_dictionary
 
 
-def set_new_dataset(new, seperator):
+def set_new_dataset(new):
     """
         set new data set and its positions
     """
@@ -70,12 +70,12 @@ def set_new_dataset(new, seperator):
         file = "../Bokeh/Data/" + new
     for i, line in enumerate(open(file)):
         if i == 0:
-            attr_list = line.split(seperator)
+            attr_list = line.split(",")
             attr_list[-1] = attr_list[-1].strip()
             cmap = {attr: color[j] for j, attr in enumerate(attr_list)}
             attr_values = [set() for _ in attr_list]
         else:
-            datum = line.split(seperator)
+            datum = line.split(",")
             datum[-1] = datum[-1].strip()
             data.append(datum)
             for j, val in enumerate(data[-1]):
@@ -83,7 +83,11 @@ def set_new_dataset(new, seperator):
     attr_values_dict = dict((attr, list(attr_values[i])) for i, attr in enumerate(attr_list))
     attr_dict = dict((attr, (i, list(attr_values[i]))) for i, attr in enumerate(attr_list))
     shuffle(data)
-    Instance().update(data, attr_values, attr_list, attr_values_dict, attr_dict, cmap, Instance().test_percentage)
+    try:
+        instance = Instance().update(data, attr_values, attr_list, attr_values_dict, attr_dict, cmap,
+                                     Instance().test_percentage)
+    except:
+        instance = Instance(data, attr_values, attr_list, attr_values_dict, attr_dict, cmap)
 
 
 def get_all_colors():

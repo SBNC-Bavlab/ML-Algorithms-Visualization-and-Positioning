@@ -10,7 +10,18 @@ import pandas as pd
 from sklearn.datasets.samples_generator import make_blobs
 from bokeh.models import ColumnDataSource
 from bokeh.layouts import row
+
+with open("../Data/ilceler.txt") as file:
+    for line in file:
+        print(line)
+"""
+votes = pd.DataFrame.from_csv("C:/Users/ASUS/Desktop/YSKSecimSonuclari-master/YSKScraper/Data/yskCombined2015.csv")
+votes.columns = [col.strip() for col in votes.columns]
+votes.drop(["SECMEN_SAYISI", "BIRIM_ID", "MUHTARLIK_ID"], axis=1, inplace=True)
+print(votes.columns)
+print(votes.where(votes["İL ADI"] == " ADANA").head());
 X, y = make_blobs()
+
 def create_figure(random_cluster = True):
     TOOLS = "hover,crosshair,pan,wheel_zoom,zoom_in,zoom_out,box_zoom,undo,redo,reset,tap,save,box_select,poly_select,lasso_select,"
     p = figure(tools=TOOLS)
@@ -44,4 +55,4 @@ def create_figure(random_cluster = True):
     return p;
 p = create_figure()
 #p2 = create_figure(False)
-show(row(p))
+show(row(p))"""

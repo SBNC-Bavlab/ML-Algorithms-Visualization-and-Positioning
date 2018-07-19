@@ -213,5 +213,5 @@ function afterGraphCompleted(){
 //When the html document is loaded
 $( function() {
     //read the data
-    readTextFileAndPlot("../../Bokeh/Data/lens.txt")
+    readTextFileAndPlot("../../Bokeh/Data/lens_charts.txt")
 });
