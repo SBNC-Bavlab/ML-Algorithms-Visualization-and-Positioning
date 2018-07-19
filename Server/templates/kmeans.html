@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="//d3js.org/d3.v4.min.js"></script>
+    <title>Title</title>
+</head>
+<body>
+
+
+<script>
+    const svg = d3.select("body")
+                    .append("svg")
+                    .attr("width", innerWidth)
+                    .attr("height", innerHeight);
+    const childPos = [];
+    //captain 0: not a captain; 1: captain of team A; 2: captain of team B
+    for(let i = 0; i < 12; i++){
+        childPos.push({x: d3.randomNormal()() * 50 + 300, y: d3.randomNormal()() * 50 + 300, image: "boy.png", captain: 0, team: 0})
+    }
+    for(let i = 0; i < 12; i++){
+        childPos.push({x: d3.randomNormal()() * 50 + 550, y: d3.randomNormal()() * 50 + 300, image: "boy.png", captain: 0, team: 0})
+    }
+    childPos.push({x: 500, y: 30, image: "boy_team_captain_a.png", captain: 1, team: 1});
+    childPos.push({x: 530, y: 30, image: "boy_team_captain_b.png", captain: 2, team: 2});
+
+    const captainA = childPos[childPos.length - 2];
+    const captainB = childPos[childPos.length - 1];
+    svg.selectAll("image.children")
+        .data(childPos)
+        .enter()
+        .append("svg:image")
+        .attr("x", (d)=>{return d.x;})
+        .attr("y", (d)=>{return d.y;})
+        .attr("width", 50)
+        .attr("height", 50)
+        .attr("class", "children")
+        .attr("xlink:href", (d)=>{
+            return "../icons/" + d.image;
+        });
+    svg.selectAll("image.children")
+        .data(childPos)
+        .filter((d, i) => {
+            return i > childPos.length - 3 //last two elements are the captains
+        })
+        .attr("width", 50)
+        .attr("height", 50)
+        .call(d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended));
+
+    svg.append("rect")
+        .attr("class", "button")
+        .attr("x", 100)
+        .attr("y", 100)
+        .attr("class", "assign")
+        .attr("width", 150)
+        .attr("height", 50)
+        .attr("fill", "red")
+        .on('click', ()=>{
+            assignChildrenToTeam();
+        });
+    svg.append("rect")
+        .attr("class", "button")
+        .attr("x", 300)
+        .attr("y", 100)
+        .attr("class", "calculate_Center")
+        .attr("width", 150)
+        .attr("height", 50)
+        .attr("fill", "red")
+        .on('click', ()=> {
+            let sumXA = 0;
+            let sumYA = 0;
+            let countA = 0;
+            let sumXB = 0;
+            let sumYB = 0;
+            let countB = 0;
+            for (let i = 0; i < childPos.length; i++) {
+                const child = childPos[i];
+                if (child.captain === 0) {
+                    if (child.team === 1) {
+                        sumXA += child.x;
+                        sumYA += child.y;
+                        countA++;
+                    } else if (child.team === 2) {
+                        sumXB += child.x;
+                        sumYB += child.y;
+                        countB++;
+                    }
+                }
+            }
+
+            const teamANewCenter = {x: sumXA / countA, y: sumYA / countA};
+            const teamBNewCenter = {x: sumXB / countB, y: sumYB / countB};
+
+            captainA.x = teamANewCenter.x;
+            captainA.y = teamANewCenter.y;
+
+            captainB.x = teamBNewCenter.x;
+            captainB.y = teamBNewCenter.y;
+
+            d3.selectAll("image.children")
+                .data(childPos)
+                .attr("x", (d) => {
+                    return d.x;
+                })
+                .attr("y", (d) => {
+                    return d.y;
+                });
+        });
+    function assignChildrenToTeam(){
+        //proced with center calculation
+        for(let i = 0; i < childPos.length; i++){
+            const player = childPos[i];
+            if(player.captain === 0) {
+                const distToA = euclidianDistance(player.x, player.y, captainA.x, captainA.y);
+                const distToB = euclidianDistance(player.x, player.y, captainB.x, captainB.y);
+                if (distToA > distToB) { //it goes to team B
+                    childPos[i].image = "boy_b.png"
+                    childPos[i].team = 2;
+                } else {
+                    childPos[i].image = "boy_a.png"
+                    childPos[i].team = 1;
+                }
+            }
+        }
+        d3.selectAll("image.children")
+            .data(childPos)
+            .attr("x", (d)=>{return d.x;})
+            .attr("y", (d)=>{return d.y;})
+            .attr("xlink:href", (d) =>{
+                return "../icons/" + d.image;
+        })
+    }
+    function euclidianDistance(x1, y1, x2, y2){
+        return Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
+    }
+    function dragstarted(d) {
+      d3.select(this).raise().classed("active", true);
+    }
+
+    function dragged(d) {
+        d3.select(this).attr("x", d.x = d3.event.x).attr("y", d.y = d3.event.y);
+    }
+
+    function dragended(d) {
+        d3.select(this).classed("active", false);
+    }
+</script>
+</body>
+</html>

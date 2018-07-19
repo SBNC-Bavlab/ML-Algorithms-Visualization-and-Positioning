@@ -241,7 +241,7 @@
                         .append('text')
                         .attr("class", "header")
                         .attr('x', function(d, i){
-                            if (i == 0){
+                            if (i === 0){
                                 return 100 * i + 370;
                             } else if (i === 1) {
                                 return 200 * i + 285;
