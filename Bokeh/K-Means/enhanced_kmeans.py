@@ -1,3 +1,6 @@
+########################################################################################################################
+############# Implementation from "Faster K-Means Cluster Estimation(Siddhesh Khandelwal, Amit Awekar)" ################
+
 from __future__ import division
 import numpy
 import copy
@@ -5,6 +8,7 @@ import time
 import threading
 import math
 import random
+import bisect
 
 
 class Point:
@@ -43,20 +47,27 @@ class Centroid:
 
 
 class Kmeans:
-    def __init__(self, k, pointList, kmeansThreshold, initialCentroids=None):
+    def __init__(self, k, pointList, kmeansThreshold, centroidsToRemember, initialCentroids=None):
         self.pointList = []
         self.numPoints = len(pointList)
         self.k = k
         self.initPointList = []
+        self.centroidsToRemember = int(k * centroidsToRemember / 100)
+        print("Centroids to Remember:", self.centroidsToRemember)
         self.dim = len(pointList[0])
         self.kmeansThreshold = kmeansThreshold
         self.error = None
         self.errorList = []
+        self.closestClusterDistance = {}
+        self.centroidDistance = {}
+
         i = 0
         for point in pointList:
             p = Point(point, self.dim, i)
             i += 1
             self.pointList.append(p)
+            self.closestClusterDistance[p.id] = -1
+            self.centroidDistance[p.id] = []
 
         if initialCentroids != None:
             self.centroidList = self.seeds(initialCentroids)
@@ -83,11 +94,16 @@ class Kmeans:
             distance += (point1.coordinates[x] - point2.coordinates[x]) ** 2
         return (distance) ** (0.5)
 
-    def getCentroid(self, point):
+    def getCentroidInit(self, point):
         minDist = -1
         pos = 0
         for centroid in self.centroidList:
             dist = self.getDistance(point, centroid.point)
+            if len(self.centroidDistance[point.id]) < self.centroidsToRemember:
+                bisect.insort(self.centroidDistance[point.id], (dist, pos))
+            elif self.centroidDistance[point.id][self.centroidsToRemember - 1][0] > dist:
+                bisect.insort(self.centroidDistance[point.id], (dist, pos))
+                del self.centroidDistance[point.id][self.centroidsToRemember]
             if minDist == -1:
                 minDist = dist
                 closestCentroid = pos
@@ -95,6 +111,26 @@ class Kmeans:
                 minDist = dist
                 closestCentroid = pos
             pos += 1
+        return (closestCentroid, minDist)
+
+    def getCentroid(self, point):
+        pos = 0
+        dist = self.getDistance(point, self.centroidList[point.centroid].point)
+        minDist = dist
+        closestCentroid = point.centroid
+        currCentroid = point.centroid
+        if self.closestClusterDistance[point.id] < dist:
+            for x in self.initPointList[point.id]:
+                centroid = self.centroidList[x]
+                if x != currCentroid:
+                    dist = self.getDistance(point, centroid.point)
+                    if minDist > dist:
+                        minDist = dist
+                        closestCentroid = x
+                pos += 1
+        else:
+            self.numChange += 1
+        self.closestClusterDistance[point.id] = minDist
         return (closestCentroid, minDist)
 
     def reCalculateCentroid(self):
@@ -117,16 +153,22 @@ class Kmeans:
             pos += 1
 
     def assignPointsInit(self):
+        self.initPointList = {}
         for i in range(len(self.pointList) - 1, -1, -1):
-            temp = self.getCentroid(self.pointList[i])
+            temp = self.getCentroidInit(self.pointList[i])
+            self.initPointList[self.pointList[i].id] = []
+            for l in range(0, self.centroidsToRemember):
+                self.initPointList[self.pointList[i].id].append(self.centroidDistance[self.pointList[i].id][l][1])
             centroidPos = temp[0]
             centroidDist = temp[1]
+            self.closestClusterDistance[self.pointList[i].id] = centroidDist
             if self.pointList[i].centroid is None:
                 self.pointList[i].centroid = centroidPos
                 self.centroidList[centroidPos].pointList.append(copy.deepcopy(self.pointList[i]))
 
     def assignPoints(self):
         doneMap = {}
+        self.numChange = 0
         for i in range(len(self.centroidList) - 1, -1, -1):
             for j in range(len(self.centroidList[i].pointList) - 1, -1, -1):
                 try:
@@ -141,6 +183,7 @@ class Kmeans:
                         self.centroidList[centroidPos].pointList.append(
                             copy.deepcopy(self.centroidList[i].pointList[j]))
                         del self.centroidList[i].pointList[j]
+        print(self.numChange)
 
     def calculateError(self, config):
         error = 0
@@ -170,42 +213,38 @@ class Kmeans:
         self.currentTime = time.time()
         self.startTime = time.time()
         self.assignPointsInit()
+        print("First Step:", time.time() - self.startTime)
         while (abs(error1 - error2)) > self.kmeansThreshold:
             iterationNo += 1
-            kmeans_error = abs(error1 - error2)
             self.iteration = iterationNo
             error1 = self.calculateError(self.centroidList)
             self.error = error1
-            print("Iteration:", iterationNo, "Error:", error1, "Kmeans Error:", kmeans_error)
+            print("Iteration:", iterationNo, "Error:", error1)
             self.reCalculateCentroid()
             self.assignPoints()
             error2 = self.calculateError(self.centroidList)
             self.error = error2
-        print("Last Error:", abs(error1 - error2))
         self.t.cancel()
 
 
 def makeRandomPoint(n, lower, upper):
     return numpy.random.normal(loc=upper, size=[lower, n])
 
-
-
-# def generate
 # pointList = []
 # x = []
 # y = []
 # c = []
-# numPoints = 9000
+# numPoints = 1740000
 # dim = 2
-# numClusters = 50
+# numClusters = 2
 # k = 0
 # for i in range(0, numClusters):
 #     num = int(numPoints/numClusters)
-#     p = makeRandomPoint(dim, num, k)
+#     p = makeRandomPoint(dim,num,k)
 #     k += 5
 #     pointList += p.tolist()
 #
 # start = time.time()
-# #self, k, pointList, kmeansThreshold, predictionThreshold, isPrediction = 0, initialCentroids = None
-# config= Kmeans(numClusters, pointList, 0.1)
-# print("Time taken:", time.time() - start)
+# # self, k, pointList, kmeansThreshold, predictionThreshold, isPrediction = 0, initialCentroids = None
+# config = Kmeans(numClusters, pointList, 1000, 100)
+# print("Time taken:",time.time() - start)

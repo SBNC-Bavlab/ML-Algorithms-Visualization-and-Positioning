@@ -59,6 +59,6 @@ class Instance(metaclass=Singleton):
         else:
             if self.data_set not in ["car", "lens"]:
                 cwd = os.getcwd()
-                file_path = cwd + "/../Bokeh/Data/" + self.data_set
+                file_path = cwd + "/../Bokeh/Decision_Tree/Data/" + self.data_set
                 os.remove(file_path)
                 self.data_set = file_name

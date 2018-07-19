@@ -7,10 +7,10 @@ from bokeh.transform import dodge, factor_cmap
 from bokeh.models import ColumnDataSource, LabelSet, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs, Toggle, CustomJS
 from bokeh.models.widgets import Button, Paragraph, Select, CheckboxGroup, Slider
 from bokeh.layouts import column, row
-from Bokeh.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
+from Bokeh.Decision_Tree.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 from math import atan
-from Bokeh.Plot.get_data import get_all_colors, set_dataset, set_new_dataset
-from Bokeh.Plot.instance import Instance
+from Bokeh.Decision_Tree.Plot.get_data import get_all_colors, set_new_dataset
+from Bokeh.Decision_Tree.Plot.instance import Instance
 
 circles = None
 rectangles = None
@@ -80,7 +80,7 @@ def create_figure():
     :return: send layout of widgets and plots back to Bokeh
     """
     global circles, rectangles, best_circles, best_rectangles
-    set_dataset()
+    set_new_dataset("lens")
     active_attributes_list = [attr for attr in Instance().cmap.keys() if attr != Instance().attr_list[-1]]
     source, width, depth, level_width, acc = get_bokeh_data("gini", active_attributes_list + [Instance().attr_list[-1]],
                                                             selected_root)
@@ -306,7 +306,7 @@ def create_figure():
         use selected dataset for the tree
         """
         global selected_root
-        set_new_dataset(new, ",")
+        set_new_dataset(new)
         selected_root = ""
         apply_changes()
         attribute_checkbox.labels = [attr for attr in list(Instance().cmap.keys()) if attr != Instance().attr_list[-1]]

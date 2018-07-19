@@ -1,6 +1,6 @@
-from Bokeh.ID3_Decision_Tree.id3_decision_tree import generate_tree
-from Bokeh.ID3_Decision_Tree.bucheim import tree_layout
-from Bokeh.Plot.instance import Instance
+from Bokeh.Decision_Tree.ID3_Decision_Tree.id3_decision_tree import generate_tree
+from Bokeh.Decision_Tree.ID3_Decision_Tree.bucheim import tree_layout
+from Bokeh.Decision_Tree.Plot.instance import Instance
 
 
 def get_depth(node, id_index, visited={}):

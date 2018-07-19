@@ -2,8 +2,8 @@ import copy
 from queue import Queue
 import random
 from math import log
-from Bokeh.Plot.get_data import set_active_attr, modify_new_values
-from Bokeh.Plot.instance import Instance
+from Bokeh.Decision_Tree.Plot.get_data import set_active_attr, modify_new_values
+from Bokeh.Decision_Tree.Plot.instance import Instance
 
 class Node(object):
     """ Tree node """

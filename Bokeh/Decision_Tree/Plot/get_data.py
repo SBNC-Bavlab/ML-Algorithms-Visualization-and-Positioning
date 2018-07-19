@@ -1,4 +1,4 @@
-from Bokeh.Plot.instance import Instance
+from Bokeh.Decision_Tree.Plot.instance import Instance
 from random import randint
 
 all_attrs_list = []
@@ -39,9 +39,9 @@ def set_new_dataset(new):
     attr_list = []
     cmap = {}
     if new in ["car", "lens"]:
-        file = "../Bokeh/Data/" + new + ".txt"
+        file = "../Bokeh/Decision_Tree/Data/" + new + ".txt"
     else:
-        file = "../Bokeh/Data/" + new
+        file = "../Bokeh/Decision_Tree/Data/" + new
     for i, line in enumerate(open(file)):
         if i == 0:
             attr_list = line.split(",")
