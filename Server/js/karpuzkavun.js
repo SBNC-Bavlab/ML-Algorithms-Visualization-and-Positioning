@@ -36,6 +36,7 @@ const rectHeight = 70;
 const maxDiameter = 14;
 const buttonX = innerWidth * 0.65;
 const buttonY = innerHeight * 0.84;
+const radius_label = [4,6,7,10,12,13,16,18,21,23,24,27,30];
 
 let fruitPlaces = [];
 let validDiameterIndex = 1;
@@ -52,9 +53,8 @@ function manipulateRectangleData(data){
             radiusDict[entry[1]] = [entry[2]];
         }
     });
-
     Object.keys(radiusDict).forEach(function(d, i){
-        rectangleData.push({'x': 105 * i + 50, 'y': 10, 'label': d,'color': 'beige'})
+        rectangleData.push({'x': 105 * i + 50, 'y': 10, 'label': d, 'text': radius_label[i], 'color': 'beige'})
     });
 }
 function calculateFruitPlaces(){
@@ -175,6 +175,8 @@ var texts = s2svg.selectAll("text.label")
     .data(rectangleData)
     .enter()
     .append('text')
+    .attr("alignment-baseline", "middle")
+    .attr("text-anchor", "middle")
     .classed('label', true)
     .transition()
     .duration(1000)
@@ -184,7 +186,7 @@ var texts = s2svg.selectAll("text.label")
     })
     .attr("fill", "black")
     .text(function (d) {
-        return d.label;
+        return d.text + "cm";
     })
     .style("font-size", "30px");
 s2svg.selectAll("image").data(fruitPlaces).enter().append("svg:image").classed('fruit', true)
@@ -201,15 +203,13 @@ s2svg.selectAll("image").data(fruitPlaces).enter().append("svg:image").classed('
                                 return "../icons/" + d.fruit_img;
                             });
 function calculateXForText(d, i){
-    var offset = 79;
-    if(+d.label % 10 !== +d.label){
-        offset -= 7;
-    }
-    return 105 * i + offset;
+    return 105 * i + 87;
 }
+
+//vtrcexrdctfyvgbhunıjıhbgvfcdrxsezxrdctfvygbuhnıjmoköjnhbgvftcdrxsexrdtfgybhunjımkoökjnhubgyvftcdrxseawzesxrdctfvg
 function paintRectangles(){
-    rectangleData.forEach(function (d) {
-        if(+d.label >= theValue){
+    rectangleData.forEach(function (d, index) {
+        if(+radius_label[index] >= theValue){
             d.color = "rgb(11, 229, 15)"
         } else {
             d.color = "rgb(228, 239, 14)"
@@ -273,7 +273,10 @@ function calculateTest(){
                             .attr('fill', function(d){return d.color})
                             .exit()
                                 .remove();
-    s2svg.selectAll("text.label").data(rectangleData).text(function(d){return d.label}).attr('x', calculateXForText).exit().remove();
+    s2svg.selectAll("text.label")
+        .data(rectangleData)
+        .text(function(d){return d.text + "cm"})
+        .attr('x', calculateXForText).exit().remove();
 
 
 
@@ -377,11 +380,13 @@ function againTrain(){
     //    .lower();
     s2svg.selectAll("text.label")
                 .data(rectangleData)
-                .text(function(d){return d.label})
+                .text(function(d){return d.text + "cm"})
                 .enter()
                     .append('text')
                     .classed('label', true)
-                    .text(function(d){return d.label})
+                    .text(function(d){return d.text + "cm"})
+                    .attr("alignment-baseline", "middle")
+                    .attr("text-anchor", "middle")
                     .attr('x', calculateXForText)
                     .attr('y', 55)
                     .attr("fill", "black")
