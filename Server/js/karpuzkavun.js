@@ -52,9 +52,9 @@ function manipulateRectangleData(data){
             radiusDict[entry[1]] = [entry[2]];
         }
     });
-
+var radius_label = [4,6,7,10,12,13,16,18,21,23,24,27,30];
     Object.keys(radiusDict).forEach(function(d, i){
-        rectangleData.push({'x': 105 * i + 50, 'y': 10, 'label': d,'color': 'beige'})
+        rectangleData.push({'x': 105 * i + 50, 'y': 10, 'label': radius_label[i] + "cm",'color': 'beige'})
     });
 }
 function calculateFruitPlaces(){
