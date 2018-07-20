@@ -1,7 +1,7 @@
 var theValue = 0;
 var slider = d3.sliderHorizontal()
-.min(1)
-.max(15)
+.min(4)
+.max(31)
 .step(1)
 .width(510)
 .displayValue(false)
