@@ -207,5 +207,5 @@ def makeRandomPoint(n, lower, upper):
 #
 # start = time.time()
 # #self, k, pointList, kmeansThreshold, predictionThreshold, isPrediction = 0, initialCentroids = None
-# config= Kmeans(numClusters, pointList, 0.1)
+# config= Kmeans(numClusters, pointList, 1)
 # print("Time taken:", time.time() - start)

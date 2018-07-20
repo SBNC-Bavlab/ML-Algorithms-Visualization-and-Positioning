@@ -18,6 +18,10 @@
                     .append("svg")
                     .attr("width", innerWidth)
                     .attr("height", innerHeight);
+    const svg2 = d3.select("body")
+                    .append("svg")
+                    .attr("width", innerWidth)
+                    .attr("height", innerHeight);
     const childPos = [];
     //captain 0: not a captain; 1: captain of team A; 2: captain of team B
     for(let i = 0; i < 15; i++){
