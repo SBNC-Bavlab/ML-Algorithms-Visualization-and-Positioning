@@ -1,5 +1,5 @@
 #####################################################################################################
-# Function definitons from "Drawing rooted trees in linear time(Buchheim, Jünger and Leipert, 2006)"#
+# Implementation of "Drawing rooted trees in linear time(Buchheim, Jünger and Leipert, 2006)"#
 
 # constant for distance between two nodes
 distance = 5

@@ -1,15 +1,10 @@
 from flask import Flask, render_template, request
 
 from bokeh.embed import server_document
-from bokeh.layouts import column
-from bokeh.models import ColumnDataSource, Slider
-from bokeh.plotting import figure
 from bokeh.server.server import Server
-from bokeh.themes import Theme
 from tornado.ioloop import IOLoop
 
-from bokeh.sampledata.sea_surface_temperature import sea_surface_temperature
-from Bokeh.Plot.plot_decision_tree import create_figure
+from Bokeh.Decision_Tree.Plot.plot_decision_tree import create_figure
 from bokeh.embed import components
 app = Flask(__name__)
 
