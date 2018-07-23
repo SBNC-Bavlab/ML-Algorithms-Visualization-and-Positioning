@@ -421,3 +421,9 @@ function againTrain(){
                     });
 }
 
+//scroll
+
+d3.select("#scroll2").style("top", 2 * innerHeight * 0.95+ "px");
+d3.select("#scroll1").style("top", innerHeight * 0.9 + "px");
+d3.select("#scroll1").style("left", innerWidth * 0.68 + "px");
+d3.select("#scroll2").style("left", innerWidth * 0.68 + "px");

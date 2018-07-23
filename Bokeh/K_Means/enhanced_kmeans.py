@@ -1,5 +1,5 @@
 ########################################################################################################################
-############# Implementation from "Faster K-Means Cluster Estimation(Siddhesh Khandelwal, Amit Awekar)" ################
+############# Implementation from "Faster K_Means Cluster Estimation(Siddhesh Khandelwal, Amit Awekar)" ################
 
 from __future__ import division
 import numpy

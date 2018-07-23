@@ -770,3 +770,10 @@
     }, innerWidth * 0.43, innerHeight * 0.48, 2, 0.2);
     svgSection3.on('valueChanged2')(rightEntropy.toFixed(2));
     svgSection3.on('opacityChanged2')("hsla(193, 100%, " + (56 - 15 * rightEntropy) + "%, 1)");
+
+    // set scroll items
+
+    d3.select("#scroll2").style("top", 2 * innerHeight * 0.95+ "px");
+    d3.select("#scroll1").style("top", innerHeight * 0.9 + "px");
+    d3.select("#scroll1").style("left", innerWidth * 0.68 + "px");
+    d3.select("#scroll2").style("left", innerWidth * 0.68 + "px");
