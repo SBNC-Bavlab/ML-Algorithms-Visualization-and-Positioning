@@ -365,12 +365,7 @@ def tree_distribution(attribute_list_var, instances_var, methodology, set_root_a
         root_node.value = success_value
 
     else:
-        if methodology == "gini":
-            value = gini_index(set_root_attribute, instances_var)
-        elif methodology == "gainRatio":
-            value = gain_ratio(set_root_attribute, instances_var)
-        else:
-            value = information_gain(set_root_attribute, instances_var)
+        value = gini_index(set_root_attribute, instances_var)
 
         attrib_list_copy.remove(set_root_attribute)
         root_node = Node("", set_root_attribute, instances_copy, [], attrib_list_copy, methodology)

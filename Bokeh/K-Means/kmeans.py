@@ -235,9 +235,9 @@ def create_figure(X):
 
 secim_df = pd.read_csv("Data/secim2015.csv")
 print(secim_df)
-pointList = [[x, y] for x, y in zip(secim_df["GECERSIZ_OY_ORAN"], secim_df["OY_KULLANMA_ORAN"])]
+pointList = [[x, y] for x, y in zip(secim_df["GECERSIZ_OY_ORAN"], secim_df["SECMEN_SAYISI"])]
 
-numClusters = 3
+numClusters = 4
 kmeans_threshold = 1
 
 start = time.time()

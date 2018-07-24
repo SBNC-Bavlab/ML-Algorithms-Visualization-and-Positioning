@@ -59,6 +59,7 @@ def create_figure(X):
                                       ("Geçersiz Oy Oranı", "@gecersiz_oran"),
                                       ("Katılım Oranı", "@katilim_oran")])
     p.title.text = "Seçim"
+
     kmeans = KMeans(n_clusters=7)
     kmeans.fit(X)
 
@@ -89,6 +90,7 @@ def create_figure(X):
 
     p.rect(cluster_xs, cluster_ys, 10, 10, width_units = "screen", height_units = "screen", color="black")
     return p
+
 
 p = create_figure(X)
 show(row(p))
