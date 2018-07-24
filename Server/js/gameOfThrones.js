@@ -34,6 +34,19 @@
               ["Wights", "Hayır", "Yok", "Hayır", "Beyaz", "Whıte Walker"],
               ["Eddard Stark", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
             ];
+    const gotRowStroke = ['white',
+              'white',
+              'white',
+              'white',
+              'white',
+              'white',
+              'white',
+              'white',
+              'white',
+              'white',
+              'white',
+              'white',
+              'white'];
     /*const got = [
               ["Trion", "Hayır", "Yok", "Hayır", "Sarı", "Lannister"],
               ["Daenerys", "Evet", "Var", "Evet", "Beyaz", "Targaryen"],
@@ -399,10 +412,14 @@
             .transition()
             .attr('fill', function(d, i){
                 if(i === index){
-                    return 'lightblue';
+                    return 'lightblue'
                 }
-                return rectColor;
-            });
+                return rectColor
+            })
+            .attr("stroke", (d, i) => {
+                return gotRowStroke[i];
+            })
+            .attr("stroke-width", "1")
     }
     function createQuestion(){
         reset()
@@ -413,13 +430,14 @@
     const left = [];
     const right = [];
     function seperate(isYes, index){
+        gotRowStroke[index] = (isYes) ? "green" : "red";
         svg.selectAll("circle.house_color")
         .filter(function(d,i) {return i === index;})
         .transition()
         .duration(600)
-        .attr("transform", function(d){
-            var targetY;
-            var targetX;
+        .attr("transform", function(d, i){
+            let targetY;
+            let targetX;
             if (isYes) {
                 targetX = s2Gauge0Width + s2ScaledRadius;
                 targetY = (s2Gauge0Height) + s2ScaledRadius;
@@ -465,7 +483,7 @@
             if(createQuestionIndex === got.length - 1)
                 calculateScore();
             createQuestionIndex++;
-            changeColorRect(createQuestionIndex)
+            changeColorRect(createQuestionIndex);
             d3.select(this).transition().duration(500).delay(500).attr('transform', result).attr('r', "5")
         })
         .delay(function(d,i){return 500 * i});
@@ -490,9 +508,6 @@
             seperate(false, createQuestionIndex);
         })
         .text("Hayır");
-
-
-
 
     let a = 0;
     let b = 0;
@@ -550,6 +565,8 @@
                                 } else {
                                     right.push(d);
                                 }
+
+                                gotRowStroke[createQuestionIndex] = (isLeft) ? "green" : "red";
                                 const leftEntropy = calculateEntropy(left);
                                 const rightEntropy = calculateEntropy(right);
                                 svg.on("valueChanged0")(leftEntropy.toFixed(2));
@@ -570,11 +587,8 @@
                                 if(createQuestionIndex === got.length - 1)
                                     calculateScore();
                                 createQuestionIndex++;
+                                changeColorRect(createQuestionIndex)
                                 d3.select(this).transition().duration(500).delay(500).attr('transform', result).attr('r', "5")
-                            })
-                            .on('end', function(d, i){
-                                //const isLeft = d[questions[questionI].type] === questions[questionI].attribute;
-
                             })
                             .delay(function(d,i){return 500 * i});
     }
@@ -590,7 +604,11 @@
         b = 0;
         svg.selectAll("rect.item")
             .transition()
-            .attr('fill', "#fc8d59");
+            .attr('fill', "#fc8d59")
+            .attr('stroke', "white");
+        for(let i = 0; i < gotRowStroke.length; i++){
+            gotRowStroke[i] = 'white';
+        }
         scoreTextPos[0].text = "Ortalama Entropi: -";
         svg.selectAll("text.score_text")
             .data(scoreTextPos)
@@ -610,11 +628,12 @@
                 const item = left[i];
                 let attributeArr = item;
                 featuresMatrix.push([]);
+                //First and last col not included
                 for(let j = 0; j < attributeArr.length; j++){
                     featuresMatrix[i].push(attributeArr[j])
                 }
             }
-
+            console.log('features', featuresMatrix)
             let validSplit = false;
             let col;
             //col started from 1 so that name is not taken into account
@@ -632,7 +651,7 @@
                         let sameFound = false;
                         for (let i = 0; i < right.length; i++) {
                             const rightItem = right[i];
-                            const current = rightItem[rightItem.length - 1];
+                            const current = rightItem[col];
                             if(current === previous){
                                 sameFound = true;
                             }
@@ -704,6 +723,19 @@
         .attr("font-size", "200px")
         .attr("fill", "white")
         .text("-");
+    svgSection3.append("text")
+        .attr("class","paran_sign")
+        .attr("font-size", "300px")
+        .attr("text-anchor", "middle")
+        .attr("transform", "translate(" + innerWidth * 0.43 + ", " + s2Gauge0Height + ") rotate(90)")
+        .attr("fill", "white")
+        .text("(");svgSection3.append("text")
+        .attr("class","paran_sign")
+        .attr("font-size", "300px")
+        .attr("text-anchor", "middle")
+        .attr("transform", "translate(" + innerWidth * 0.43 + ", " + innerHeight * 0.7 + ") rotate(90)")
+        .attr("fill", "white")
+        .text(")");
     svgSection3.append("text")
         .attr("class","equals_sign")
         .attr("x", innerWidth * 0.55)
