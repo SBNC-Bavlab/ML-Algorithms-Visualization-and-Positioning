@@ -204,7 +204,6 @@ def create_figure(X):
     p = figure(tools=tools)
     p.title.text = "Seçim"
 
-
     cluster_xs = []
     cluster_ys = []
 
@@ -220,7 +219,8 @@ def create_figure(X):
             df = df.append({'x': point.coordinates[0], 'y': point.coordinates[1],
                             'cluster': str(centroid.point.coordinates[0] + centroid.point.coordinates[1])}, ignore_index=True)
 
-    cmap = {str(centroid.point.coordinates[0] + centroid.point.coordinates[1]): ('#%06X' % randint(0, 0xFFFFFF)) for centroid in X}
+    cmap = {str(centroid.point.coordinates[0] + centroid.point.coordinates[1]): ('#%06X' % randint(0, 0xFFFFFF))
+            for centroid in X}
 
     dataSource = ColumnDataSource(data=pd.DataFrame.from_dict(df))
 
@@ -231,13 +231,11 @@ def create_figure(X):
     return p
 
 
-
-
 secim_df = pd.read_csv("Data/secim2015.csv")
 print(secim_df)
-pointList = [[x, y] for x, y in zip(secim_df["GECERSIZ_OY_ORAN"], secim_df["SECMEN_SAYISI"])]
+pointList = [[x, y] for x, y in zip(secim_df["GECERSIZ_OY_ORAN"], secim_df["OY_KULLANMA_ORAN"])]
 
-numClusters = 4
+numClusters = 5
 kmeans_threshold = 1
 
 start = time.time()
