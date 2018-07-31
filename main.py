@@ -6,11 +6,10 @@ from bokeh.plotting import figure
 from bokeh.transform import dodge, factor_cmap
 from bokeh.models import ColumnDataSource, LabelSet, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs, Toggle, CustomJS
 from bokeh.models.widgets import Button, Paragraph, Select, CheckboxGroup, Slider
-from bokeh.layouts import column, row, widgetbox, layout
+from bokeh.layouts import widgetbox, layout
 from Bokeh.Decision_Tree.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 from math import atan, pi
-from Bokeh.Decision_Tree.Plot.get_data import get_all_colors, set_new_dataset
-from Bokeh.Decision_Tree.Plot.instance import Instance
+from Bokeh.Decision_Tree.Plot.get_data import get_all_colors, set_new_data_set
 from bokeh.io import curdoc
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -24,20 +23,20 @@ circles = rectangles = best_circles = best_rectangles = active_attributes_list =
 attr_info = Paragraph(text="""
    Nitelikleri seçiniz:
 """)
-set_new_dataset("lens")
+Instance = set_new_data_set("lens")
 radio_button_labels = ["gini", "gainRatio"]
 tree_mode_labels = ["Basit", "Detaylı"]
 arrow_list = {"current": [], "previous": []}
 current_label = "gini"
 selected_root = ""
-attribute_checkbox = CheckboxGroup(labels=[attr for attr in list(Instance().attr_list)
-                                           if attr != Instance().attr_list[-1]],
-                                   active=[i for i, attr in enumerate(list(Instance().attr_list))])
+attribute_checkbox = CheckboxGroup(labels=[attr for attr in list(Instance.attr_list)
+                                           if attr != Instance.attr_list[-1]],
+                                   active=[i for i, attr in enumerate(list(Instance.attr_list))])
 apply_changes_button = Button(label="Değişiklikleri uygula", button_type="success")
 decision_button = Toggle(label="Sonuç göster", button_type="warning")
 arrow_button = Toggle(label="Karar değerlerini göster", button_type="warning")
 root_select = Select(title="Kök niteliği seçiniz:",
-                     options=['Hiçbiri'] + [attr for attr in list(Instance().attr_list)[:-1]],
+                     options=['Hiçbiri'] + [attr for attr in list(Instance.attr_list)[:-1]],
                      value="Hiçbiri")
 method_select = Select(title="Metodu seçiniz:", options=radio_button_labels, value="gini")
 tree_select = Select(title="Ağacın görünümünü seçiniz:", options=tree_mode_labels, value="Basit")
@@ -116,10 +115,10 @@ def modify_individual_plot(mode, root):
     modular plot
     """
     global p, data_source, active_attributes_list, arrow_data_source, width, depth, level_width, acc, periods, groups,\
-        best_root_plot, best_root_plot_data_source, best_arrow_data_source
+        best_root_plot, best_root_plot_data_source, best_arrow_data_source, Instance
 
-    data, width, depth, level_width, acc = get_bokeh_data(current_label,
-                                                          active_attributes_list + [Instance().attr_list[-1]],
+    data, width, depth, level_width, acc = get_bokeh_data(Instance, current_label,
+                                                          active_attributes_list + [Instance.attr_list[-1]],
                                                           root)
     data = pd.DataFrame.from_dict(data)
     get_new_data_source(data)
@@ -154,10 +153,10 @@ def create_figure():
     global active_attributes_list, width, depth, level_width, acc, periods, groups, data_source,\
         attr_info, attribute_checkbox, apply_changes_button, decision_button, arrow_button, root_select, method_select,\
         tree_select, dataset_select, dataset_slider, p, arrow_data_source, circles, rectangles, best_circles,\
-        best_rectangles, best_root_plot, best_root_plot_data_source, tree_tab, best_arrow_data_source, text_props
+        best_rectangles, best_root_plot, best_root_plot_data_source, tree_tab, best_arrow_data_source, text_props, Instance
 
-    active_attributes_list = [attr for attr in Instance().attr_list if attr != Instance().attr_list[-1]]
-    source, width, depth, level_width, acc = get_bokeh_data("gini", active_attributes_list + [Instance().attr_list[-1]],
+    active_attributes_list = [attr for attr in Instance.attr_list if attr != Instance.attr_list[-1]]
+    source, width, depth, level_width, acc = get_bokeh_data(Instance, "gini", active_attributes_list + [Instance.attr_list[-1]],
                                                             selected_root)
     # X and y range calculated
     periods = [str(i) for i in range(0, width+1)]
@@ -205,10 +204,10 @@ def update_attributes(new):
     """
     create a new active_attributes_list when any of the checkboxes are selected
     """
-    global selected_root
+    global selected_root, Instance
     active_attributes_list[:] = []
     for i in new:
-        active_attributes_list.append(list(Instance().attr_list)[i])
+        active_attributes_list.append(list(Instance.attr_list)[i])
     if selected_root != '' and selected_root not in active_attributes_list:
         apply_changes_button.disabled = True
     else:
@@ -219,9 +218,9 @@ attribute_checkbox.on_click(update_attributes)
 
 
 def modify_test_percentage(_attr, _old, new):
-    Instance().update(Instance().data, Instance().attr_values, Instance().attr_list,
-                      Instance().attr_values_dict, Instance().attr_dict, Instance().cmap,
-                      new)
+    global Instance
+    Instance.update(Instance.data, Instance.attr_values, Instance.attr_list,
+                    Instance.attr_values_dict, Instance.attr_dict, Instance.cmap, new)
 
 
 dataset_slider.on_change('value', modify_test_percentage)
@@ -296,9 +295,9 @@ def update_root(_attr, _old, new):
     """
     change root attribute to be used for creating a new tree
     """
-    global selected_root
+    global selected_root, Instance
     new = root_select.options.index(new)
-    method_type_selected = list(Instance().attr_list)[new - 1]
+    method_type_selected = list(Instance.attr_list)[new - 1]
     if new == 0:
         selected_root = ''
         apply_changes_button.disabled = False
@@ -317,13 +316,13 @@ def change_dataset(_attr, _old, new):
     """
     use selected dataset for the tree
     """
-    global selected_root
-    set_new_dataset(new)
+    global selected_root, Instance
+    set_new_data_set(new)
     selected_root = ""
     apply_changes()
-    attribute_checkbox.labels = [attr for attr in list(Instance().attr_list) if attr != Instance().attr_list[-1]]
-    attribute_checkbox.active = [i for i, attr in enumerate(list(Instance().attr_list))]
-    root_select.options = ['Hiçbiri'] + [attr for attr in list(Instance().attr_list)[:-1]]
+    attribute_checkbox.labels = [attr for attr in list(Instance.attr_list) if attr != Instance.attr_list[-1]]
+    attribute_checkbox.active = [i for i, attr in enumerate(list(Instance.attr_list))]
+    root_select.options = ['Hiçbiri'] + [attr for attr in list(Instance.attr_list)[:-1]]
 
 
 dataset_select.on_change('value', change_dataset)
@@ -334,7 +333,7 @@ def apply_changes():
     compute new data source to be used for the new tree. change values of several variables to be used before
     sending them to get_bokeh_data
     """
-    global circles, rectangles, best_circles, best_rectangles
+    global circles, rectangles, best_circles, best_rectangles, Instance
     p.renderers.remove(circles)
     p.renderers.remove(rectangles)
     best_root_plot.renderers.remove(best_circles)
@@ -349,22 +348,22 @@ def apply_changes():
     circles = p.circle("y", "x", radius=circle_radius, radius_units='screen', source=data_source,
                        name="circles", legend="attribute_type",
                        color=factor_cmap('attribute_type', palette=list(get_all_colors()),
-                                         factors=Instance().attr_list))
+                                         factors=Instance.attr_list))
     circles.visible = False
     rectangles = p.rect("y", "x", rect_width, rect_height, source=data_source, name="rectangles",
                         legend="attribute_type",
                         color=factor_cmap('attribute_type', palette=list(get_all_colors()),
-                                          factors=Instance().attr_list))
+                                          factors=Instance.attr_list))
     rectangles.visible = False
     best_circles = best_root_plot.circle("y", "x", radius=circle_radius, radius_units='screen',
                                          source=best_root_plot_data_source, name="circles", legend="attribute_type",
                                          color=factor_cmap('attribute_type', palette=list(get_all_colors()),
-                                                           factors=Instance().attr_list))
+                                                           factors=Instance.attr_list))
     best_circles.visible = False
     best_rectangles = best_root_plot.rect("y", "x", rect_width, rect_height, source=best_root_plot_data_source,
                                           name="rectangles", legend="attribute_type",
                                           color=factor_cmap('attribute_type', palette=list(get_all_colors()),
-                                                            factors=Instance().attr_list))
+                                                            factors=Instance.attr_list))
     best_rectangles.visible = False
 
     circles.visible = True
@@ -387,6 +386,7 @@ apply_changes_button.on_click(apply_changes)
 
 
 def file_callback(_attr, _old, _new):
+    global Instance
     raw_contents = file_source.data['contents'][0]
     prefix, b64_contents = raw_contents.split(",", 1)
     file_contents = base64.b64decode(b64_contents)
@@ -396,10 +396,10 @@ def file_callback(_attr, _old, _new):
         with open(fname, "wb") as f:
             f.write(file_contents)
     dataset_select.options = dataset_select.options + [file_source.data['name'][0]]
-    if Instance().data_set:
-        dataset_select.options = [item for item in dataset_select.options if item != Instance().data_set]
-    Instance().update_data_set(file_source.data['name'][0])
-    dataset_select.value = Instance().data_set
+    if Instance.data_set:
+        dataset_select.options = [item for item in dataset_select.options if item != Instance.data_set]
+    Instance.update_data_set(file_source.data['name'][0])
+    dataset_select.value = Instance.data_set
 
 
 file_source.on_change('data', file_callback)
@@ -416,6 +416,7 @@ def create_plot(mode):
     :param is_previous: is the customized or ideal tree being created?
     :return: plot p and the arrow data source
     """
+    global Instance
     title = "Karar Ağacı " + ("(Algoritmanın Seçtiği Kök Nitelikli Hali)"
                               if mode == "customized" else
                               "(Seçtiğiniz Kök Nitelikli Hali)") + ("\t\t\t\tTahmin Başarısı (%): "
@@ -432,10 +433,10 @@ def create_plot(mode):
     circles = p.circle("y", "x", radius=circle_radius, radius_units='screen', source=data_source,
                        name="circles", legend="attribute_type",
                        color=factor_cmap('attribute_type',
-                                         palette=list(get_all_colors()), factors=Instance().attr_list))
+                                         palette=list(get_all_colors()), factors=Instance.attr_list))
     rectangles = p.rect("y", "x", rect_width, rect_height, source=data_source, name="rectangles",
                         legend="attribute_type", color=factor_cmap('attribute_type', palette=list(get_all_colors()),
-                                                                   factors=Instance().attr_list))
+                                                                   factors=Instance.attr_list))
     p.select(name="rectangles").visible = False
 
     # Drawing on the rectangles
@@ -474,14 +475,15 @@ def draw_arrow(source, p, mode="draw"):
     :param mode: when mode isn't draw, it means that the function is being called only for getting the arrow data source
     :return: returns arrow data source, arrows and labels
     """
+    global Instance
     arrow_coordinates = {"x_start": [], "x_end": [], "y_start": [], "y_end": [], "x_avg": [], "y_avg": [],
                          "label_name": [], "instances": [], "angle": [], "xs": [], "ys": []}
     for i in range(width):
         x_offset = 0
         for j in range(level_width[i]):
             offset = sum(level_width[:i])
-            if source["attribute_type"][offset + j] != Instance().attr_list[-1]:
-                children_names = Instance().attr_values_dict[source["attribute_type"][offset + j]]
+            if source["attribute_type"][offset + j] != Instance.attr_list[-1]:
+                children_names = Instance.attr_values_dict[source["attribute_type"][offset + j]]
                 number_of_children = len(children_names)
                 for index in range(number_of_children):
                     x_start = source["y"][offset + j]

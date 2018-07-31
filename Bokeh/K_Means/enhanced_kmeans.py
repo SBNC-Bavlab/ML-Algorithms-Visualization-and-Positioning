@@ -9,6 +9,14 @@ import threading
 import math
 import random
 import bisect
+import pandas as pd
+from bokeh.transform import factor_cmap
+from bokeh.plotting import figure, show
+from bokeh.models import ColumnDataSource
+from bokeh.layouts import layout
+from random import randint
+
+graph_list = []
 
 
 class Point:
@@ -224,27 +232,56 @@ class Kmeans:
             self.assignPoints()
             error2 = self.calculateError(self.centroidList)
             self.error = error2
+            graph_list.append(create_figure(self.centroidList))
         self.t.cancel()
 
 
 def makeRandomPoint(n, lower, upper):
     return numpy.random.normal(loc=upper, size=[lower, n])
+def create_figure(X):
+    tools = "hover,crosshair,pan,wheel_zoom,zoom_in,zoom_out,box_zoom,undo," \
+            "redo,reset,tap,save,box_select,poly_select,lasso_select,"
+    p = figure(tools=tools)
+    p.title.text = "Seçim"
 
-# pointList = []
-# x = []
-# y = []
-# c = []
-# numPoints = 1740000
-# dim = 2
-# numClusters = 2
-# k = 0
-# for i in range(0, numClusters):
-#     num = int(numPoints/numClusters)
-#     p = makeRandomPoint(dim,num,k)
-#     k += 5
-#     pointList += p.tolist()
-#
-# start = time.time()
-# # self, k, pointList, kmeansThreshold, predictionThreshold, isPrediction = 0, initialCentroids = None
-# config = Kmeans(numClusters, pointList, 1000, 100)
-# print("Time taken:",time.time() - start)
+
+    cluster_xs = []
+    cluster_ys = []
+
+    for centroid in X:
+        cluster_xs.append(centroid.centerPos[-1].coordinates[0])
+        cluster_ys.append(centroid.centerPos[-1].coordinates[1])
+
+    columns = ['x', 'y', 'cluster']
+    df = pd.DataFrame(columns=columns)
+
+    for centroid in X:
+        for point in centroid.pointList:
+            df = df.append({'x': point.coordinates[0], 'y': point.coordinates[1],
+                            'cluster': str(centroid.point.coordinates[0] + centroid.point.coordinates[1])}, ignore_index=True)
+
+    cmap = {str(centroid.point.coordinates[0] + centroid.point.coordinates[1]): ('#%06X' % randint(0, 0xFFFFFF)) for centroid in X}
+
+    dataSource = ColumnDataSource(data=pd.DataFrame.from_dict(df))
+
+    p.circle(x='x', y='y', size=5, source=dataSource,
+             color=factor_cmap('cluster', palette=list(cmap.values()), factors=list(cmap.keys())))
+
+    p.rect(cluster_xs, cluster_ys, 10, 10, width_units="screen", height_units="screen", color="black")
+    return p
+
+
+
+
+secim_df = pd.read_csv("Data/secim2015.csv")
+print(secim_df)
+pointList = [[x, y] for x, y in zip(secim_df["GECERSIZ_OY_ORAN"], secim_df["GECERLI_OY_TOPLAMI"])]
+
+numClusters = 7
+kmeans_threshold = 1
+
+start = time.time()
+config = Kmeans(numClusters, pointList, kmeans_threshold, 100)
+print("Time taken:", time.time() - start)
+
+show(layout(graph_list))
