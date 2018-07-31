@@ -1,4 +1,4 @@
-Buying,Maintenance,Doors,Persons,Lug_Boot,Safety,Result
+Fiyat,Tamir Masrafı,Kapı Sayısı,Yolcu Kapasitesi,Bagaj Boyutu,Güvenlik,Sonuç
 vhigh,vhigh,2,2,small,low,unacc
 vhigh,vhigh,2,2,small,med,unacc
 vhigh,vhigh,2,2,small,high,unacc

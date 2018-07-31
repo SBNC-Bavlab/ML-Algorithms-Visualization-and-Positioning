@@ -7,6 +7,7 @@ import pandas as pd
 from bokeh.models import ColumnDataSource
 from bokeh.layouts import row, column
 from bokeh.tile_providers import CARTODBPOSITRON_RETINA
+from bokeh.io import curdoc
 from bokeh.models.widgets import Slider, Select
 import math
 
@@ -35,7 +36,7 @@ def merc_y(lat):
     return y
 
 
-secim_df = pd.read_csv("../Bokeh/K_Means/Data/secim2015.csv")
+secim_df = pd.read_csv("Data/secim2015.csv")
 cmap = {'0': "red", '1': "green", '2': "blue", '3': "orange", '4': "yellow", '5': "pink", '6': "purple"}
 
 vote_results = [[x, y] for x, y in zip(secim_df["GECERSIZ_OY_ORAN"], secim_df["OY_KULLANMA_ORAN"])]
@@ -45,8 +46,8 @@ data_source = None
 data_source_map = None
 center_of_mass_data_source = None
 
-districts = secim_df["İLÇE ADI"].tolist()
-cities = secim_df["İL ADI"].tolist()
+districts = secim_df["ILCE ADI"].tolist()
+cities = secim_df["IL ADI"].tolist()
 invalid_ratio = secim_df["GECERSIZ_OY_ORAN"].tolist()
 turnout = secim_df["OY_KULLANMA_ORAN"].tolist()
 
@@ -172,3 +173,4 @@ def change_cluster(_attr, _old, new):
 
     temp_com_df = pd.DataFrame.from_dict({'x': cluster_xs, 'y': cluster_ys})
     center_of_mass_data_source.data = ColumnDataSource(data=temp_com_df).data
+curdoc().add_root(create_figure())

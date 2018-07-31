@@ -47,7 +47,7 @@
                 .attr("xlink:href", "http://iop.io/demo/iopctrl/knob.png")
     }
 
-    var vol = iopctrl.arcslider()
+    const vol = iopctrl.arcslider()
                     .radius(75)
                     .indicator(drawKnob);
     vol.axis().orient("out")
@@ -59,11 +59,42 @@
                     .domain([0, 100])
                     .range([-3*Math.PI/4,  3*Math.PI/4]));
 
-    const knob = svg.append("g")
+    svg.append("g")
         .attr("class", "knob")
         .attr("transform", "scale(0.5)")
         .attr("transform", "translate(300, 200)")
         .call(vol);
+
+
+    vol.onValueChanged(function(value){
+        valueOfKnob = Math.round(value);
+        for(let i = 0; i <= animalIndex; i++){
+            const index = (Math.round(+valueOfKnob) * (i + 1)) % 4;
+            decisionText[i].text = decisions[index];
+            console.log(index)
+        }
+        svg.selectAll("text.decision")
+            .text((d) => {return d.text});
+    });
+
+    //Second knob drawn
+    const vol_2 = iopctrl.arcslider()
+                    .radius(75)
+                    .indicator(drawKnob);
+    vol_2.axis().orient("out")
+            .ticks(10)
+            .tickSubdivide(5)
+            .tickSize(10, 6)
+            .tickPadding(5)
+            .scale(d3.scale.linear()
+                    .domain([0, 100])
+                    .range([-3*Math.PI/4,  3*Math.PI/4]));
+
+    svg.append("g")
+        .attr("class", "knob")
+        .attr("transform", "scale(0.5)")
+        .attr("transform", "translate(300, 0)")
+        .call(vol_2);
 
     // Drawing Knob finished
     const imageWidth = 150;
@@ -93,7 +124,7 @@
             imagePos[i + 1].y = imagePos[i].y;
         }
         imagePos[animalIndex].x = 300 * animalIndex + 120;
-        imagePos[animalIndex].y = 400;
+        imagePos[animalIndex].y = 500;
         svg.selectAll("image.animal")
             .data(imagePos)
             .transition()
@@ -102,7 +133,7 @@
 
         //Texts set
         decisionText[decisionText.length - 1].x = 300 * animalIndex + 160;
-        decisionText[decisionText.length - 1].y = 395;
+        decisionText[decisionText.length - 1].y = 490;
         decisionText.push({x: initTextX, y: initTextY, text: decisions[0]});
         const texts = svg.selectAll("text.decision")
             .data(decisionText)
@@ -119,7 +150,7 @@
         animalIndex++;
 
         for(let i = 0; i <= animalIndex; i++){
-            const index = (Math.round(+value) * (i + 1) + 10) % 4;
+            const index = ((Math.round(+valueOfKnob) * (i + 1))) % 4;
             decisionText[i].text = decisions[index];
         }
         svg.selectAll("text.decision")
@@ -149,17 +180,6 @@
             .attr("x", (d) => {return d.x})
             .attr("y", (d) => {return d.y})
             .text((d) => {return d.text});
-
-    vol.onValueChanged(function(value){
-        for(let i = 0; i <= animalIndex; i++){
-            const index = (Math.round(+value) * (i + 1) + 10) % 4;
-            decisionText[i].text = decisions[index];
-            console.log(index)
-        }
-        svg.selectAll("text.decision")
-            .text((d) => {return d.text})
-        valueOfKnob = Math.round(value);
-    });
 </script>
 </body>
 </html>

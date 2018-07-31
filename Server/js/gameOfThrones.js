@@ -156,7 +156,8 @@
                     .attr("x", (d , i) => {
                         return 90 * i + 240;
                     })
-                    .attr("y", 82)
+                    .attr("y", 88)
+                    .attr("fill", "white")
                     .text((d)=>{
                         let possibleName = d[0].split(" ")[0];
                         if(possibleName === "Night"){
@@ -187,7 +188,7 @@
                     .delay((d, i) => {return 1000 * i + 500})
                     .duration(1000);
     //Below is for section 2
-    const scoreTextPos = [{x: innerWidth * 0.75, y: innerHeight / 2, text: "Ortalama Entropi: -"}];
+    const scoreTextPos = [{x: innerWidth * 0.72, y: innerHeight / 2, text: "Ortalama Entropi: -"}];
     const buttonsPos = [{x: 60, y: 100, text: "Zengin mi?", click: () => {askQuestion(0)}},
                         {x: 60, y: 170, text: "Ejderhasi var mi?", click: () => {askQuestion(2)}},
                         {x: 60, y: 240, text: "Tahti istiyor mu?", click: () => {askQuestion(3)}},
@@ -198,6 +199,7 @@
                     .attr("width", innerWidth)
                     .attr("height", innerHeight);
 
+    /*
     svg.selectAll("rect.yes_no")
         .data([{x: 250, y: 495, text: "Evet", click: () => {reset()}},
             {x: 250, y: 535, text: "Hayır", click: () => {reset()}}])
@@ -208,7 +210,8 @@
             .attr("y", (d) => {return d.y})
             .attr("width", buttonWidth / 2)
             .attr("height", buttonHeight / 2)
-            .attr("fill", "white")
+            .attr("fill", "white");
+    */
     svg.selectAll("text.score_text")
         .data(scoreTextPos)
         .enter()
@@ -239,11 +242,13 @@
         .attr('x', 95)
         .attr("y", 80)
         .attr("font-size", 30)
+        .attr("fill", "white")
         .text("Sorular");
     svg.append("text")
         .attr("class", "button_header")
         .attr('x', 95)
         .attr("y", 480)
+        .attr("fill", "white")
         .attr("font-size", 30)
         .text("Araçlar");
     const rectWidth = 600;
@@ -495,6 +500,7 @@
         })
         .attr("fill", 'rgb(242, 247, 255)')
         .attr("stroke", 'black')
+        .attr("cursor", 'pointer')
         .text("Evet");
     svg.append('text')
         .attr('x', (s2Gauge1Width + s2ScaledRadius) *0.956)
@@ -502,6 +508,7 @@
         .style("font-size", "40px")
         .attr("fill", 'rgb(242, 247, 255)')
         .attr("stroke", 'black')
+        .attr("cursor", 'pointer')
         .on("click", function(d) {
             seperate(false, createQuestionIndex);
         })
@@ -675,7 +682,7 @@
                     .data(scoreTextPos)
                     .text((d)=>{return d.text})
                     const text = "Sistemin tüm entropisi " + generalEntropy.toFixed(2) + " idi.<br><br> Sorduğunuz soru sonunda 'Evet' ve 'Hayir' havuzlarinin agirlikli" +
-                                " ortalama entropisi " + averageEntropy.toFixed(2) + " oldu.<br><br> Sorunun karmaşıklığı azaltma miktarı yani skoru tüm entropi ile ortalama entropinin farkıdır:   " + (generalEntropy - averageEntropy).toFixed(2);
+                                " ortalama entropisi " + averageEntropy.toFixed(2) + " oldu.<br><br> Sorunun karmaşıklığı azaltma miktarı yani skoru bu ikisinin farkıdır:   " + (generalEntropy - averageEntropy).toFixed(2);
                 svgSection3.select(".text_itself")
                             .html(text)
                 svgSection3.select(".equals_sign")
@@ -699,7 +706,7 @@
                             .attr("width", innerWidth)
                             .attr("height", innerHeight);
     const text = "Sistemin tüm entropisi " + generalEntropy.toFixed(2) + " idi.<br><br> Sorduğunuz soru sonunda 'Evet' ve 'Hayir' havuzlarinin agirlikli" +
-        " ortalama entropisi " + averageEntropy.toFixed(2) + " oldu.<br><br>Sorunun karmaşıklığı azaltma miktarı yani skoru tüm entropi ile ortalama entropinin farkıdır: " + (generalEntropy - averageEntropy).toFixed(2);
+        " ortalama entropisi " + averageEntropy.toFixed(2) + " oldu.<br><br>Sorunun karmaşıklığı azaltma miktarı yani skoru bu ikisinin farkıdır: " + (generalEntropy - averageEntropy).toFixed(2);
     svgSection3.append("foreignObject")
         .attr("class", "info_text")
         .attr("width", innerWidth)
@@ -773,7 +780,7 @@
       waveOffset: 0.25,
       textSize: 0.75,
       waveCount: 3
-    }, innerWidth * 0.43, innerHeight * 0.10, 1, 0.2);
+    }, innerWidth * 0.437, innerHeight * 0.10, 1, 0.2);
     const leftEntropy = calculateEntropy(left);
     const rightEntropy = calculateEntropy(right);
     svgSection3.on('valueChanged1')(leftEntropy.toFixed(2));
@@ -794,7 +801,7 @@
       waveOffset: 0.25,
       textSize: 0.75,
       waveCount: 3
-    }, innerWidth * 0.43, innerHeight * 0.48, 2, 0.2);
+    }, innerWidth * 0.437, innerHeight * 0.48, 2, 0.2);
     svgSection3.on('valueChanged2')(rightEntropy.toFixed(2));
     svgSection3.on('opacityChanged2')("hsla(193, 100%, " + (56 - 15 * rightEntropy) + "%, 1)");
 
