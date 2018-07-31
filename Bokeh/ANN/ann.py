@@ -22,7 +22,7 @@ Y = tf.placeholder("float", [None, 2])
 
 
 def graph_plot(num_epoch, _loss_arr):
-
+    """ plot the results"""
     # Plots the loss array
     plt.plot(np.arange(num_epoch), _loss_arr, label='train')
     plt.legend(loc='upper right')
@@ -31,7 +31,7 @@ def graph_plot(num_epoch, _loss_arr):
 
 # ANN class
 class AnnHidden1:
-
+    """ Ann class"""
     # Initializer
     def __init__(self, hidden_unit1, input_unit, classes_unit):
         self.hidden1    = tf.Variable(tf.random_normal([input_unit, hidden_unit1]))
