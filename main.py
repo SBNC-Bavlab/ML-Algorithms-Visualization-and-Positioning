@@ -98,6 +98,7 @@ file_button.callback = CustomJS(args=dict(source=file_source), code=_upload_js)
 """""""""""""""""""""""""""""""""" GLOBAL VARIABLES END """""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+
 def get_new_data_source(df):
     """
     modular data source
@@ -394,7 +395,7 @@ def file_callback(_attr, _old, _new):
     file_contents = base64.b64decode(b64_contents)
     size = getsizeof(file_contents)
     if size < 10**7:
-        fname = join("../Bokeh/Decision_Tree/Data/", file_source.data['name'][0])
+        fname = join("Bokeh/Decision_Tree/Data/", file_source.data['name'][0])
         with open(fname, "wb") as f:
             f.write(file_contents)
     dataset_select.options = dataset_select.options + [file_source.data['name'][0]]
