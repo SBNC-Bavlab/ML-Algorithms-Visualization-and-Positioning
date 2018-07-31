@@ -1,5 +1,6 @@
 import pandas as pd
 from os.path import join
+from os.path import dirname
 from sys import getsizeof
 import base64
 from bokeh.plotting import figure
@@ -395,7 +396,7 @@ def file_callback(_attr, _old, _new):
     file_contents = base64.b64decode(b64_contents)
     size = getsizeof(file_contents)
     if size < 10**7:
-        fname = join("Bokeh/Decision_Tree/Data/", file_source.data['name'][0])
+        fname = join( dirname(__file__) + "/Bokeh/Decision_Tree/Data/", file_source.data['name'][0])
         with open(fname, "wb") as f:
             f.write(file_contents)
     dataset_select.options = dataset_select.options + [file_source.data['name'][0]]
