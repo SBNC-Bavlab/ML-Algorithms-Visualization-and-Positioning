@@ -32,7 +32,7 @@ def modify_new_values(tmp_attr_names, attr_names_list, attr_dictionary):
     return attr_names_list, attr_dictionary
 
 
-def set_new_data_set(new):
+def set_new_data_set(new, test_percentage=10):
     """
         set new data set and its positions
     """
@@ -55,7 +55,7 @@ def set_new_data_set(new):
     attr_values_dict = dict((attr, list(attr_values[i])) for i, attr in enumerate(attr_list))
     attr_dict = dict((attr, (i, list(attr_values[i]))) for i, attr in enumerate(attr_list))
     shuffle(data)
-    instance = data_instance(data, attr_values, attr_list, attr_values_dict, attr_dict, data_instance.test_percentage)
+    instance = data_instance(data, attr_values, attr_list, attr_values_dict, attr_dict, test_percentage)
     return instance
 
 

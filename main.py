@@ -23,6 +23,7 @@ circles = rectangles = best_circles = best_rectangles = active_attributes_list =
 attr_info = Paragraph(text="""
    Nitelikleri seçiniz:
 """)
+test_percentage = 10
 Instance = set_new_data_set("lens")
 radio_button_labels = ["gini", "gainRatio"]
 tree_mode_labels = ["Basit", "Detaylı"]
@@ -218,7 +219,8 @@ attribute_checkbox.on_click(update_attributes)
 
 
 def modify_test_percentage(_attr, _old, new):
-    global Instance
+    global Instance, test_percentage
+    test_percentage = new
     Instance.update(Instance.data, Instance.attr_values, Instance.attr_list,
                     Instance.attr_values_dict, Instance.attr_dict, Instance.cmap, new)
 
@@ -316,8 +318,8 @@ def change_dataset(_attr, _old, new):
     """
     use selected dataset for the tree
     """
-    global selected_root, Instance
-    set_new_data_set(new)
+    global selected_root, Instance, test_percentage
+    set_new_data_set(new, test_percentage)
     selected_root = ""
     apply_changes()
     attribute_checkbox.labels = [attr for attr in list(Instance.attr_list) if attr != Instance.attr_list[-1]]
