@@ -319,7 +319,7 @@ def change_dataset(_attr, _old, new):
     use selected dataset for the tree
     """
     global selected_root, Instance, test_percentage
-    set_new_data_set(new, test_percentage)
+    Instance = set_new_data_set(new, test_percentage)
     selected_root = ""
     apply_changes()
     attribute_checkbox.labels = [attr for attr in list(Instance.attr_list) if attr != Instance.attr_list[-1]]
