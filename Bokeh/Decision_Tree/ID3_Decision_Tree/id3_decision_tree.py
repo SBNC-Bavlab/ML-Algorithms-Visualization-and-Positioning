@@ -488,7 +488,7 @@ def generate_tree(method, set_root_attribute, active_attr_list):
     percentage = Instance().test_percentage
     test_index = int(len(Instance().data)*percentage/100)
     Instance().update(Instance().data, Instance().attr_values, Instance().attr_list,
-                      Instance().attr_values_dict, Instance().attr_dict, Instance().cmap,
+                      Instance().attr_values_dict, Instance().attr_dict,
                       percentage)
     if 0 < percentage:
         test_data = Instance().data[:test_index]

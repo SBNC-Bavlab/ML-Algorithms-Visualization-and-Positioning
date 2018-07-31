@@ -4,7 +4,8 @@ from threading import Thread
 from bokeh.embed import server_document
 from bokeh.server.server import Server
 from tornado.ioloop import IOLoop
-
+import sys
+sys.path.append("..")
 from Bokeh.Decision_Tree.Plot.plot_decision_tree import create_figure
 from Bokeh.K_Means.kmeans_cluestering import create_figure as create_figure_k_means
 from bokeh.embed import components

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="//d3js.org/d3.v4.min.js"></script>
+    <script>const d3_v4 = d3;</script>
+    <title>Title</title>
+    <style>
+        .knob .cursor {
+            fill: silver;
+        }
+
+        .knob .tick {
+            fill: silver;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .knob .major line {
+            stroke: silver;
+            stroke-width: 2px;
+        }
+    </style>
+    <script type="text/javascript" src="http://iop.io/js/vendor/d3.v3.min.js"></script>
+    <script type="text/javascript" src="http://iop.io/js/vendor/polymer/PointerEvents/pointerevents.js"></script>
+    <script type="text/javascript" src="http://iop.io/js/vendor/polymer/PointerGestures/pointergestures.js"></script>
+    <script type="text/javascript" src="http://iop.io/js/iopctrl.js"></script>
+</head>
+<body>
+
+
+
+<script>
+    const svg = d3_v4.select("body")
+                    .append("svg")
+                    .attr('id', 'section1')
+                    .attr("width", innerWidth)
+                    .attr("height", innerHeight);
+    // Drawing knob
+    function drawKnob(g, r) {
+        g.append("image")
+                .attr("x", -r)
+                .attr("y", -r)
+                .attr("width", 2 * r)
+                .attr("height", 2 * r)
+                .attr("xlink:href", "http://iop.io/demo/iopctrl/knob.png")
+    }
+
+    const sel = iopctrl.arcslider()
+            .radius(50)
+            .indicator(drawKnob)
+            .ease("cubic-in");
+    sel.axis().orient("out")
+            .normalize(true)
+            .tickSize(10)
+            .scale(d3.scale.ordinal()
+                    .domain(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"])
+                    .rangeBands([-Math.PI,  Math.PI]));
+    const knob = svg.append("g")
+        .attr("class", "knob")
+        .attr("transform", "scale(0.6)")
+        .attr("transform", "translate(300, 200)")
+        .call(sel);
+    // Drawing Knob finished
+
+    const imageWidth = 150;
+    const imageHeight = 150;
+    const animalX = 100;
+    const animalY = 200;
+    const decisions = ["Aslan", "Arı", "Örümcek", "Kaplan"];
+    const imagePos = [{x: animalX, y: animalY, text: "Arı", image: 'bee.png'},
+                        {x: 0, y: 0, text: "Aslan", image: 'lion.png'},
+                        {x: -300, y: 0, text: "Arı", image: 'bee_2.png'},
+                        {x: -300, y: 0, text: "Aslan", image: 'lion_2.png'}];
+    const decisionText = [{x: 530, y: 220 + imageHeight / 2, text: decisions[0]}];
+    const trainButton = svg.append("rect")
+                            .attr("class", "button")
+                            .attr("x", 700)
+                            .attr("y", 220)
+                            .attr("width", 140)
+                            .attr("height", 50)
+                            .attr("fill", "orange");
+    let animalIndex = 0;
+    trainButton.on('click', () => {
+        //Image positions set
+        for(let i = imagePos.length - 2; i >= animalIndex; i--) {
+            imagePos[i + 1].x = imagePos[i].x;
+            imagePos[i + 1].y = imagePos[i].y;
+        }
+        imagePos[animalIndex].x = 300 * animalIndex + 120;
+        imagePos[animalIndex].y = 400;
+        svg.selectAll("image.animal")
+            .data(imagePos)
+            .transition()
+            .attr("x", (d) => {return d.x})
+            .attr("y", (d) => {return d.y});
+
+        //Texts set
+        decisionText.push({x: 300 * animalIndex + 160, y: 320, text: decisionText[0].text});
+        svg.selectAll("text.decision")
+            .data(decisionText)
+            .enter()
+            .append("text")
+            .attr("class", "decision")
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("font-size", "30")
+            .attr("x", decisionText[0].x)
+            .attr("y", decisionText[0].y)
+            .transition()
+            .attr("x", (d) => {return d.x})
+            .attr("y", (d) => {return d.y + imageHeight / 2})
+            .text((d) => {return d.text});
+        animalIndex++;
+    });
+    // Layout
+    svg.selectAll("image.animal")
+        .data(imagePos)
+        .enter()
+            .append("svg:image")
+            .attr("class", "animal")
+            .attr("x", (d) => {return d.x})
+            .attr("y", (d) => {return d.y})
+            .attr("width", imageWidth)
+            .attr("height", imageHeight)
+            .attr("xlink:href", (d) => {return "../icons/" + d.image});
+
+    createText();
+
+    sel.onValueChanged(function(value){
+        for(let i = animalIndex; i >= 0; i--){
+            decisionText[i].text = decisions[(+value^i) % 4];
+        }
+        svg.selectAll("text.decision")
+            .text((d) => {return d.text})
+    });
+
+    function createText(){
+        svg.selectAll("text.decision")
+            .data(decisionText)
+            .enter()
+            .append("text")
+            .attr("class", "decision")
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("font-size", "30")
+            .attr("x", (d) => {return d.x})
+            .attr("y", (d) => {return d.y})
+            .text((d) => {return d.text});
+    }
+</script>
+</body>
+</html>
