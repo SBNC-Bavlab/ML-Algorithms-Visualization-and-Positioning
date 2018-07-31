@@ -194,11 +194,9 @@
                         {x: 60, y: 500, text: "Kendi sorunu oluştur", click: () => {createQuestion()}},
                         {x: 60, y: 570, text: "Reset", click: () => {reset()}}];
 
-    const svg = d3.select("body")
-                            .append("svg")
-                            .attr('id', 'section2')
-                            .attr("width", innerWidth)
-                            .attr("height", innerHeight);
+    const svg = d3.select("#section2")
+                    .attr("width", innerWidth)
+                    .attr("height", innerHeight);
 
     svg.selectAll("rect.yes_no")
         .data([{x: 250, y: 495, text: "Evet", click: () => {reset()}},
@@ -697,10 +695,7 @@
         }
     }
     //Section 3
-    const svgSection3 = d3.select("body")
-                            .append("svg")
-                            .attr("id", "section3")
-                            .style("background-color", "orange")
+    const svgSection3 = d3.select("#section3")
                             .attr("width", innerWidth)
                             .attr("height", innerHeight);
     const text = "Sistemin tüm entropisi " + generalEntropy.toFixed(2) + " idi.<br><br> Sorduğunuz soru sonunda 'Evet' ve 'Hayir' havuzlarinin agirlikli" +
