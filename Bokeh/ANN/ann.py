@@ -34,27 +34,29 @@ class AnnHidden1:
     """ Ann class"""
     # Initializer
     def __init__(self, hidden_unit1, input_unit, classes_unit):
-        self.hidden1    = tf.Variable(tf.random_normal([input_unit, hidden_unit1]))
+        self.hidden1 = tf.Variable(tf.random_normal([input_unit, hidden_unit1]))
         self.hidden_out = tf.Variable(tf.random_normal([hidden_unit1, classes_unit]))
-        self.bias1      = tf.Variable(tf.random_normal([hidden_unit1]))
-        self.bias_out   = tf.Variable(tf.random_normal([classes_unit]))
-        self.model      = None
-        self.loss_opt   = None
-        self.train_opt  = None
-        self.accuracy   = None
+        self.bias1 = tf.Variable(tf.random_normal([hidden_unit1]))
+        self.bias_out = tf.Variable(tf.random_normal([classes_unit]))
+        self.model = None
+        self.loss_opt = None
+        self.train_opt = None
+        self.accuracy = None
 
     # set layers
     def set_model(self, x):
-        layer1      = tf.nn.relu(tf.add(tf.matmul(x, self.hidden1), self.bias1))
-        out_layer   = tf.matmul(layer1, self.hidden_out) + self.bias_out
-        self.model  =  tf.nn.softmax(out_layer)
+        """ attach layers """
+        layer1 = tf.nn.relu(tf.add(tf.matmul(x, self.hidden1), self.bias1))
+        out_layer = tf.matmul(layer1, self.hidden_out) + self.bias_out
+        self.model = tf.nn.softmax(out_layer)
 
     # set loss and accuracy
     def loss_acc(self, rate, y):
-        self.loss_opt   = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=self.model, labels=y))
-        self.train_opt  = tf.train.GradientDescentOptimizer(learning_rate=rate).minimize(self.loss_opt)
-        prediction_opt  = tf.equal(tf.argmax(self.model, 1), tf.argmax(y, 1))
-        self.accuracy   = tf.reduce_mean(tf.cast(prediction_opt, tf.float32))
+        """ loss graph """
+        self.loss_opt = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=self.model, labels=y))
+        self.train_opt = tf.train.GradientDescentOptimizer(learning_rate=rate).minimize(self.loss_opt)
+        prediction_opt = tf.equal(tf.argmax(self.model, 1), tf.argmax(y, 1))
+        self.accuracy = tf.reduce_mean(tf.cast(prediction_opt, tf.float32))
 
 
 if __name__ == "__main__":
