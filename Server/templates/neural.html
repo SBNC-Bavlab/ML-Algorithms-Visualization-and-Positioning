@@ -36,6 +36,7 @@
                     .attr('id', 'section1')
                     .attr("width", innerWidth)
                     .attr("height", innerHeight);
+    let valueOfKnob = 0;
     // Drawing knob
     function drawKnob(g, r) {
         g.append("image")
@@ -46,33 +47,37 @@
                 .attr("xlink:href", "http://iop.io/demo/iopctrl/knob.png")
     }
 
-    const sel = iopctrl.arcslider()
-            .radius(50)
-            .indicator(drawKnob)
-            .ease("cubic-in");
-    sel.axis().orient("out")
-            .normalize(true)
-            .tickSize(10)
-            .scale(d3.scale.ordinal()
-                    .domain(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"])
-                    .rangeBands([-Math.PI,  Math.PI]));
+    var vol = iopctrl.arcslider()
+                    .radius(75)
+                    .indicator(drawKnob);
+    vol.axis().orient("out")
+            .ticks(10)
+            .tickSubdivide(5)
+            .tickSize(10, 6)
+            .tickPadding(5)
+            .scale(d3.scale.linear()
+                    .domain([0, 100])
+                    .range([-3*Math.PI/4,  3*Math.PI/4]));
+
     const knob = svg.append("g")
         .attr("class", "knob")
-        .attr("transform", "scale(0.6)")
+        .attr("transform", "scale(0.5)")
         .attr("transform", "translate(300, 200)")
-        .call(sel);
-    // Drawing Knob finished
+        .call(vol);
 
+    // Drawing Knob finished
     const imageWidth = 150;
     const imageHeight = 150;
     const animalX = 100;
-    const animalY = 200;
+    const animalY = 230;
+    const initTextX = 600;
+    const initTextY = 240 + imageHeight / 2;
     const decisions = ["Aslan", "Arı", "Örümcek", "Kaplan"];
     const imagePos = [{x: animalX, y: animalY, text: "Arı", image: 'bee.png'},
                         {x: 0, y: 0, text: "Aslan", image: 'lion.png'},
                         {x: -300, y: 0, text: "Arı", image: 'bee_2.png'},
                         {x: -300, y: 0, text: "Aslan", image: 'lion_2.png'}];
-    const decisionText = [{x: 530, y: 220 + imageHeight / 2, text: decisions[0]}];
+    const decisionText = [{x: initTextX, y: initTextY, text: decisions[0]}];
     const trainButton = svg.append("rect")
                             .attr("class", "button")
                             .attr("x", 700)
@@ -96,8 +101,10 @@
             .attr("y", (d) => {return d.y});
 
         //Texts set
-        decisionText.push({x: 300 * animalIndex + 160, y: 320, text: decisionText[0].text});
-        svg.selectAll("text.decision")
+        decisionText[decisionText.length - 1].x = 300 * animalIndex + 160;
+        decisionText[decisionText.length - 1].y = 395;
+        decisionText.push({x: initTextX, y: initTextY, text: decisions[0]});
+        const texts = svg.selectAll("text.decision")
             .data(decisionText)
             .enter()
             .append("text")
@@ -105,13 +112,18 @@
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "middle")
             .attr("font-size", "30")
-            .attr("x", decisionText[0].x)
-            .attr("y", decisionText[0].y)
-            .transition()
-            .attr("x", (d) => {return d.x})
-            .attr("y", (d) => {return d.y + imageHeight / 2})
             .text((d) => {return d.text});
+        svg.selectAll("text.decision")
+            .attr("x", (d) => {return d.x})
+            .attr("y", (d) => {return d.y})
         animalIndex++;
+
+        for(let i = 0; i <= animalIndex; i++){
+            const index = (Math.round(+value) * (i + 1) + 10) % 4;
+            decisionText[i].text = decisions[index];
+        }
+        svg.selectAll("text.decision")
+            .text((d) => {return d.text})
     });
     // Layout
     svg.selectAll("image.animal")
@@ -125,20 +137,10 @@
             .attr("height", imageHeight)
             .attr("xlink:href", (d) => {return "../icons/" + d.image});
 
-    createText();
-
-    sel.onValueChanged(function(value){
-        for(let i = animalIndex; i >= 0; i--){
-            decisionText[i].text = decisions[(+value^i) % 4];
-        }
-        svg.selectAll("text.decision")
-            .text((d) => {return d.text})
-    });
-
-    function createText(){
-        svg.selectAll("text.decision")
-            .data(decisionText)
-            .enter()
+    //Texts laid out
+    svg.selectAll("text.decision")
+        .data(decisionText)
+        .enter()
             .append("text")
             .attr("class", "decision")
             .attr("text-anchor", "middle")
@@ -147,7 +149,17 @@
             .attr("x", (d) => {return d.x})
             .attr("y", (d) => {return d.y})
             .text((d) => {return d.text});
-    }
+
+    vol.onValueChanged(function(value){
+        for(let i = 0; i <= animalIndex; i++){
+            const index = (Math.round(+value) * (i + 1) + 10) % 4;
+            decisionText[i].text = decisions[index];
+            console.log(index)
+        }
+        svg.selectAll("text.decision")
+            .text((d) => {return d.text})
+        valueOfKnob = Math.round(value);
+    });
 </script>
 </body>
 </html>

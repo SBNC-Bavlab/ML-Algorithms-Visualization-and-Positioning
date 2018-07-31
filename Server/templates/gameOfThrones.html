@@ -5,22 +5,51 @@
     <script src="//d3js.org/d3.v4.min.js"></script>
     <script src="../js/snap.svg-min.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/gameOfThrones.css">
-    <link rel="stylesheet" type="text/css" href="../css/scroll.css">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
     <link href="https://fonts.googleapis.com/css?family=Chela+One|Cormorant+Unicase&subset=latin,latin-ext" rel="stylesheet">
+    <link rel="stylesheet" href="../css/reset.css"> <!-- CSS reset -->
+	<link rel="stylesheet" href="../css/style.css"> <!-- Resource style -->
+	<script src="../js/modernizr.js"></script> <!-- Modernizr -->
     <title>Title</title>
 </head>
-<body>
-<svg id = "section1"></svg>
+<body data-hijacking="off" data-animation="rotate">
+    <section id = "section1_parent" class="cd-section visible">
+		<div>
+    	    <svg id = "section1"></svg>
+	    </div>
+	</section>
 
-    <section class="demo">
-      <a id="scroll1" style="color: black;" href="#section2"><span></span><span></span><span></span>Kaydırın</a>
-    </section>
+    <section id = "section2_parent"  class="cd-section visible">
+		<div>
+    	    <svg id = "section2"></svg>
 
-    <section class="demo">
-      <a id="scroll2" style="color: black;" href="#section3"><span></span><span></span><span></span>Kaydırın</a>
-    </section>
+            <section class="demo">
+              <a id="scroll1" style="color: black;" href="#section2"><span></span><span></span><span></span>Kaydırın</a>
+            </section>
+	    </div>
+	</section>
+
+    <section id = "section3_parent" class="cd-section visible">
+		<div>
+    	    <svg id = "section3"></svg>
+
+            <section class="demo">
+              <a id="scroll1" style="color: black;" href="#section2"><span></span><span></span><span></span>Kaydırın</a>
+            </section>
+	    </div>
+	</section>
+    <nav>
+		<ul class="cd-vertical-nav">
+			<li><a href="#0" class="cd-prev inactive">Next</a></li>
+			<li><a href="#0" class="cd-next">Prev</a></li>
+		</ul>
+	</nav> <!-- .cd-vertical-nav -->
 
 <script src="../js/liquidFillGauge.js"></script>
 <script src="../js/gameOfThrones.js"></script>
+<script src="../js/jquery-2.1.4.js"></script>
+<script src="../js/velocity.min.js"></script>
+<script src="../js/velocity.ui.min.js"></script>
+<script src="../js/main.js"></script> <!-- Resource jQuery -->
 </body>
 </html>
