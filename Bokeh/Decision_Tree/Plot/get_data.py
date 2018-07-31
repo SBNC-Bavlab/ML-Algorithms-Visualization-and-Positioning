@@ -39,8 +39,10 @@ def set_new_data_set(new, test_percentage=10):
     data = []
     attr_values = []
     attr_list = []
-    if new in ["lens", "mushrooms"]:
+    if new in ["lens", "car"]:
         file = dirname(__file__) + "/../Data/" + new + ".txt"
+    else:
+        file = dirname(__file__) + "/../Data/" + new
     for i, line in enumerate(open(file)):
         if i == 0:
             attr_list = line.split(",")
