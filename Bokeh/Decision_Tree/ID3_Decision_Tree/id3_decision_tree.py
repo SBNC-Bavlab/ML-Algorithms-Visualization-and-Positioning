@@ -3,7 +3,9 @@ from queue import Queue
 import random
 from math import log
 from Bokeh.Decision_Tree.Plot.get_data import set_active_attr, modify_new_values
-from Bokeh.Decision_Tree.Plot.instance import Instance
+
+data_instance = None
+
 
 class Node(object):
     """ Tree node """
@@ -122,7 +124,8 @@ def information(attribute_name_var, instances_var):
 
 def information_gain(attribute_name_var, instances_var):
     """ Calculate the information gain by subtracting node information from system entropy"""
-    global_distribution_list = classify_list(Instance().attr_list[-1], instances_var)
+    global data_instance
+    global_distribution_list = classify_list(data_instance.attr_list[-1], instances_var)
     entropy_value = entropy(global_distribution_list)
 
     information_value = information(attribute_name_var, instances_var)
@@ -300,7 +303,8 @@ def leaf_control(node_var):
     """
         Check if the node's instances distributed to certain value
     """
-    distributed_list = classify_list(Instance().attr_list[-1], node_var.data)
+    global data_instance
+    distributed_list = classify_list(data_instance.attr_list[-1], node_var.data)
     numbers_greater_than_zero = 0
     for p in distributed_list:
         if p > 0:
@@ -317,8 +321,9 @@ def determine_dominant_one(node_var):
         If there is no remaining attribute to divide instances than
         determine the decision by looking remaining instances label values
     """
+    global data_instance
     instances = node_var.data
-    distributed_list_on_class_attr = classify_list(Instance().attr_list[-1], instances)
+    distributed_list_on_class_attr = classify_list(data_instance.attr_list[-1], instances)
 
     max_occurrence = max(distributed_list_on_class_attr)
     max_indexes = []
@@ -336,11 +341,12 @@ def observe_from_siblings(node_var):
     """
         If there is no instance to classify a leaf then choose its decision by checking siblings decisions
     """
+    global data_instance
     siblings = node_var.parentPointer.children
 
     siblings_distributions = [0] * len(classAttr)
     for sibling in siblings:
-        sibling_dist = classify_list(Instance().attr_list[-1], sibling.data)
+        sibling_dist = classify_list(data_instance.attr_list[-1], sibling.data)
         for i in range(len(sibling_dist)):
             siblings_distributions[i] += sibling_dist[i]
 
@@ -467,35 +473,36 @@ def dataset_same(tmp_attr_names, attr_names_list):
     """
         Check data set is new
     """
+    global data_instance
     for i in tmp_attr_names:
-        if i in attr_names_list and i != Instance().attr_list[-1]:
+        if i in attr_names_list and i != data_instance.attr_list[-1]:
             return True
     return False
 
 
-def generate_tree(method, set_root_attribute, active_attr_list):
+def generate_tree(instance, method, set_root_attribute, active_attr_list):
     """
         Generate tree
     """
-    global attrNamesList, attrDictionary, classAttr
+    global attrNamesList, attrDictionary, classAttr, data_instance
+    data_instance = instance
     tmp_attr_names = set_active_attr(active_attr_list)
-    attrNamesList, attrDictionary = copy.deepcopy(Instance().attr_list), copy.deepcopy(Instance().attr_dict)
+    attrNamesList, attrDictionary = copy.deepcopy(data_instance.attr_list), copy.deepcopy(data_instance.attr_dict)
 
     if dataset_same(tmp_attr_names, attrNamesList):
         attrNamesList, attrDictionary = modify_new_values(tmp_attr_names, attrNamesList, attrDictionary)
     new_att_name_list = copy.deepcopy(attrNamesList)
-    new_att_name_list.remove(Instance().attr_list[-1])
-    percentage = Instance().test_percentage
-    test_index = int(len(Instance().data)*percentage/100)
-    Instance().update(Instance().data, Instance().attr_values, Instance().attr_list,
-                      Instance().attr_values_dict, Instance().attr_dict,
-                      percentage)
+    new_att_name_list.remove(data_instance.attr_list[-1])
+    percentage = data_instance.test_percentage
+    test_index = int(len(data_instance.data) * percentage / 100)
+    data_instance.update(data_instance.data, data_instance.attr_values, data_instance.attr_list,
+                         data_instance.attr_values_dict, data_instance.attr_dict, percentage)
     if 0 < percentage:
-        test_data = Instance().data[:test_index]
-        train_data = Instance().data[test_index:]
+        test_data = data_instance.data[:test_index]
+        train_data = data_instance.data[test_index:]
     else:
-        test_data = train_data = Instance().data
-    test, classAttr = test_data, Instance().attr_values_dict[Instance().attr_list[-1]]
-    train, classAttr = train_data, Instance().attr_values_dict[Instance().attr_list[-1]]
+        test_data = train_data = data_instance.data
+    test, classAttr = test_data, data_instance.attr_values_dict[data_instance.attr_list[-1]]
+    train, classAttr = train_data, data_instance.attr_values_dict[data_instance.attr_list[-1]]
     root_node = tree_distribution(new_att_name_list, train, method, set_root_attribute)
     return root_node, real_world_test(root_node, test)

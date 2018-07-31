@@ -1,12 +1,15 @@
+# -*- coding: utf-8 -*-
 from Bokeh.Decision_Tree.ID3_Decision_Tree.id3_decision_tree import generate_tree
 from Bokeh.Decision_Tree.ID3_Decision_Tree.bucheim import tree_layout
-from Bokeh.Decision_Tree.Plot.instance import Instance
+
+
+data_instance = None
 
 
 def get_depth(node, id_index, visited={}):
     """ Calculate depth of the tree """
-    if node.decision in Instance().attr_values_dict[Instance().attr_list[-1]]:
-        node.name = Instance().attr_list[-1]
+    if node.decision in data_instance.attr_values_dict[data_instance.attr_list[-1]]:
+        node.name = data_instance.attr_list[-1]
 
     if not node.children:
         node.depth = 1
@@ -93,7 +96,7 @@ def fill_source(source, node_list):
             source["leafNodes_y"].append(node.coord[1])
 
         if node.name == "":
-            source["attribute_type"].append(Instance().attr_list[-1])
+            source["attribute_type"].append(data_instance.attr_list[-1])
         else:
             source["attribute_type"].append(node.name)
 
@@ -104,10 +107,12 @@ def fill_source(source, node_list):
         source["attr_type_index"].append(node_list.index(node))
 
 
-def get_bokeh_data(method, active_attr_list=[], set_root_attribute=""):
+def get_bokeh_data(instance, method, active_attr_list=[], set_root_attribute=""):
     """ Generate tree, fill source dictionary and return corresponding values to the plotting functions"""
+    global data_instance
+    data_instance = instance
     id_index = 0
-    root, acc = generate_tree(method, set_root_attribute, active_attr_list)
+    root, acc = generate_tree(instance, method, set_root_attribute, active_attr_list)
 
     visited = {}
     depth = get_depth(root, id_index, visited)

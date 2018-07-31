@@ -5,34 +5,18 @@ from os.path import dirname
 import os
 
 
-class Singleton(type):
-    """
-    Define an Instance operation that lets clients access its unique
-    instance.
-    """
-
-    def __init__(cls, name, bases, attrs):
-        super().__init__(name, bases, attrs)
-        cls._instance = None
-
-    def __call__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super().__call__(*args, **kwargs)
-        return cls._instance
-
-
-class Instance(metaclass=Singleton):
+class data_instance():
     """
         Singleton class
     """
-    def __init__(self, data, attr_values, attr_list, attr_values_dict, attr_dict):
+    def __init__(self, data, attr_values, attr_list, attr_values_dict, attr_dict, test_percentage=10):
         self.data = data
         self.attr_values = attr_values
         self.attr_list = attr_list
         self.attr_values_dict = attr_values_dict
         self.attr_dict = attr_dict
         self.data_set = None
-        self.test_percentage = 0
+        self.test_percentage = test_percentage
         self.all_attr_list = ["Age", "Spectacle Prescription", "Astigmatic", "Tear Production Rate", "Classes",
                               "cap-shape", "cap-surface", "cap-color", "bruises", "odor", "gill-attachment",
                               "gill-spacing", "gill-size", "gill-color", "stalk-shape", "stalk-root",

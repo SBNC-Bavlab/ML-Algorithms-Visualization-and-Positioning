@@ -6,9 +6,8 @@ from bokeh.server.server import Server
 from tornado.ioloop import IOLoop
 import sys
 sys.path.append("..")
-from Bokeh.Decision_Tree.Plot.plot_decision_tree import create_figure
+from Bokeh.Decision_Tree.Plot.plot_decision_tree import crea
 from Bokeh.K_Means.kmeans_cluestering import create_figure as create_figure_k_means
-from bokeh.embed import components
 app = Flask(__name__)
 
 
