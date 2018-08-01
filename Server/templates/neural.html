@@ -31,12 +31,29 @@
 
 
 <script>
+    const combinations = [{0: ["Kedi", "Köpek", "Köpek", "Kedi"],
+                            1: ["Köpek", "Köpek", "Köpek", "Köpek"],
+                            2: ["Köpek", "Kedi", "Köpek", "Kedi"],
+                            3: ["Kedi", "Kedi", "Kedi", "Kedi"]},
+                            {0: ["Köpek", "Kedi", "Köpek", "Kedi"],
+                            1: ["Kedi", "Kedi", "Kedi", "Köpek"],
+                            2: ["Köpek", "Kedi", "Köpek", "Kedi"],
+                            3: ["Kedi", "Köpek", "Kedi", "Köpek"]},
+                            {0: ["Kedi", "Köpek", "Köpek", "Kedi"],
+                            1: ["Kedi", "Köpek", "Kedi", "Köpek"],
+                            2: ["Kedi", "Kedi", "Köpek", "Köpek"],
+                            3: ["Köpek", "Kedi", "Köpek", "Kedi"]},
+                            {0: ["Kedi", "Kedi", "Kedi", "Kedi"],
+                            1: ["Kedi", "Köpek", "Kedi", "Köpek"],
+                            2: ["Köpek", "Kedi", "Köpek", "Köpek"],
+                            3: ["Köpek", "Köpek", "Kedi", "Kedi"]}];
     const svg = d3_v4.select("body")
                     .append("svg")
                     .attr('id', 'section1')
                     .attr("width", innerWidth)
                     .attr("height", innerHeight);
-    let valueOfKnob = 0;
+    let indexOfFirstKnob = 0;
+    let indexOfSecondKnob = 0;
     // Drawing knob
     function drawKnob(g, r) {
         g.append("image")
@@ -48,30 +65,27 @@
     }
 
     const vol = iopctrl.arcslider()
-                    .radius(75)
-                    .indicator(drawKnob);
+                .radius(50)
+                .indicator(drawKnob)
+                .ease("cubic-in");
     vol.axis().orient("out")
-            .ticks(10)
-            .tickSubdivide(5)
-            .tickSize(10, 6)
-            .tickPadding(5)
-            .scale(d3.scale.linear()
-                    .domain([0, 100])
-                    .range([-3*Math.PI/4,  3*Math.PI/4]));
+            .normalize(true)
+            .tickSize(10)
+            .scale(d3.scale.ordinal()
+                    .domain(["1", "2", "3", "4"])
+                    .rangeBands([-Math.PI/2,  Math.PI/2]));
 
     svg.append("g")
         .attr("class", "knob")
         .attr("transform", "scale(0.5)")
-        .attr("transform", "translate(300, 200)")
+        .attr("transform", "translate(300, 0)")
         .call(vol);
 
-
     vol.onValueChanged(function(value){
-        valueOfKnob = Math.round(value);
+        indexOfFirstKnob = +value - 1;
+        const combination = combinations[indexOfFirstKnob][indexOfSecondKnob];
         for(let i = 0; i <= animalIndex; i++){
-            const index = (Math.round(+valueOfKnob) * (i + 1)) % 4;
-            decisionText[i].text = decisions[index];
-            console.log(index)
+            decisionText[i].text = combination[i];
         }
         svg.selectAll("text.decision")
             .text((d) => {return d.text});
@@ -79,21 +93,28 @@
 
     //Second knob drawn
     const vol_2 = iopctrl.arcslider()
-                    .radius(75)
-                    .indicator(drawKnob);
+                    .radius(50)
+                    .indicator(drawKnob)
+                    .ease("cubic-in");
     vol_2.axis().orient("out")
-            .ticks(10)
-            .tickSubdivide(5)
-            .tickSize(10, 6)
-            .tickPadding(5)
-            .scale(d3.scale.linear()
-                    .domain([0, 100])
-                    .range([-3*Math.PI/4,  3*Math.PI/4]));
-
+            .normalize(true)
+            .tickSize(10)
+            .scale(d3.scale.ordinal()
+                    .domain(["1", "2", "3", "4"])
+                    .rangeBands([-Math.PI/2, Math.PI/2]));
+    vol_2.onValueChanged(function(value){
+            indexOfSecondKnob = +value - 1;
+            const combination = combinations[indexOfFirstKnob][indexOfSecondKnob];
+            for(let i = 0; i <= animalIndex; i++){
+                decisionText[i].text = combination[i];
+            }
+            svg.selectAll("text.decision")
+                .text((d) => {return d.text});
+        });
     svg.append("g")
         .attr("class", "knob")
         .attr("transform", "scale(0.5)")
-        .attr("transform", "translate(300, 0)")
+        .attr("transform", "translate(300, 200)")
         .call(vol_2);
 
     // Drawing Knob finished
@@ -103,11 +124,11 @@
     const animalY = 230;
     const initTextX = 600;
     const initTextY = 240 + imageHeight / 2;
-    const decisions = ["Aslan", "Arı", "Örümcek", "Kaplan"];
-    const imagePos = [{x: animalX, y: animalY, text: "Arı", image: 'bee.png'},
-                        {x: 0, y: 0, text: "Aslan", image: 'lion.png'},
-                        {x: -300, y: 0, text: "Arı", image: 'bee_2.png'},
-                        {x: -300, y: 0, text: "Aslan", image: 'lion_2.png'}];
+    const decisions = ["Kedi", "Köpek"];
+    const imagePos = [{x: animalX, y: animalY, text: "Arı", image: 'cat_1.png'},
+                        {x: 0, y: 0, text: "Aslan", image: 'dog_1.png'},
+                        {x: -300, y: 0, text: "Arı", image: 'cat_2.png'},
+                        {x: -300, y: 0, text: "Aslan", image: 'dog_2.png'}];
     const decisionText = [{x: initTextX, y: initTextY, text: decisions[0]}];
     const trainButton = svg.append("rect")
                             .attr("class", "button")
@@ -146,12 +167,12 @@
             .text((d) => {return d.text});
         svg.selectAll("text.decision")
             .attr("x", (d) => {return d.x})
-            .attr("y", (d) => {return d.y})
+            .attr("y", (d) => {return d.y});
         animalIndex++;
 
+        const combination = combinations[indexOfFirstKnob][indexOfSecondKnob];
         for(let i = 0; i <= animalIndex; i++){
-            const index = ((Math.round(+valueOfKnob) * (i + 1))) % 4;
-            decisionText[i].text = decisions[index];
+            decisionText[i].text = combination[i];
         }
         svg.selectAll("text.decision")
             .text((d) => {return d.text})
