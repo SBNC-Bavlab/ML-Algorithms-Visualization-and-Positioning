@@ -30,7 +30,7 @@ const test_data = [["Sarı", 3, "Kavun"], ["Sarı", 4, "Kavun"], ["Sarı", 5, "K
 
 const buttonWidth = 180;
 const buttonHeight = 60;
-const  maxFrequency = 8;
+const maxFrequency = 8;
 const rectWidth = 70;
 const rectHeight = 70;
 const maxDiameter = 14;
@@ -54,19 +54,19 @@ function manipulateRectangleData(data){
         }
     });
     Object.keys(radiusDict).forEach(function(d, i){
-        rectangleData.push({'x': 105 * i + 50, 'y': 10, 'label': d, 'text': radius_label[i], 'color': 'beige'})
+        rectangleData.push({'x': innerWidth * (i + 1) * 0.07 - innerWidth * 0.04, 'y': 10, 'label': d, 'text': radius_label[i], 'color': 'beige'})
     });
 }
 function calculateFruitPlaces(){
-    fruitPlaces = []
+    fruitPlaces = [];
     for(let i = 0; i < maxFrequency; i++){
         for(let j = 1; j <= maxDiameter; j++){
             if(j in radiusDict) {
                 if (i < radiusDict[j].length) {
                     if (radiusDict[j][i] === 'Karpuz') {
-                        fruitPlaces.push({'x': 105 * validDiameterIndex - 55, 'y': 68 * i + 95, 'fruit_img': 'watermelon.png'})
+                        fruitPlaces.push({'x': innerWidth * validDiameterIndex * 0.07 - innerWidth * 0.04, 'y': 68 * i + 95, 'fruit_img': 'watermelon.png'})
                     } else {
-                        fruitPlaces.push({'x': 105 * validDiameterIndex - 55, 'y': 68 * i + 95, 'fruit_img': 'melon.png'})
+                        fruitPlaces.push({'x': innerWidth * validDiameterIndex * 0.07 - innerWidth * 0.04, 'y': 68 * i + 95, 'fruit_img': 'melon.png'})
                     }
                 }
                 validDiameterIndex++;
@@ -111,12 +111,6 @@ s1svg.selectAll("text.infoText")
         .html((d)=>{
             return d.text;
         });
-
-
-
-
-
-
 //Initial settings
 manipulateRectangleData(train_data);
 calculateFruitPlaces();
@@ -171,7 +165,7 @@ var rectangles = s2svg.selectAll("rect.palette")
                             .attr("rx", 15)
                             .attr("width", function (d) { return 73; })
                             .attr("height", function (d, i) { return rectHeight * radiusDict[Object.keys(radiusDict)[i]].length + 80});
-var texts = s2svg.selectAll("text.label")
+s2svg.selectAll("text.label")
     .data(rectangleData)
     .enter()
     .append('text')
@@ -189,21 +183,25 @@ var texts = s2svg.selectAll("text.label")
         return d.text + "cm";
     })
     .style("font-size", "30px");
-s2svg.selectAll("image").data(fruitPlaces).enter().append("svg:image").classed('fruit', true)
-                            .transition().delay(1000).ease(d3.easeElastic).duration(2000)
-                            .attr('x', function(d){
-                                return d.x;
-                            })
-                            .attr('y', function(d){
-                                return d.y;
-                            })
-                            .attr('width', rectWidth)
-                            .attr('height', rectHeight)
-                            .attr("xlink:href", function (d) {
-                                return "../icons/" + d.fruit_img;
-                            });
+s2svg.selectAll("image")
+    .data(fruitPlaces)
+    .enter()
+        .append("svg:image")
+        .classed('fruit', true)
+        .transition().delay(1000).ease(d3.easeElastic).duration(2000)
+        .attr('x', function(d){
+            return d.x;
+        })
+        .attr('y', function(d){
+            return d.y;
+        })
+        .attr('width', rectWidth)
+        .attr('height', rectHeight)
+        .attr("xlink:href", function (d) {
+            return "../icons/" + d.fruit_img;
+        });
 function calculateXForText(d, i){
-    return 105 * i + 87;
+    return innerWidth * (i + 1) * 0.07 - innerWidth * 0.015;
 }
 
 //vtrcexrdctfyvgbhunıjıhbgvfcdrxsezxrdctfvygbuhnıjmoköjnhbgvftcdrxsexrdtfgybhunjımkoökjnhubgyvftcdrxseawzesxrdctfvg
