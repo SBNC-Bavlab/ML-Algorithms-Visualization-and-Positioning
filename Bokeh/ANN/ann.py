@@ -1,83 +1,96 @@
-import tensorflow as tf
-import numpy as np
-import matplotlib.pyplot as plt
+from __future__ import print_function
 
-import pickle
-bank = pickle.load(open('bank.pkl', 'rb'))
-x_train = bank['x_train']
-y_train = bank['y_train']
-x_test = bank['x_test']
-y_test = bank['y_test']
+# Import MNIST data
+from tensorflow.examples.tutorials.mnist import input_data
+mnist = input_data.read_data_sets("/tmp/data/", one_hot=False)
+
+import tensorflow as tf
 
 # Parameters
-learning_rate = 0.01
-epochs = 2000
-hidden1 = 3
-inputs = 4
-classes = 2
+learning_rate = 0.1
+num_steps = 1000
+batch_size = 128
+display_step = 100
 
-# tf placeholders
-X = tf.placeholder("float", [None, 4])
-Y = tf.placeholder("float", [None, 2])
-
-
-def graph_plot(num_epoch, _loss_arr):
-    """ plot the results"""
-    # Plots the loss array
-    plt.plot(np.arange(num_epoch), _loss_arr, label='train')
-    plt.legend(loc='upper right')
-    plt.show()
+# Network Parameters
+n_hidden_1 = 15 # 1st layer number of neurons
+n_hidden_2 = 15 # 2nd layer number of neurons
+n_hidden_3 = 10 # 2nd layer number of neurons
+num_input = 784 # MNIST data input (img shape: 28*28)
+num_classes = 10 # MNIST total classes (0-9 digits)
 
 
-# ANN class
-class AnnHidden1:
-    """ Ann class"""
-    # Initializer
-    def __init__(self, hidden_unit1, input_unit, classes_unit):
-        self.hidden1 = tf.Variable(tf.random_normal([input_unit, hidden_unit1]))
-        self.hidden_out = tf.Variable(tf.random_normal([hidden_unit1, classes_unit]))
-        self.bias1 = tf.Variable(tf.random_normal([hidden_unit1]))
-        self.bias_out = tf.Variable(tf.random_normal([classes_unit]))
-        self.model = None
-        self.loss_opt = None
-        self.train_opt = None
-        self.accuracy = None
-
-    # set layers
-    def set_model(self, x):
-        """ attach layers """
-        layer1 = tf.nn.relu(tf.add(tf.matmul(x, self.hidden1), self.bias1))
-        out_layer = tf.matmul(layer1, self.hidden_out) + self.bias_out
-        self.model = tf.nn.softmax(out_layer)
-
-    # set loss and accuracy
-    def loss_acc(self, rate, y):
-        """ loss graph """
-        self.loss_opt = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=self.model, labels=y))
-        self.train_opt = tf.train.GradientDescentOptimizer(learning_rate=rate).minimize(self.loss_opt)
-        prediction_opt = tf.equal(tf.argmax(self.model, 1), tf.argmax(y, 1))
-        self.accuracy = tf.reduce_mean(tf.cast(prediction_opt, tf.float32))
+# Define the neural network
+def neural_net(x_dict):
+    # TF Estimator input is a dict, in case of multiple inputs
+    x = x_dict['images']
+    # Hidden fully connected layer with 256 neurons
+    layer_1 = tf.layers.dense(x, n_hidden_1)
+    # Hidden fully connected layer with 256 neurons
+    layer_2 = tf.layers.dense(layer_1, n_hidden_2)
+    # Hidden fully connected layer with 256 neurons
+    # layer_3 = tf.layers.dense(layer_2, n_hidden_3)
+    # Output fully connected layer with a neuron for each class
+    out_layer = tf.layers.dense(layer_2, num_classes)
+    return out_layer
 
 
-if __name__ == "__main__":
+# Define the model function (following TF Estimator Template)
+def model_fn(features, labels, mode):
+    # Build the neural network
+    logits = neural_net(features)
 
-    loss_arr = []
+    # Predictions
+    pred_classes = tf.argmax(logits, axis=1)
+    pred_probas = tf.nn.softmax(logits)
 
-    model = AnnHidden1(hidden1, inputs, classes)
-    model.set_model(X)
-    model.loss_acc(learning_rate, Y)
+    # If prediction mode, early return
+    if mode == tf.estimator.ModeKeys.PREDICT:
+        return tf.estimator.EstimatorSpec(mode, predictions=pred_classes)
 
-    init = tf.global_variables_initializer()
+    # Define loss and optimizer
+    loss_op = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(
+        logits=logits, labels=tf.cast(labels, dtype=tf.int32)))
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
+    train_op = optimizer.minimize(loss_op,
+                                  global_step=tf.train.get_global_step())
 
-    with tf.Session() as sess:
+    # Evaluate the accuracy of the model
+    acc_op = tf.metrics.accuracy(labels=labels, predictions=pred_classes)
+    # Evaluate the precision of the model
+    prec_op = tf.metrics.precision(labels=labels, predictions=pred_classes)
+    # Evaluate the recall of the model
+    rec_op = tf.metrics.recall(labels=labels, predictions=pred_classes)
 
-        sess.run(init)
+    # TF Estimators requires to return a EstimatorSpec, that specify
+    # the different ops for training, evaluating, ...
+    estim_specs = tf.estimator.EstimatorSpec(
+        mode=mode,
+        predictions=pred_classes,
+        loss=loss_op,
+        train_op=train_op,
+        eval_metric_ops={'accuracy': acc_op, 'recall': rec_op, 'precision': prec_op})
 
-        for epoch in range(1, epochs+1):
-            loss, acc, _ = sess.run([model.loss_opt, model.accuracy, model.train_opt], feed_dict={X: x_train, Y: y_train})
-            print("Epoch: " + str(epoch) + " Loss: " + "{:.4f}".format(loss))
-            loss_arr.append(loss)
+    return estim_specs
 
-        print("Testing Accuracy: ", sess.run(model.accuracy, feed_dict={X: x_test, Y: y_test}))
+# Build the Estimator
+model = tf.estimator.Estimator(model_fn)
 
-    graph_plot(epochs, loss_arr)
+# Define the input function for training
+input_fn = tf.estimator.inputs.numpy_input_fn(
+    x={'images': mnist.train.images}, y=mnist.train.labels,
+    batch_size=batch_size, num_epochs=None, shuffle=True)
+# Train the Model
+model.train(input_fn, steps=num_steps)
+
+# Evaluate the Model
+# Define the input function for evaluating
+input_fn = tf.estimator.inputs.numpy_input_fn(
+    x={'images': mnist.test.images}, y=mnist.test.labels,
+    batch_size=batch_size, shuffle=False)
+# Use the Estimator 'evaluate' method
+e = model.evaluate(input_fn)
+
+print("Testing Accuracy:", e['accuracy'])
+print("Testing Precision:", e['precision'])
+print("Testing Recall:", e['recall'])
