@@ -165,17 +165,22 @@ function drawGraph(data, labels, label, chartID){
 //This function will be called having downloaded and plotted the data
 function afterGraphCompleted(){
     let descIndex = 0;
-    $("#header0, #myChart0, #myLabelChart00, #myLabelChart10, #myLabelChart20").addClass("blur");
-    $("#header1, #myChart1, #myLabelChart01, #myLabelChart11, #myLabelChart21").addClass("blur");
-    $("#myLabelChart22").addClass("blur");
-    $("#label2").addClass("blur");
-    $("#header3, #myChart3, #myLabelChart03, #myLabelChart13, #myLabelChart23").addClass("blur")
-                                                                        .css("border-left", "");
-    $("#myChart2, #myLabelChart02, #myLabelChart12, #myLabelChart22").css("border-right", "1px solid black");
-    $("#infoText").html(descriptions[0]);
-    descIndex++;
     //Borders were manipulated so that when blurring there would not be any collision
-    $("#next").click(()=>{
+    $("#text_overlay").css("display", "none");
+    $("#start").click(function(){
+        $("#text_overlay").css("display", "block");
+        $(this).css("display", "none");
+        $("#header0, #myChart0, #myLabelChart00, #myLabelChart10, #myLabelChart20").addClass("blur");
+        $("#header1, #myChart1, #myLabelChart01, #myLabelChart11, #myLabelChart21").addClass("blur");
+        $("#myLabelChart22").addClass("blur");
+        $("#label2").addClass("blur");
+        $("#header3, #myChart3, #myLabelChart03, #myLabelChart13, #myLabelChart23").addClass("blur")
+                                                                            .css("border-left", "");
+        $("#myChart2, #myLabelChart02, #myLabelChart12, #myLabelChart22").css("border-right", "1px solid black");
+        $("#infoText").html(descriptions[0]);
+        descIndex++;
+    });
+    $("#next").click(()=> {
         $("*").removeClass("blur");
         $("#infoText").html(descriptions[descIndex]);
         if(descIndex === 1){
@@ -240,7 +245,7 @@ $( function() {
     next_button_group
         .attr("cursor", "pointer")
     next_button_group.on('click', () => {
-       location.href = "index.html"
+       location.href = "agac"
     });
     s0svg.append("foreignObject")
             .attr("class", "info_text")
@@ -252,6 +257,6 @@ $( function() {
             .attr("class", "text_itself")
             .style("color", "black")
             .style("font", "30px 'Arial'")
-            .html("Karpuz kavun örneğini tamamladınız. <br><br>" +
-                "Son zamanların popüler dizisi Game of Thrones'un kullanıldığı bir sonraki örneğe geçmek için butona tıklayınız.");
+            .html("Karar ağacı ile ilgili eğitici kısmı tamamladınız. <br><br>" +
+                "Artık karar ağacı ile sizi tanıştırmanın zamanı geldi.");
 });

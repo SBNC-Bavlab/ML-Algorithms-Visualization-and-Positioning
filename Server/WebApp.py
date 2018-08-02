@@ -48,7 +48,7 @@ def charts():
 
 @app.route('/agac', methods=['GET'])
 def tree():
-    script = server_document("http://localhost:5006/bokeh-decision-tree")
+    script = server_document("http://localhost:5006/Pure")
     return render_template("index.html", script=script)
 
 

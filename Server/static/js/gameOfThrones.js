@@ -167,7 +167,7 @@
                     .attr("y", 50 - 25)
                     .attr("width", 50)
                     .attr("height", 50)
-        .attr("xlink:href", "../icons/john.jpg");
+        .attr("xlink:href", "../static/icons/john.jpg");
 
     circleTextGroup.append("text")
                     .attr("x", (d , i) => {
