@@ -4,32 +4,70 @@
     <meta charset="UTF-8">
     <script src="//d3js.org/d3.v4.min.js"></script>
     <script>const d3_v4 = d3;</script>
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="../static/css/neural.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Chela+One|Cormorant+Unicase&subset=latin,latin-ext" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/reset.css"> <!-- CSS reset -->
+	<link rel="stylesheet" href="../static/css/style.css"> <!-- Resource style -->
+	<script src="../static/js/modernizr.js"></script> <!-- Modernizr -->
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Yapay Sinir Ağları</title>
     <style>
-        .knob .cursor {
-            fill: silver;
-        }
-
-        .knob .tick {
-            fill: silver;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .knob .major line {
-            stroke: silver;
-            stroke-width: 2px;
-        }
     </style>
     <script type="text/javascript" src="http://iop.io/js/vendor/d3.v3.min.js"></script>
     <script type="text/javascript" src="http://iop.io/js/vendor/polymer/PointerEvents/pointerevents.js"></script>
     <script type="text/javascript" src="http://iop.io/js/vendor/polymer/PointerGestures/pointergestures.js"></script>
     <script type="text/javascript" src="http://iop.io/js/iopctrl.js"></script>
 </head>
-<body>
+<body data-hijacking="off" data-animation="rotate">
 
+    <section id = "section0_parent" class="cd-section visible">
+		<div>
+            <!-- Navbar -->
+            <div class="w3-top" style="position: absolute;">
+              <div class="w3-bar w3-red w3-card w3-left-align w3-large">
+                <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+                <a href="main.html" class="w3-bar-item w3-button w3-padding-large w3-hover-white">Ana Sayfa</a>
+                <a href="karpuzkavun.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Karar Ağacı</a>
+                <a href="kmeans.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">K-Means</a>
+                <a href="neural.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-white">Yapay Sinir Ağları</a>
+                <a href="about.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" style="background-color: orange;">Hakkında</a>
+              </div>
 
+              <!-- Navbar on small screens -->
+              <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium w3-large">
+                <a href="karpuzkavun.html" class="w3-bar-item w3-button w3-padding-large">Karar Ağacı</a>
+                <a href="kmeans.html" class="w3-bar-item w3-button w3-padding-large">K-Means</a>
+                <a href="neural.html" class="w3-bar-item w3-button w3-padding-large">Yapay Sinir Ağları</a>
+                <a href="about.html" class="w3-bar-item w3-button w3-padding-large" style="background-color: orange">Hakkında</a>
+              </div>
+            </div>
+    	    <svg id="section0"></svg>
+	    </div>
+	</section>
+    <section id = "section1_parent" class="cd-section visible">
+		<div>
+    	    <svg id="section1"></svg>
+	    </div>
+	</section>
 
+    <nav>
+    <ul class="cd-vertical-nav" style="right: 5px;">
+        <li><a href="#0" class="cd-prev inactive">Next</a></li>
+        <li><a href="#0" class="cd-next">Prev</a></li>
+    </ul>
+	</nav> <!-- .cd-vertical-nav -->
+    <script src="../static/js/jquery-2.1.4.js"></script>
+    <script src="../static/js/velocity.min.js"></script>
+    <script src="../static/js/velocity.ui.min.js"></script>
+    <script src="../static/js/main.js"></script> <!-- Resource jQuery -->
 <script>
     const combinations = [{0: ["Kedi", "Köpek", "Köpek", "Kedi"],
                             1: ["Köpek", "Köpek", "Köpek", "Köpek"],
@@ -47,9 +85,11 @@
                             1: ["Kedi", "Köpek", "Kedi", "Köpek"],
                             2: ["Köpek", "Kedi", "Köpek", "Köpek"],
                             3: ["Köpek", "Köpek", "Kedi", "Kedi"]}];
-    const svg = d3_v4.select("body")
-                    .append("svg")
-                    .attr('id', 'section1')
+    const svgSection0 = d3_v4.select("#section0")
+                    .attr("width", innerWidth)
+                    .attr("height", innerHeight)
+                    .style("background-color", "orange");
+    const svgSection1 = d3_v4.select("#section1")
                     .attr("width", innerWidth)
                     .attr("height", innerHeight);
     let indexOfFirstKnob = 0;
@@ -75,7 +115,7 @@
                     .domain(["1", "2", "3", "4"])
                     .rangeBands([-Math.PI/2,  Math.PI/2]));
 
-    svg.append("g")
+    svgSection1.append("g")
         .attr("class", "knob")
         .attr("transform", "scale(0.5)")
         .attr("transform", "translate(300, 0)")
@@ -87,7 +127,7 @@
         for(let i = 0; i <= animalIndex; i++){
             decisionText[i].text = combination[i];
         }
-        svg.selectAll("text.decision")
+        svgSection1.selectAll("text.decision")
             .text((d) => {return d.text});
     });
 
@@ -108,10 +148,10 @@
             for(let i = 0; i <= animalIndex; i++){
                 decisionText[i].text = combination[i];
             }
-            svg.selectAll("text.decision")
+            svgSection1.selectAll("text.decision")
                 .text((d) => {return d.text});
         });
-    svg.append("g")
+    svgSection1.append("g")
         .attr("class", "knob")
         .attr("transform", "scale(0.5)")
         .attr("transform", "translate(300, 200)")
@@ -130,7 +170,7 @@
                         {x: -300, y: 0, text: "Arı", image: 'cat_2.png'},
                         {x: -300, y: 0, text: "Aslan", image: 'dog_2.png'}];
     const decisionText = [{x: initTextX, y: initTextY, text: decisions[0]}];
-    const trainButton = svg.append("rect")
+    const trainButton = svgSection1.append("rect")
                             .attr("class", "button")
                             .attr("x", 700)
                             .attr("y", 220)
@@ -146,7 +186,7 @@
         }
         imagePos[animalIndex].x = 300 * animalIndex + 120;
         imagePos[animalIndex].y = 500;
-        svg.selectAll("image.animal")
+        svgSection1.selectAll("image.animal")
             .data(imagePos)
             .transition()
             .attr("x", (d) => {return d.x})
@@ -156,7 +196,7 @@
         decisionText[decisionText.length - 1].x = 300 * animalIndex + 160;
         decisionText[decisionText.length - 1].y = 490;
         decisionText.push({x: initTextX, y: initTextY, text: decisions[0]});
-        const texts = svg.selectAll("text.decision")
+        const texts = svgSection1.selectAll("text.decision")
             .data(decisionText)
             .enter()
             .append("text")
@@ -165,7 +205,7 @@
             .attr("alignment-baseline", "middle")
             .attr("font-size", "30")
             .text((d) => {return d.text});
-        svg.selectAll("text.decision")
+        svgSection1.selectAll("text.decision")
             .attr("x", (d) => {return d.x})
             .attr("y", (d) => {return d.y});
         animalIndex++;
@@ -174,11 +214,11 @@
         for(let i = 0; i <= animalIndex; i++){
             decisionText[i].text = combination[i];
         }
-        svg.selectAll("text.decision")
+        svgSection1.selectAll("text.decision")
             .text((d) => {return d.text})
     });
     // Layout
-    svg.selectAll("image.animal")
+    svgSection1.selectAll("image.animal")
         .data(imagePos)
         .enter()
             .append("svg:image")
@@ -187,10 +227,10 @@
             .attr("y", (d) => {return d.y})
             .attr("width", imageWidth)
             .attr("height", imageHeight)
-            .attr("xlink:href", (d) => {return "../icons/" + d.image});
+            .attr("xlink:href", (d) => {return "../static/icons/" + d.image});
 
     //Texts laid out
-    svg.selectAll("text.decision")
+    svgSection1.selectAll("text.decision")
         .data(decisionText)
         .enter()
             .append("text")
