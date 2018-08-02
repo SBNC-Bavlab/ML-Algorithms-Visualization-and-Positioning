@@ -74,7 +74,7 @@
     let colorScheme = d3.scaleOrdinal()
                     .range(d3.schemeCategory10);
     let color = [];
-    for(var i = 0; i < 10; i++){
+    for(let i = 0; i < 10; i++){
         color.push(colorScheme(i))
     }
 
@@ -104,6 +104,11 @@
     const svgSection1 = d3.select("#section1")
                             .attr("width", innerWidth)
                             .attr("height", innerHeight);
+    /*svgSection1.append("svg:image")
+        .attr("width", innerWidth)
+        .attr("height", innerHeight)
+        .attr("xlink:href", "../icons/eagle.jpg")
+        .lower().lower();*/
 
     svgSection1.selectAll("text.infoText")
         .data(infoTextPost)
@@ -122,7 +127,6 @@
         .html((d)=>{
             return d.text;
         });
-
 
     svgSection1.call(d3.liquidfillgauge, 50, {
         circleThickness: 0.15,
@@ -156,6 +160,15 @@
                             .attr("fill", (d, i)=>{
                                 return color[familyToColorIndex[d[d.length - 1]]];
                             });
+    circleTextGroup.append("svg:image")
+                    .attr("x", (d , i) => {
+                        return 90 * i + 240 - 25;
+                    })
+                    .attr("y", 50 - 25)
+                    .attr("width", 50)
+                    .attr("height", 50)
+        .attr("xlink:href", "../icons/john.jpg");
+
     circleTextGroup.append("text")
                     .attr("x", (d , i) => {
                         return 90 * i + 240;
