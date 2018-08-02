@@ -6,6 +6,7 @@
     <title>K-Means</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="../static/css/k_means.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
@@ -61,6 +62,10 @@
 	</section>
     <section id = "section4_parent" class="cd-section visible">
 		<div style="background-color: orange">
+            <div class="alert" style="width: 50%; left: 25%; position: absolute; opacity: 0;">
+              <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                <span id="alert_text">Bilgilendirme: </span>
+            </div>
     	    <svg id="section4"></svg>
 	    </div>
 	</section>

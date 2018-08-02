@@ -105,12 +105,13 @@ const childPos = [
 {x: 640, y: 419, image: "boy.png", captain: 0, team: 0},
 {x: 706, y: 399, image: "boy.png", captain: 0, team: 0}];
 
+let isPlacingCaptains = false;
 svgSection5.on('click', (event)=>{
     //childPos.push({x: d3.event.x, y: d3.event.y, image: "boy.png", captain: 0, team: 0})
     //console.log(childPos)
 });
-childPos.push({x: innerWidth * 0.79, y: innerHeight * 0.05, image: "courier_1.png", captain: 1, team: 1});
-childPos.push({x: innerWidth * 0.83, y: innerHeight * 0.05, image: "courier_2.png", captain: 1, team: 2});
+childPos.push({x: innerWidth * 0.79, y: innerHeight * 0.08, image: "courier_1.png", captain: 1, team: 1});
+childPos.push({x: innerWidth * 0.83, y: innerHeight * 0.08, image: "courier_2.png", captain: 1, team: 2});
 svgSection5.selectAll("image.children")
     .data(childPos)
     .enter()
@@ -153,31 +154,72 @@ svgSection5.selectAll("image.children")
 
 let isAssignment = true;
 const add_courier = () => {
-    childPos.push({x: innerWidth * (0.79 + captainAmount * 0.04), y: innerHeight * 0.05, image: "courier_" + (captainAmount + 1) + ".png", captain: 1, team: captainAmount + 1});
-    svgSection5.selectAll("image.children")
-    .data(childPos)
-    .enter()
-    .append("svg:image")
-    .attr("x", (d)=>{return d.x;})
-    .attr("y", (d)=>{return d.y;})
-    .attr("width", 80)
-    .attr("height", 80)
-    .attr("class", "children")
-    .attr("xlink:href", (d)=>{
-        return "../static/icons/" + d.image;
-    });
-    svgSection5.selectAll("image.children")
-        .filter((d, i) => {
-            return i === childPos.length - 1;
-        })
-        .call(drag);
-    captainAmount++;
+    if(!isPlacingCaptains) {
+        childPos.push({
+            x: innerWidth * (0.79 + captainAmount * 0.04),
+            y: innerHeight * 0.08,
+            image: "courier_" + (captainAmount + 1) + ".png",
+            captain: 1,
+            team: captainAmount + 1
+        });
+        svgSection5.selectAll("image.children")
+            .data(childPos)
+            .enter()
+            .append("svg:image")
+            .attr("x", (d) => {
+                return d.x;
+            })
+            .attr("y", (d) => {
+                return d.y;
+            })
+            .attr("width", 80)
+            .attr("height", 80)
+            .attr("class", "children")
+            .attr("xlink:href", (d) => {
+                return "../static/icons/" + d.image;
+            });
+        svgSection5.selectAll("image.children")
+            .filter((d, i) => {
+                return i === childPos.length - 1;
+            })
+            .call(drag);
+        captainAmount++;
+    } else {
+        console.log("Kuryeler yerleştirilirken kurye ekleme işlemi yapılamaz")
+        d3.select(".alert")
+            .transition()
+                .style("opacity", "1")
+            .transition()
+                .delay(3000)
+                .style("opacity", "0");
+        d3.select("#alert_text")
+            .transition()
+                .text("Bilgilendirme: Kuryeler yerleştirilirken kurye ekleme işlemi yapılamaz")
+            .transition()
+                .delay(3200)
+                .text("Bilgilendirme: ");
+    }
+};
+const remove_courier = () => {
+    if(!isPlacingCaptains) {
+        if (captainAmount > 1) {
+            childPos.pop();
+            svgSection5.selectAll("image.children")
+                .data(childPos)
+                .exit()
+                .remove();
+            captainAmount--;
+        }
+    } else {
+        console.log("Kuryeler yerleştirilirken kurye silme silme yapılamaz")
+    }
 };
 const button_click_listener = () => {
+    isPlacingCaptains = true;
     let newButtonText = "";
     if(isAssignment) {
         assignChildrenToTeam();
-        newButtonText = "Kuryeyı Ortala";
+        newButtonText = "Kuryeyi Ortala";
     } else {
         calculateNewCenters();
         newButtonText = "Kurye Ata";
@@ -190,16 +232,16 @@ const button_click_listener = () => {
         .text((d) => {return d.text;});
 };
 
-const buttonTextPos = [{x: innerWidth * 0.8, y: innerHeight * 0.2, text: "Kurye Ata", click: button_click_listener},
+const buttonTextPos = [{x: innerWidth * 0.8, y: innerHeight * 0.20, text: "Kurye Ata", click: button_click_listener},
     {x: innerWidth * 0.8, y: innerHeight * 0.8, text: "Reset", click: reset},
-    {x: innerWidth * 0.8, y: innerHeight * 0.35, text: "Kurye Ekle", click: add_courier}];
+    {x: innerWidth * 0.8, y: innerHeight * 0.35, text: "Kurye Ekle", click: add_courier},
+    {x: innerWidth * 0.8, y: innerHeight * 0.46, text: "Kurye Çıkar", click: remove_courier}];
 const buttonGroup = svgSection5.selectAll("g.button_and_text")
                         .data(buttonTextPos)
                         .enter()
                         .append("g");
-const buttonWidth = 200;
+const buttonWidth = 250;
 const buttonHeight = 80;
-
 buttonGroup
     .append("rect")
     .attr("class", "assign_button")
@@ -208,9 +250,6 @@ buttonGroup
     .attr("width", buttonWidth)
     .attr("height", buttonHeight)
     .attr("fill", "red")
-    .on('click', (d) => {
-        d.click();
-    });
 buttonGroup.append("text")
     .attr("class", "assign_button_text")
     .attr("alignment-baseline", "middle")
@@ -220,8 +259,18 @@ buttonGroup.append("text")
     .attr("fill", "white")
     .attr("font-size", 30)
     .text((d) => {return d.text})
-    .on('click', (d) => {d.click();});
-
+buttonGroup
+    .attr("cursor", "pointer")
+    .on('click', (d) => {
+        d.click();
+    });
+// Add title text 'Kuryeler'
+svgSection5.append("text")
+    .attr("x", innerWidth * 0.8)
+    .attr("y", innerHeight * 0.06)
+    .style("fill", "white")
+    .attr("font-size", "30px")
+    .text("Kuryeler");
 function calculateNewCenters(){
     for(let captainIndex = childPos.length - captainAmount; captainIndex < childPos.length; captainIndex++){
         const captain = childPos[captainIndex];
@@ -283,6 +332,7 @@ function assignChildrenToTeam(){
 }
 
 function reset(){
+    isPlacingCaptains = false;
     if(!isAssignment) {
         buttonTextPos[0].text = "Kurye Ata";
         d3.selectAll("text.assign_button_text")
@@ -298,7 +348,7 @@ function reset(){
     for(let captainIndex = childPos.length - captainAmount; captainIndex < childPos.length; captainIndex++){
         const captain = childPos[captainIndex];
         captain.x = innerWidth * (0.75 + captain.team * 0.04);
-        captain.y = innerHeight * 0.05;
+        captain.y = innerHeight * 0.08;
     }
 
 
