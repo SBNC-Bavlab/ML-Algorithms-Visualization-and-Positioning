@@ -1,5 +1,4 @@
-const svgSection1 = d3.select("body")
-                .append("svg")
+const svgSection1 = d3.select("#section1")
                 .attr("width", innerWidth)
                 .attr("height", innerHeight)
                 .style("background-color", "orange");
@@ -17,8 +16,7 @@ svgSection1
         " uygulaması gösterilecektir" +
         "<br><br>K-Means'deki K'nin anlamı oluşturmak istediğiniz küme sayısıdır");
 
-const svgSection2 = d3.select("body")
-                .append("svg")
+const svgSection2 = d3.select("#section2")
                 .attr("width", innerWidth)
                 .attr("height", innerHeight)
                 .style("background-color", "orange");
@@ -35,8 +33,8 @@ svgSection2
         "<br><br>Çocukların maça başlayabilmeleri için onları iki takıma (kümeye) bölmeniz gerekecek" +
         "<br><br>Bunun için önceden seçilmiş iki tane kaptan köşede bekliyorlar" +
         "<br><br>İlk önce onları sahanın içine uygun gördüğünüz yere sürüklemeniz gerekecek");
-const svgSection3 = d3.select("body")
-                .append("svg")
+
+const svgSection3 = d3.select("#section3")
                 .attr("width", innerWidth)
                 .attr("height", innerHeight)
                 .style("background-color", "orange");
@@ -54,8 +52,7 @@ svgSection3
         "<br><br>Böylece kaptanlar takım arkadaşlarına moral konuşması yapabilecek" +
         "<br><br>Ancak kaptanlar takımın ortasına geçince diğer takımdaki oyunculara yaklaşabilir böylece karşı takımdan oyuncu alabilir");
 
-const svgSection4 = d3.select("body")
-                .append("svg")
+const svgSection4 = d3.select("#section4")
                 .attr("width", innerWidth)
                 .attr("height", innerHeight)
                 .style("background-color", "orange");
@@ -74,8 +71,7 @@ svgSection4
         "<br><br>Hadi işe koyulun!"
         );
 
-const svgSection5 = d3.select("body")
-                .append("svg")
+const svgSection5 = d3.select("#section5")
                 .attr("width", innerWidth)
                 .attr("height", innerHeight);
 //captain 0: not a captain; 1: captain of team A; 2: captain of team B
