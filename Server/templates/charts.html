@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Grafikler</title>
+    <script src="//d3js.org/d3.v4.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -10,22 +11,61 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" type="text/css" href="../static/css/charts.css">
     <script src="../static/js/charts.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Chela+One|Cormorant+Unicase&subset=latin,latin-ext" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/reset.css"> <!-- CSS reset -->
+	<link rel="stylesheet" href="../static/css/style.css"> <!-- Resource style -->
+	<script src="../static/js/modernizr.js"></script> <!-- Modernizr -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-    <div class="row" style="margin-left: 0">
-        <div id = "header0" class = "col-sm-2" style="margin-left: 15%">Yaş</div>
-        <div id = "header1" class = "col-sm-2">Göz Bozukluğu</div>
-        <div id = "header2" class = "col-sm-2">Astigmat</div>
-        <div id = "header3" class = "col-sm-2">Göz yaşı üretimi</div>
-    </div>
-    <div id = "chartArea" class = "row" style="margin-left: 0; margin-right: 0">
-    </div>
-    <div id = "text_overlay" style="position: absolute; top: 30%; left: 11%; width: 30%; z-index: 999; ">
-        <div id="infoText" style="font-family: 'San Fransisco Bold'; font-size: 30px"></div>
-        <button id="next" style="position: absolute; margin-top: 2%; right: 0" class="btn btn-outline-success">Devam</button>
-    </div>
+    <div id = "section0_parent">
+        <!-- Navbar -->
+        <div class="w3-top" style="position: absolute;">
+          <div class="w3-bar w3-red w3-card w3-left-align w3-large">
+            <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+            <a href="main.html" class="w3-bar-item w3-button w3-padding-large w3-hover-white">Ana Sayfa</a>
+            <a href="karpuzkavun.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-white">Karar Ağacı</a>
+            <a href="kmeans.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">K-Means</a>
+            <a href="neural.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Yapay Sinir Ağları</a>
+            <a href="about.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" style="background-color: orange;">Hakkında</a>
+          </div>
 
+          <!-- Navbar on small screens -->
+          <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium w3-large">
+            <a href="karpuzkavun.html" class="w3-bar-item w3-button w3-padding-large">Karar Ağacı</a>
+            <a href="kmeans.html" class="w3-bar-item w3-button w3-padding-large">K-Means</a>
+            <a href="neural.html" class="w3-bar-item w3-button w3-padding-large">Yapay Sinir Ağları</a>
+            <a href="about.html" class="w3-bar-item w3-button w3-padding-large" style="background-color: orange">Hakkında</a>
+          </div>
+        </div>
+        <div id="chart_here" class="w3-row-padding w3-padding-64 w3-container">
+
+            <div class="row" style="margin-left: 0">
+                <div id = "header0" class = "col-sm-2" style="margin-left: 15%">Yaş</div>
+                <div id = "header1" class = "col-sm-2">Göz Bozukluğu</div>
+                <div id = "header2" class = "col-sm-2">Astigmat</div>
+                <div id = "header3" class = "col-sm-2">Göz yaşı üretimi</div>
+            </div>
+            <div id = "chartArea" class = "row" style="margin-left: 0; margin-right: 0">
+            </div>
+
+            <div id = "text_overlay" style="position: absolute; top: 30%; left: 11%; width: 30%; z-index: 999; ">
+                <div id="infoText" style="font-family: 'San Fransisco Bold'; font-size: 30px"></div>
+                <button id="next" style="transform: scale(1.5); position: absolute; margin-top: 2%; right: 0" class="btn btn-outline-success">Devam</button>
+            </div>
+        </div>
+	</div>
+    <div id = "section1_parent" class="cd-section">
+            <svg id="section0"></svg>
+	</div>
+    <script src="../static/js/velocity.min.js"></script>
+    <script src="../static/js/velocity.ui.min.js"></script>
+    <script src="../static/js/main.js"></script> <!-- Resource jQuery --
 </body>
 </html>

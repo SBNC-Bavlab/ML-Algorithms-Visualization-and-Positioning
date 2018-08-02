@@ -205,7 +205,7 @@ const next_button_group = s3svg.append("g");
 next_button_group.append("rect")
     .attr("class", "next_button")
     .attr("x", 100)
-    .attr("y", 300)
+    .attr("y", 400)
     .attr("fill", "white")
     .attr("width", buttonWidth)
     .attr("height", buttonHeight);
@@ -213,20 +213,33 @@ next_button_group
     .append("text")
     .attr("class", "next_button_text")
     .attr("x", 100 + buttonWidth / 2)
-    .attr("y", 300 + buttonHeight / 2)
+    .attr("y", 400 + buttonHeight / 2)
     .attr("text-anchor", "middle")
     .attr("alignment-baseline", "middle")
     .attr("color", "black")
     .attr("font-size", "30")
     .text("İlerle");
+next_button_group
+    .attr("cursor", "pointer")
 next_button_group.on('click', () => {
-   location.href = "charts.html"
+   location.href = "gameOfThrones.html"
 });
+s3svg.append("foreignObject")
+        .attr("class", "info_text")
+        .attr("width", innerWidth * 0.7)
+        .attr("height", 300)
+        .attr("x", innerWidth * 0.05)
+        .attr("y", innerHeight * 0.1)
+        .append("xhtml:body")
+        .attr("class", "text_itself")
+        .style("color", "white")
+        .style("font", "30px 'Arial'")
+        .html("Karpuz kavun örneğini tamamladınız. <br><br>" +
+            "Son zamanların popüler dizisi Game of Thrones'un kullanıldığı bir sonraki örneğe geçmek için butona tıklayınız.");
 function calculateXForText(d, i){
     return innerWidth * (i + 1) * 0.07 - innerWidth * 0.015;
 }
 
-//vtrcexrdctfyvgbhunıjıhbgvfcdrxsezxrdctfvygbuhnıjmoköjnhbgvftcdrxsexrdtfgybhunjımkoökjnhubgyvftcdrxseawzesxrdctfvg
 function paintRectangles(){
     rectangleData.forEach(function (d, index) {
         if(+radius_label[index] >= theValue){

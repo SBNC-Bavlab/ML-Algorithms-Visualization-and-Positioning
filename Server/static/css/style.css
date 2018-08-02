@@ -14,7 +14,7 @@ html {
 body {
   font-size: 1.6rem;
   font-family: "Open Sans", sans-serif;
-  color: #ffffff;
+  color: black;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -55,7 +55,6 @@ Main Components
   font-size: 2.4rem;
 }
 .cd-section:first-of-type > div {
-  background-color: #2b334f;
 }
 .cd-section:first-of-type > div::before {
   /* alert -> all scrolling effects are not visible on small devices */

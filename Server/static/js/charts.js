@@ -3,7 +3,7 @@ const descriptions = ["Verimizden Astigmat olan insanların sadece sert lens kul
                     "Bu kısım gösteriyor ki; göz bozukluğu hipermetrop olanlar daha çok yumuşak lens kullanabiliyorken, miyop olanlar sert lense yönlendiriliyor.",
                     "Hadi şimdi de siz grafikleri keşfedip çıkarımlarda bulunun"];
 const features = {"Yaş": ["Genç", "Orta", "Yaşlı"], "Göz Bozukluğu" : ["Miyop", "Hipermetrop"], "Astigmat" : ["Yok", "Var"], "Göz yaşı üretimi" : ["Az", "Normal"]};
-const labelDict = {1 : "Sert Lens Kullananlar", 2: "Yumuşak Lens Kullananlar", 3: "Lens Kullanamayanlar"};
+const labelDict = {1 : "Sert Lens Kullanabilir", 2: "Yumuşak Lens Kullanabilir", 3: "Lens Kullanamaz"};
 function readTextFileAndPlot(file)
 {
     const rawFile = new XMLHttpRequest();
@@ -43,9 +43,6 @@ function readTextFileAndPlot(file)
                     const key = Object.keys(features)[i];
                     drawGraph(Object.values(calculateFrequence(df, i)), features[key], key, "myChart" + i)
                 }
-                const hr = document.createElement("hr");
-                hr.style.backgroundColor = "black";
-                document.body.appendChild(hr);
                 for(let i = 0; i < Object.keys(labelDict).length; i++){
                     const div = document.createElement("div");
                     div.classList.add("row");
@@ -57,13 +54,15 @@ function readTextFileAndPlot(file)
                             tempArray.push(df[k])
                         }
                     }
-                    document.body.appendChild(div);
+                    document.getElementById("chart_here").appendChild(div);
 
                     const textDiv = document.createElement("div");
                     textDiv.classList.add("col-sm-1");
                     textDiv.id = "label" + i;
                     textDiv.innerHTML = labelDict[i + 1];
                     textDiv.style.marginTop = "3%";
+                    textDiv.style.paddingLeft = "-5px";
+                    textDiv.style.fontSize= "14px";
                     div.appendChild(textDiv);
                     for(let j = 0; j < Object.keys(features).length; j++){
                         const canvas = document.createElement('canvas');
@@ -213,5 +212,46 @@ function afterGraphCompleted(){
 //When the html document is loaded
 $( function() {
     //read the data
-    readTextFileAndPlot("../static/data/lens_charts.txt")
+    readTextFileAndPlot("../static/data/lens_charts.txt");
+
+    const buttonWidth = 180;
+    const buttonHeight = 60;
+    const s0svg = d3.select("#section0")
+                    .attr("width", innerWidth)
+                    .attr("height", innerHeight);
+    const next_button_group = s0svg.append("g");
+    next_button_group.append("rect")
+        .attr("class", "next_button")
+        .attr("x", 100)
+        .attr("y", 400)
+        .attr("fill", "orange")
+        .attr("width", buttonWidth)
+        .attr("height", buttonHeight);
+    next_button_group
+        .append("text")
+        .attr("class", "next_button_text")
+        .attr("x", 100 + buttonWidth / 2)
+        .attr("y", 400 + buttonHeight / 2)
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("color", "white")
+        .attr("font-size", "30")
+        .text("İlerle");
+    next_button_group
+        .attr("cursor", "pointer")
+    next_button_group.on('click', () => {
+       location.href = "index.html"
+    });
+    s0svg.append("foreignObject")
+            .attr("class", "info_text")
+            .attr("width", innerWidth * 0.7)
+            .attr("height", 300)
+            .attr("x", innerWidth * 0.05)
+            .attr("y", innerHeight * 0.1)
+            .append("xhtml:body")
+            .attr("class", "text_itself")
+            .style("color", "black")
+            .style("font", "30px 'Arial'")
+            .html("Karpuz kavun örneğini tamamladınız. <br><br>" +
+                "Son zamanların popüler dizisi Game of Thrones'un kullanıldığı bir sonraki örneğe geçmek için butona tıklayınız.");
 });

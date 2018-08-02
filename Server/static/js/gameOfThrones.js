@@ -8,7 +8,7 @@
     const s2Gauge1Width = innerWidth * 0.75;
     const s2Gauge1Height = innerHeight * 0.6 + 10;
 
-    const buttonWidth = 160;
+    const buttonWidth = 180;
     const buttonHeight = 50;
 
     const s1Gauge0Width = innerWidth / 2 - s1ScaledRadius;
@@ -68,6 +68,7 @@
         const str2 = b[b.length - 1];
         return str1 < str2 ? -1 : str1 > str2;
     });
+    let isLoadingToBigGauge = false;
     const familyToColorIndex = {'Lannıster': 0,'Targaryen': 1,'Stark': 2,'Whıte Walker': 3};
     const gotPosArray = [];
     let colorScheme = d3.scaleOrdinal()
@@ -91,15 +92,18 @@
     //Below is for section 1
 
     const infoTextPost = [{x: 30, y: 200, text: "Her bir daire Game of Thrones dizisindeki bir karakteri, her bir renk ise üyesi oldukları haneyi temsil etmektedir"},
-                        {x: innerWidth * 0.67, y: 200, text: "Renkleri bir suda karıştırdığımızda suyun koyuluk oranı elimizde ki verilerin entropi (karmaşıklık) miktarını göstermektedir"}];
+                        {x: innerWidth * 0.67, y: 200, text: "Renkleri bir suda karıştırdığımızda suyun koyuluk oranı elimizdeki verilerin entropi (karmaşıklık) miktarını göstermektedir"}];
 
     const generalEntropy = calculateEntropy(got);
     let averageEntropy = 0
-    const svgSection1 = d3.select("#section1")
+    const svgSection0 = d3.select("#section0")
                             .attr("width", innerWidth)
                             .attr("height", innerHeight);
 
 
+    const svgSection1 = d3.select("#section1")
+                            .attr("width", innerWidth)
+                            .attr("height", innerHeight);
 
     svgSection1.selectAll("text.infoText")
         .data(infoTextPost)
@@ -121,23 +125,23 @@
 
 
     svgSection1.call(d3.liquidfillgauge, 50, {
-      circleThickness: 0.15,
-      circleColor: "#1CA3EC",
-      textColor: "#1CA3EC",
-      waveTextColor: "#FFFFAA",
-      waveColor: "1CA3EC",
+        circleThickness: 0.15,
+        circleColor: "#1CA3EC",
+        textColor: "#1CA3EC",
+        waveTextColor: "#FFFFAA",
+        waveColor: "1CA3EC",
         backgroundColor: "white",
-      textVertPosition: 0.8,
-      waveAnimateTime: 1000,
-      waveHeight: 0.05,
-      waveAnimate: true,
-      waveRise: false,
-      waveOffset: 0.25,
-      textSize: 0.75,
-      waveCount: 3
+        textVertPosition: 0.8,
+        waveAnimateTime: 1000,
+        waveHeight: 0.05,
+        waveAnimate: true,
+        waveRise: false,
+        waveOffset: 0.25,
+        textSize: 0.75,
+        waveCount: 3
     }, s1Gauge0Width, s1Gauge0Height, 0, 0.7);
-
-    var circleTextGroup = svgSection1.selectAll("g.s1circle")
+    svgSection1.on("opacityChanged0")("hsla(193, 100%, 56%, 1)");
+    const circleTextGroup = svgSection1.selectAll("g.s1circle")
                 .data(got)
                 .enter()
                     .append("g")
@@ -167,26 +171,77 @@
                         }
                         return possibleName
                     });
-    circleTextGroup.transition()
-                    .attr("transform", (d, i)=>{
-                        const targetX = s1Gauge0Width + s1ScaledRadius
-                        const targetY = s1Gauge0Height + s1ScaledRadius
-                        const currentX = 90 * i + 240;
-                        const currentY = 50;
-                        const dx = targetX - currentX;
-                        const dy = targetY - currentY;
-                        return "translate( " + dx + "," + dy + ")";
-                    })
-                    .on('start', function(d, i){
-                        setTimeout(()=> {
-                            const tempGot = got.slice(0, i + 1);
-                            const entropySoFar = calculateEntropy(tempGot)
-                            svgSection1.on("valueChanged0")(entropySoFar.toFixed(2));
-                            svgSection1.on("opacityChanged0")("hsla(193, 100%, " + (56 - 15 * entropySoFar) + "%, 1)");
-                        }, 500);
-                    })
-                    .delay((d, i) => {return 1000 * i + 500})
-                    .duration(1000);
+    const resetButtonGroup = svgSection1.append("g");
+    const resetButtonPos = [innerWidth * 0.7, innerHeight * 0.7];
+    resetButtonGroup
+        .append("rect")
+        .attr("x", resetButtonPos[0])
+        .attr("y", resetButtonPos[1])
+        .attr("fill", "orange")
+        .attr("rx", "15")
+        .attr("width", buttonWidth)
+        .attr("height", buttonHeight);
+    resetButtonGroup
+        .append("text")
+        .attr("x", resetButtonPos[0] + buttonWidth / 2)
+        .attr("y", resetButtonPos[1] + buttonHeight / 2)
+        .attr("fill", "white")
+        .attr("font-size", "15px")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .text("Animasyonu Tekrarla");
+    resetButtonGroup
+        .attr("cursor", "pointer")
+        .attr("opacity", "0")
+        .on("click", () => {
+            if(!isLoadingToBigGauge) {
+                circleTextGroup.transition()
+                    .attr("transform", "translate(0,0)");
+                resetButtonGroup.attr("opacity", "0");
+                svgSection1.on("valueChanged0")("0.00");
+                svgSection1.on("opacityChanged0")("hsla(193, 100%, 56%, 1)");
+                animateFill();
+            }
+        });
+    let firstAnimationWithScrolling = true;
+    startAnimation();//Initial invocation is made since user may spawn into this page
+    function startAnimation() {
+        const scrollPos = document.documentElement.scrollTop;
+        if(!isLoadingToBigGauge && firstAnimationWithScrolling && scrollPos < innerHeight * 1.1 && scrollPos > innerHeight * 0.9) {
+            firstAnimationWithScrolling = false;
+            animateFill();
+        }
+    }
+    function animateFill(){
+        isLoadingToBigGauge = true;
+        circleTextGroup.transition()
+            .attr("transform", (d, i) => {
+                const targetX = s1Gauge0Width + s1ScaledRadius
+                const targetY = s1Gauge0Height + s1ScaledRadius
+                const currentX = 90 * i + 240;
+                const currentY = 50;
+                const dx = targetX - currentX;
+                const dy = targetY - currentY;
+                return "translate( " + dx + "," + dy + ")";
+            })
+            .on('start', function (d, i) {
+                setTimeout(() => {
+                    const tempGot = got.slice(0, i + 1);
+                    const entropySoFar = calculateEntropy(tempGot)
+                    svgSection1.on("valueChanged0")(entropySoFar.toFixed(2));
+                    svgSection1.on("opacityChanged0")("hsla(193, 100%, " + (56 - 15 * entropySoFar) + "%, 1)");
+                    if( i === got.length - 1){
+                        //it means all finished
+                        isLoadingToBigGauge = false;
+                        resetButtonGroup.attr("opacity", "1");
+                    }
+                }, 500);
+            })
+            .delay((d, i) => {
+                return 1000 * i + 500
+            })
+            .duration(1000);
+    }
     //Below is for section 2
     const scoreTextPos = [{x: innerWidth * 0.72, y: innerHeight / 2, text: "Ortalama Entropi: -"}];
     const buttonsPos = [{x: 60, y: 100, text: "Zengin mi?", click: () => {askQuestion(0)}},
@@ -805,9 +860,51 @@
     svgSection3.on('valueChanged2')(rightEntropy.toFixed(2));
     svgSection3.on('opacityChanged2')("hsla(193, 100%, " + (56 - 15 * rightEntropy) + "%, 1)");
 
+
+    const svgSection4 = d3.select("#section4")
+                .attr("width", innerWidth)
+                .attr("height", innerHeight);
+    const next_button_group = svgSection4.append("g");
+    next_button_group.append("rect")
+        .attr("class", "next_button")
+        .attr("x", 100)
+        .attr("y", 400)
+        .attr("fill", "white")
+        .attr("width", buttonWidth)
+        .attr("height", buttonHeight);
+    next_button_group
+        .append("text")
+        .attr("class", "next_button_text")
+        .attr("x", 100 + buttonWidth / 2)
+        .attr("y", 400 + buttonHeight / 2)
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("color", "black")
+        .attr("font-size", "30")
+        .text("İlerle");
+    next_button_group
+        .attr("cursor", "pointer")
+    next_button_group.on('click', () => {
+       location.href = "charts.html"
+    });
+    svgSection4.append("foreignObject")
+            .attr("class", "info_text")
+            .attr("width", innerWidth * 0.7)
+            .attr("height", 300)
+            .attr("x", innerWidth * 0.05)
+            .attr("y", innerHeight * 0.1)
+            .append("xhtml:body")
+            .attr("class", "text_itself")
+            .style("color", "white")
+            .style("font", "30px 'Arial'")
+            .html("Game of Thrones örneğini tamamladınız. <br><br>" +
+                "Bir kişinin yaşı, göz bozukluğu, göz yaşı üretimi ve astigmatizm özellikleri ile o kişinin " +
+                "lens takmaya uygunluğu arasındaki ilişkiyi gösteren bir veri seti ile tanışacaksınız.");
+
     // set scroll items
 
     d3.select("#scroll2").style("top", 2 * innerHeight * 0.95+ "px");
     d3.select("#scroll1").style("top", innerHeight * 0.9 + "px");
     d3.select("#scroll1").style("left", innerWidth * 0.68 + "px");
     d3.select("#scroll2").style("left", innerWidth * 0.68 + "px");
+
