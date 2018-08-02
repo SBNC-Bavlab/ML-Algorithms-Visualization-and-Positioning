@@ -1,0 +1,12 @@
+.knob .cursor {
+    fill: silver;
+}
+.knob .tick {
+    fill: silver;
+    font-size: 14px;
+    font-weight: bold;
+}
+.knob .major line {
+    stroke: silver;
+    stroke-width: 2px;
+}

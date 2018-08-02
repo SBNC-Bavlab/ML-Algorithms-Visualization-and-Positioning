@@ -3,15 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <script src="//d3js.org/d3.v4.min.js"></script>
-    <title>Title</title>
-    <style>
-        .assign_button, .assign_button_text{
-            cursor: pointer;
-        }
-    </style>
+    <title>K-Means</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Chela+One|Cormorant+Unicase&subset=latin,latin-ext" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/reset.css"> <!-- CSS reset -->
+	<link rel="stylesheet" href="../static/css/style.css"> <!-- Resource style -->
+	<script src="../static/js/modernizr.js"></script> <!-- Modernizr -->
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body>
+<body data-hijacking="off" data-animation="rotate">
 
-<script src="../js/k_means.js"></script>
+     <section id = "section0_parent" class="cd-section visible">
+		<div>
+            <!-- Navbar -->
+            <div class="w3-top" style="position: absolute;">
+              <div class="w3-bar w3-red w3-card w3-left-align w3-large">
+                <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+                <a href="main.html" class="w3-bar-item w3-button w3-padding-large w3-hover-white">Ana Sayfa</a>
+                <a href="karpuzkavun.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Karar Ağacı</a>
+                <a href="kmeans.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-white">K-Means</a>
+                <a href="neural.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Yapay Sinir Ağları</a>
+                <a href="about.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" style="background-color: orange;">Hakkında</a>
+              </div>
+
+              <!-- Navbar on small screens -->
+              <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium w3-large">
+                <a href="karpuzkavun.html" class="w3-bar-item w3-button w3-padding-large">Karar Ağacı</a>
+                <a href="kmeans.html" class="w3-bar-item w3-button w3-padding-large">K-Means</a>
+                <a href="neural.html" class="w3-bar-item w3-button w3-padding-large">Yapay Sinir Ağları</a>
+                <a href="about.html" class="w3-bar-item w3-button w3-padding-large" style="background-color: orange">Hakkında</a>
+              </div>
+            </div>
+    	    <svg id="section0"></svg>
+	    </div>
+	</section>
+    <section id = "section1_parent" class="cd-section visible">
+		<div>
+    	    <svg id="section1"></svg>
+	    </div>
+	</section>
+    <section id = "section2_parent" class="cd-section visible">
+		<div style="background-color: orange">
+    	    <svg id="section2"></svg>
+	    </div>
+	</section>
+    <section id = "section3_parent" class="cd-section visible">
+		<div style="background-color: orange">
+    	    <svg id="section3"></svg>
+	    </div>
+	</section>
+    <section id = "section4_parent" class="cd-section visible">
+		<div style="background-color: orange">
+    	    <svg id="section4"></svg>
+	    </div>
+	</section>
+
+    <nav>
+		<ul class="cd-vertical-nav" style="right: 5px;">
+			<li><a href="#0" class="cd-prev inactive">Next</a></li>
+			<li><a href="#0" class="cd-next">Prev</a></li>
+		</ul>
+	</nav> <!-- .cd-vertical-nav -->
+    <script src="../static/js/k_means.js"></script>
+    <script src="../static/js/jquery-2.1.4.js"></script>
+    <script src="../static/js/velocity.min.js"></script>
+    <script src="../static/js/velocity.ui.min.js"></script>
+    <script src="../static/js/main.js"></script> <!-- Resource jQuery -->
 </body>
 </html>
