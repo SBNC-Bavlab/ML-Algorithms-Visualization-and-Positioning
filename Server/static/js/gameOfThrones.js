@@ -3,9 +3,9 @@
     const s1ScaledRadius = 0.7 * 370;
     const s2ScaledRadius = 0.3 * 370;
 
-    const s2Gauge0Width = innerWidth * 0.75;
+    const s2Gauge0Width = innerWidth * 0.72;
     const s2Gauge0Height = innerHeight * 0.05 + 10;
-    const s2Gauge1Width = innerWidth * 0.75;
+    const s2Gauge1Width = innerWidth * 0.72;
     const s2Gauge1Height = innerHeight * 0.6 + 10;
 
     const buttonWidth = 180;
@@ -82,9 +82,11 @@
         for(let j = 0; j < got[0].length; j++) {
             if (j === 1) {
                 gotPosArray.push({'x': 200 * j + 300, 'y': 53 * i + 75, 'text': got[i][j]})
+            } else if(j == 4){
+                gotPosArray.push({'x': 80 * j + 430, 'y': 53 * i + 75, 'text': got[i][j]})
             } else if(j > 1){
                 gotPosArray.push({'x': 80 * j + 420, 'y': 53 * i + 75, 'text': got[i][j]})
-            }else {
+            } else {
                 gotPosArray.push({'x': 100 * j + 330, 'y': 53 * i + 75, 'text': got[i][j]})
             }
         }
@@ -190,7 +192,7 @@
         .append("rect")
         .attr("x", resetButtonPos[0])
         .attr("y", resetButtonPos[1])
-        .attr("fill", "orange")
+        .attr("fill", "blue")
         .attr("rx", "15")
         .attr("width", buttonWidth)
         .attr("height", buttonHeight);
@@ -256,7 +258,7 @@
             .duration(1000);
     }
     //Below is for section 2
-    const scoreTextPos = [{x: innerWidth * 0.72, y: innerHeight / 2, text: "Ortalama Entropi: -"}];
+    const scoreTextPos = [{x: innerWidth * 0.7, y: innerHeight / 2, text: "Ortalama Entropi: -"}];
     const buttonsPos = [{x: 60, y: 100, text: "Zengin mi?", click: () => {askQuestion(0)}},
                         {x: 60, y: 170, text: "Ejderhasi var mi?", click: () => {askQuestion(2)}},
                         {x: 60, y: 240, text: "Tahti istiyor mu?", click: () => {askQuestion(3)}},
@@ -332,8 +334,10 @@
                             } else if (i === 1) {
                                 return 200 * i + 285;
                             } else if(i === 3){
-                                return 80 * i + 408;
-                            } else if(i === 5){
+                                return 80 * i + 402;
+                            } else if(i === 4){
+                                return 80 * i + 415;
+                            }  else if(i === 5){
                                 return 80 * i + 415;
                             } else if(i > 1){
                                 return 80 * i + 410;
@@ -400,29 +404,31 @@
         .attr('rx', 15)
         .attr('ry', 15)
         .attr('fill', "#fc8d59")
+        .attr('stroke', "white")
         .attr('x', 320)
         .attr('y', function(d, i){
             return 53 * i + 50;
         })
         .attr('width', rectWidth)
         .attr('height', rectHeight);
-    svg.selectAll("text.table").data(gotPosArray)
-                        .enter()
-                        .append("text")
-                        .transition()
-                        .attr('class', 'table')
-                        .ease(d3.easeLinear)
-                        .duration(1000)
-                        .style("font-size", "12px")
-                        .attr("fill", "black")
-                        .attr('x', function(d){
-                            return d.x;
-                        })
-                        .attr('y', function(d){
-                           return d.y;
-                        }).text(function(d){
-                            return d.text.toLocaleUpperCase("tr-TR");
-                        });
+    svg.selectAll("text.table")
+        .data(gotPosArray)
+        .enter()
+            .append("text")
+            .transition()
+            .attr('class', 'table')
+            .ease(d3.easeLinear)
+            .duration(1000)
+            .style("font-size", "12px")
+            .attr("fill", "black")
+            .attr('x', function(d){
+                return d.x;
+            })
+            .attr('y', function(d){
+               return d.y;
+            }).text(function(d){
+                return d.text.toLocaleUpperCase("tr-TR");
+            });
     svg.selectAll("circle.house_color")
         .data(got)
         .enter()
@@ -608,62 +614,73 @@
     }
     function askQuestion(questionI){
         reset();
-        svg.selectAll("circle.house_color").transition()
-                            .duration(600)
-                            .attr("transform", function(d,i){
-                                const isLeft = d[questions[questionI].type] === questions[questionI].attribute;
-                                var targetY;
-                                var targetX;
-                                if(isLeft) {
-                                    targetX = s2Gauge0Width + s2ScaledRadius;
-                                    targetY = s2Gauge0Height + s2ScaledRadius;
-                                } else {
-                                    targetX = s2Gauge1Width + s2ScaledRadius;
-                                    targetY = s2Gauge1Height + s2ScaledRadius;
-                                }
-                                const currentY =  53 * i + 40;
-                                const currentX = circleX;
-                                const dx = targetX - currentX;
-                                const dy = targetY - currentY;
+        svg.selectAll("circle.house_color")
+            .transition()
+            .duration(600)
+            .attr("transform", function(d,i){
+                const isLeft = d[questions[questionI].type] === questions[questionI].attribute;
+                var targetY;
+                var targetX;
+                if(isLeft) {
+                    targetX = s2Gauge0Width + s2ScaledRadius;
+                    targetY = s2Gauge0Height + s2ScaledRadius;
+                } else {
+                    targetX = s2Gauge1Width + s2ScaledRadius;
+                    targetY = s2Gauge1Height + s2ScaledRadius;
+                }
+                const currentY =  53 * i + 40;
+                const currentX = circleX;
+                const dx = targetX - currentX;
+                const dy = targetY - currentY;
 
-                                dxs.push(dx);
-                                dys.push(dy);
-                                return "translate(" + dx + "," + dy +  ")"
-                            })
-                            .on('start', function(d, i){
-                                const isLeft = d[questions[questionI].type] === questions[questionI].attribute;
+                dxs.push(dx);
+                dys.push(dy);
+                return "translate(" + dx + "," + dy +  ")"
+            })
+            .on('start', function(d, i){
+                const isLeft = d[questions[questionI].type] === questions[questionI].attribute;
 
-                                if(isLeft) {
-                                    left.push(d);
-                                } else {
-                                    right.push(d);
-                                }
+                if(isLeft) {
+                    left.push(d);
+                } else {
+                    right.push(d);
+                }
 
-                                gotRowStroke[createQuestionIndex] = (isLeft) ? "green" : "red";
-                                const leftEntropy = calculateEntropy(left);
-                                const rightEntropy = calculateEntropy(right);
-                                svg.on("valueChanged0")(leftEntropy.toFixed(2));
-                                svg.on("valueChanged1")(rightEntropy.toFixed(2));
-                                svg.on("opacityChanged0")("hsla(193, 100%, " + (56 - 15 * leftEntropy) + "%, 1)");
-                                svg.on("opacityChanged1")("hsla(193, 100%, " + (56 - 15 * rightEntropy) + "%, 1)");
+                gotRowStroke[createQuestionIndex] = (isLeft) ? "green" : "red";
+                const leftEntropy = calculateEntropy(left);
+                const rightEntropy = calculateEntropy(right);
 
-                                var result = "";
-                                if(isLeft) {
-                                    var dx2 = 15 * (a2++ + 1) + 110;
-                                    var dy2 = 0;
-                                    result = "translate(" + (dxs[i] + dx2) + "," + (dys[i] + dy2)+ ")"
-                                } else {
-                                    var dx2 = 15 * (b2++ + 1) + 110;
-                                    var dy2 = 0;
-                                    result = "translate(" + (dxs[i] + dx2) + "," + (dys[i] + dy2)+ ")"
-                                }
-                                if(createQuestionIndex === got.length - 1)
-                                    calculateScore();
-                                createQuestionIndex++;
-                                changeColorRect(createQuestionIndex)
-                                d3.select(this).transition().duration(500).delay(500).attr('transform', result).attr('r', "5")
-                            })
-                            .delay(function(d,i){return 500 * i});
+                var result = "";
+                if(isLeft) {
+                    var dx2 = 15 * (a2++ + 1) + 110;
+                    var dy2 = 0;
+                    result = "translate(" + (dxs[i] + dx2) + "," + (dys[i] + dy2)+ ")"
+                } else {
+                    var dx2 = 15 * (b2++ + 1) + 110;
+                    var dy2 = 0;
+                    result = "translate(" + (dxs[i] + dx2) + "," + (dys[i] + dy2)+ ")"
+                }
+                changeColorRect(createQuestionIndex);
+                d3.select(this)
+                    .transition()
+                    .duration(500)
+                    .delay(500)
+                    .attr('transform', result)
+                    .attr('r', "5");
+                d3
+                    .transition()
+                    .duration(500)
+                    .call(function(){
+                        svg.on("valueChanged0")(leftEntropy.toFixed(2));
+                        svg.on("valueChanged1")(rightEntropy.toFixed(2));
+                        svg.on("opacityChanged0")("hsla(193, 100%, " + (56 - 15 * leftEntropy) + "%, 1)");
+                        svg.on("opacityChanged1")("hsla(193, 100%, " + (56 - 15 * rightEntropy) + "%, 1)");
+                        if(createQuestionIndex === got.length - 1)
+                            calculateScore();
+                        createQuestionIndex++;
+                    })
+            })
+            .delay(function(d,i){return 500 * i});
     }
     function reset(){
         svg.selectAll("circle.house_color").transition()
