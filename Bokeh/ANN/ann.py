@@ -1,5 +1,5 @@
 import tensorflow as tf
-from bokeh.palettes import viridis
+from bokeh.palettes import cividis
 
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
@@ -201,7 +201,7 @@ class Ann(object):
         progress_bar_length=10
         self.neural_nets()
         self.set_optimizers()
-        viridis_colors = viridis(128)
+        cividis_colors = cividis(256)
         init = tf.global_variables_initializer()
         with tf.Session() as sess:
 
@@ -217,7 +217,7 @@ class Ann(object):
                           "{:.4f}".format(loss) + ", Training Accuracy= " + \
                           "{:.3f}".format(acc))
                 '''
-                circles.glyph.fill_color = circles.glyph.line_color = viridis_colors[step%128]
+                circles.glyph.fill_color = circles.glyph.line_color = cividis_colors[step%256]
                 text = "\r Bekleyiniz: [" + "+" * int(round(progress_bar_length * step/self.epochs))\
                        + '-' * (progress_bar_length - int(round(progress_bar_length * step/self.epochs)))\
                        + "] " + str(round(step/self.epochs * 100, 2)) + "%"
