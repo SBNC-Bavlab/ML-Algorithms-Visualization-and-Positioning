@@ -1,7 +1,7 @@
 from os.path import dirname
 
 from random import randint, shuffle
-from Bokeh.Decision_Tree.Plot.data_instance import data_instance
+from Bokeh.Decision_Tree.Plot.tree_data_instance import tree_data_instance
 
 color = []
 
@@ -57,7 +57,7 @@ def set_new_data_set(new, test_percentage=10):
     attr_values_dict = dict((attr, list(attr_values[i])) for i, attr in enumerate(attr_list))
     attr_dict = dict((attr, (i, list(attr_values[i]))) for i, attr in enumerate(attr_list))
     shuffle(data)
-    instance = data_instance(data, attr_values, attr_list, attr_values_dict, attr_dict, test_percentage)
+    instance = tree_data_instance(data, attr_values, attr_list, attr_values_dict, attr_dict, test_percentage)
     return instance
 
 
