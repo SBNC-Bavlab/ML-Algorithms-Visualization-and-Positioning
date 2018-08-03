@@ -1,11 +1,11 @@
 """
-Singleton class for data set and its information
+Class for data set and its information
 """
 from os.path import dirname
 import os
 
 
-class data_instance():
+class tree_data_instance():
     """
         Singleton class
     """

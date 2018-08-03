@@ -30,7 +30,7 @@ const test_data = [["Sarı", 3, "Kavun"], ["Sarı", 4, "Kavun"], ["Sarı", 5, "K
 
 const buttonWidth = 180;
 const buttonHeight = 60;
-const  maxFrequency = 8;
+const maxFrequency = 8;
 const rectWidth = 70;
 const rectHeight = 70;
 const maxDiameter = 14;
@@ -54,19 +54,19 @@ function manipulateRectangleData(data){
         }
     });
     Object.keys(radiusDict).forEach(function(d, i){
-        rectangleData.push({'x': 105 * i + 50, 'y': 10, 'label': d, 'text': radius_label[i], 'color': 'beige'})
+        rectangleData.push({'x': innerWidth * (i + 1) * 0.07 - innerWidth * 0.039, 'y': 10, 'label': d, 'text': radius_label[i], 'color': 'beige'})
     });
 }
 function calculateFruitPlaces(){
-    fruitPlaces = []
+    fruitPlaces = [];
     for(let i = 0; i < maxFrequency; i++){
         for(let j = 1; j <= maxDiameter; j++){
             if(j in radiusDict) {
                 if (i < radiusDict[j].length) {
                     if (radiusDict[j][i] === 'Karpuz') {
-                        fruitPlaces.push({'x': 105 * validDiameterIndex - 55, 'y': 68 * i + 95, 'fruit_img': 'watermelon.png'})
+                        fruitPlaces.push({'x': innerWidth * validDiameterIndex * 0.07 - innerWidth * 0.04, 'y': 68 * i + 95, 'fruit_img': 'watermelon.png'})
                     } else {
-                        fruitPlaces.push({'x': 105 * validDiameterIndex - 55, 'y': 68 * i + 95, 'fruit_img': 'melon.png'})
+                        fruitPlaces.push({'x': innerWidth * validDiameterIndex * 0.07 - innerWidth * 0.04, 'y': 68 * i + 95, 'fruit_img': 'melon.png'})
                     }
                 }
                 validDiameterIndex++;
@@ -77,18 +77,16 @@ function calculateFruitPlaces(){
 }
 
 //Section 0
-const s0svg = d3.select("body").append("svg")
-                                .style("background-color", "blue")
-                                .attr("width", innerWidth)
-                                .attr("id", "section0")
-                                .attr("height", innerHeight);
+const s0svg = d3.select("#section0")
+                .style("background-color", "blue")
+                .attr("width", innerWidth)
+                .attr("height", innerHeight);
 //Section 1
 
-const s1svg = d3.select("body").append("svg")
-                                .style("background-color", "blue")
-                                .attr("width", innerWidth)
-                                .attr("id", "section1")
-                                .attr("height", innerHeight);
+const s1svg = d3.select("#section1")
+                .style("background-color", "blue")
+                .attr("width", innerWidth)
+                .attr("height", innerHeight);
 const infoTextPost = [{x : innerWidth / 8, y : 50, text: "Elimizde Mehmet ve Ahmet'in tezgahlarındaki karpuz ve kavunların çap bilgileri var." +
     "<br><br>Amacımız karpuz ve kavunları birbirinden ayıran bir çap değeri bulmak." +
     "<br><br>Yani öyle bir çap değeri bulmalıyız ki onun üstündekilere karpuz altındakilere kavun diyebilelim"}] //'Faruk reistir'
@@ -111,20 +109,13 @@ s1svg.selectAll("text.infoText")
         .html((d)=>{
             return d.text;
         });
-
-
-
-
-
-
 //Initial settings
 manipulateRectangleData(train_data);
 calculateFruitPlaces();
 
-const s2svg = d3.select("body").append("svg")
-                                .attr("width", innerWidth)
-                                .attr("id", "section2")
-                                .attr("height", innerHeight);
+const s2svg = d3.select("#section2")
+    .attr("width", innerWidth)
+    .attr("height", innerHeight);
 
 s2svg.append("text")
     .attr("x", innerWidth / 2.1)
@@ -171,7 +162,7 @@ var rectangles = s2svg.selectAll("rect.palette")
                             .attr("rx", 15)
                             .attr("width", function (d) { return 73; })
                             .attr("height", function (d, i) { return rectHeight * radiusDict[Object.keys(radiusDict)[i]].length + 80});
-var texts = s2svg.selectAll("text.label")
+s2svg.selectAll("text.label")
     .data(rectangleData)
     .enter()
     .append('text')
@@ -188,25 +179,67 @@ var texts = s2svg.selectAll("text.label")
     .text(function (d) {
         return d.text + "cm";
     })
-    .style("font-size", "30px");
-s2svg.selectAll("image").data(fruitPlaces).enter().append("svg:image").classed('fruit', true)
-                            .transition().delay(1000).ease(d3.easeElastic).duration(2000)
-                            .attr('x', function(d){
-                                return d.x;
-                            })
-                            .attr('y', function(d){
-                                return d.y;
-                            })
-                            .attr('width', rectWidth)
-                            .attr('height', rectHeight)
-                            .attr("xlink:href", function (d) {
-                                return "../icons/" + d.fruit_img;
-                            });
+    .style("font-size", "25px");
+s2svg.selectAll("image")
+    .data(fruitPlaces)
+    .enter()
+        .append("svg:image")
+        .classed('fruit', true)
+        .transition().delay(1000).ease(d3.easeElastic).duration(2000)
+        .attr('x', function(d){
+            return d.x;
+        })
+        .attr('y', function(d){
+            return d.y;
+        })
+        .attr('width', rectWidth)
+        .attr('height', rectHeight)
+        .attr("xlink:href", function (d) {
+            return "../static/icons/" + d.fruit_img;
+        });
+
+const s3svg = d3.select("#section3")
+                .attr("width", innerWidth)
+                .attr("height", innerHeight);
+const next_button_group = s3svg.append("g");
+next_button_group.append("rect")
+    .attr("class", "next_button")
+    .attr("x", 100)
+    .attr("y", 400)
+    .attr("fill", "orange")
+    .attr("width", buttonWidth)
+    .attr("height", buttonHeight);
+next_button_group
+    .append("text")
+    .attr("class", "next_button_text")
+    .attr("x", 100 + buttonWidth / 2)
+    .attr("y", 400 + buttonHeight / 2)
+    .attr("text-anchor", "middle")
+    .attr("alignment-baseline", "middle")
+    .attr("color", "black")
+    .attr("font-size", "30")
+    .text("İlerle");
+next_button_group
+    .attr("cursor", "pointer")
+next_button_group.on('click', () => {
+   location.href = "gameOfThrones.html"
+});
+s3svg.append("foreignObject")
+        .attr("class", "info_text")
+        .attr("width", innerWidth * 0.7)
+        .attr("height", 300)
+        .attr("x", innerWidth * 0.05)
+        .attr("y", innerHeight * 0.1)
+        .append("xhtml:body")
+        .attr("class", "text_itself")
+        .style("color", "black")
+        .style("font", "30px 'Arial'")
+        .html("Karpuz kavun örneğini tamamladınız. <br><br>" +
+            "Son zamanların popüler dizisi Game of Thrones'un kullanıldığı bir sonraki örneğe geçmek için butona tıklayınız.");
 function calculateXForText(d, i){
-    return 105 * i + 87;
+    return innerWidth * (i + 1) * 0.07 - innerWidth * 0.015;
 }
 
-//vtrcexrdctfyvgbhunıjıhbgvfcdrxsezxrdctfvygbuhnıjmoköjnhbgvftcdrxsexrdtfgybhunjımkoökjnhubgyvftcdrxseawzesxrdctfvg
 function paintRectangles(){
     rectangleData.forEach(function (d, index) {
         if(+radius_label[index] >= theValue){
@@ -287,7 +320,7 @@ function calculateTest(){
     s2svg.selectAll("image.tick").style('display', "block")
                             .data(checkImgsData)
                             .attr("xlink:href", function (d) {
-                                return "../icons/" + d.resultImg;
+                                return "../static/icons/" + d.resultImg;
                             })
                             .raise()
                             .enter()
@@ -303,7 +336,7 @@ function calculateTest(){
                                 .attr('width', rectWidth / 2)
                                 .attr('height', rectHeight / 2)
                                 .attr("xlink:href", function (d) {
-                                    return "../icons/" + d.resultImg;
+                                    return "../static/icons/" + d.resultImg;
                                 });
 
     s2svg.selectAll("image.fruit").data(fruitPlaces)
@@ -316,7 +349,7 @@ function calculateTest(){
                             .attr('width', rectWidth)
                             .attr('height', rectHeight)
                             .attr("xlink:href", function (d) {
-                                return "../icons/" + d.fruit_img;
+                                return "../static/icons/" + d.fruit_img;
                             }).exit().remove();
 
     s2svg.selectAll("text.accuracy").style('display',"block")
@@ -390,7 +423,7 @@ function againTrain(){
                     .attr('x', calculateXForText)
                     .attr('y', 55)
                     .attr("fill", "black")
-                    .style("font-size", "30px");
+                    .style("font-size", "25px");
 
     s2svg.selectAll("image.fruit")
                 .data(fruitPlaces)
@@ -401,7 +434,7 @@ function againTrain(){
                     return d.y;
                 })
                 .attr("xlink:href", function (d) {
-                    return "../icons/" + d.fruit_img;
+                    return "../static/icons/" + d.fruit_img;
                 })
                 .raise()
                 .enter()
@@ -417,7 +450,7 @@ function againTrain(){
                     .attr('width', rectWidth)
                     .attr('height', rectHeight)
                     .attr("xlink:href", function (d) {
-                        return "../icons/" + d.fruit_img;
+                        return "../static/icons/" + d.fruit_img;
                     });
 }
 

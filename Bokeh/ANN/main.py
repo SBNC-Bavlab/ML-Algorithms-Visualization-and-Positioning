@@ -14,7 +14,7 @@ layer_select = Select(title="Düğüm Eklemek/Çıkarmak İçin Katman Seç:", o
 add_node_button = Button(label="+", button_type="warning")
 remove_node_button = Button(label="-", button_type="warning")
 epoch_slider = Slider(start=500, end=50000, value=500, step=1000, title="Adım Sayısı Belirle")
-play_button = Button(label="►/❚❚ Play", button_type="success")
+play_button = Button(label="Oynat", button_type="success")
 wait_info = Paragraph(text="")
 widgets = widgetbox(learning_rate_select, activation_func_select,
                     add_layer_button, remove_layer_select, layer_select,

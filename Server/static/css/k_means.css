@@ -1,0 +1,36 @@
+body, h1, h2, h3, h4, h5, h6 {
+    font-family: "Lato", sans-serif
+}
+.w3-bar, h1, button {
+    font-family: "Montserrat", sans-serif
+}
+.fa-anchor,.fa-coffee {
+    font-size:200px
+}
+.assign_button, .assign_button_text{
+    cursor: pointer;
+}
+/* The alert message box */
+.alert {
+    padding: 20px;
+    background-color: rgba(0, 0, 255, 0.88); /* Red */
+    color: white;
+    margin-bottom: 15px;
+}
+
+/* The close button */
+.closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* When moving the mouse over the close button */
+.closebtn:hover {
+    color: black;
+}
