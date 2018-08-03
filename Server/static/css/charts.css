@@ -1,4 +1,4 @@
-            @font-face {
+@font-face {
     font-family: "San Fransisco";
     src: url(../css/sf.otf) format("truetype");
 }
@@ -9,4 +9,13 @@
 .blur{
     -webkit-filter: blur(8px); /* Chrome, Safari, Opera */
     filter: blur(8px);
+}
+body, h1, h2, h3, h4, h5, h6 {
+    font-family: "Lato", sans-serif
+}
+.w3-bar, h1, button {
+    font-family: "Montserrat", sans-serif
+}
+.fa-anchor,.fa-coffee {
+    font-size200:px
 }

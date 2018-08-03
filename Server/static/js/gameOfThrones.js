@@ -762,6 +762,18 @@
                 svgSection3.on('opacityChanged2')("hsla(193, 100%, " + (56 - 15 * rightEntropy) + "%, 1)");
             }  else {
                 console.log("Verilerinizi herhangi bir soruya veya ortak özelliğe göre bölmediniz bu yüzden skor hesaplanamadı.");
+                d3.select(".alert")
+                    .transition()
+                        .style("opacity", "1")
+                    .transition()
+                        .delay(3000)
+                        .style("opacity", "0");
+                d3.select("#alert_text")
+                    .transition()
+                        .text("Bilgilendirme: Verilerinizi geçerli bir soruya veya ortak özelliğe göre bölmediniz bu yüzden ortalama hesaplanamadı.")
+                    .transition()
+                        .delay(3200)
+                        .text("Bilgilendirme: ");
                 //$error.slideDown().delay(5000).slideUp();
             }
         } else {
