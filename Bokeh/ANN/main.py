@@ -1,12 +1,12 @@
 from bokeh.plotting import figure
-from bokeh.models.widgets import Select, Button, Slider, Paragraph
+from bokeh.models.widgets import Select, Button, Slider, Paragraph, Panel, Tabs
 from bokeh.layouts import layout, widgetbox
 from Plot.ann_data_instance import ANNData
-from ann import Ann
+import ann
 from bokeh.io import curdoc
 from bokeh.models import ColumnDataSource
 
-learning_rate_select = Select(title="Öğrenme Hızını Seçiniz:", options=['1e-5', '1e-3', '0.1', '1'], value="1e-5")
+learning_rate_select = Select(title="Öğrenme Hızını Seçiniz:", options=['1e-5', '1e-3', '0.01', '0.1', '1'], value="0.01")
 activation_func_select = Select(title="Aktivasyon Fonksiyonunu Seçiniz:", options=['ReLu', 'Tanh', 'Sigmoid'],
                                 value='ReLu')
 add_layer_button = Button(label="Katman Ekle", button_type="success")
@@ -14,12 +14,13 @@ remove_layer_select = Select(title="Katman Çıkar:", options=["Seçiniz", "1"])
 layer_select = Select(title="Düğüm Eklemek/Çıkarmak İçin Katman Seç:", options=["1"])
 add_node_button = Button(label="+", button_type="warning")
 remove_node_button = Button(label="-", button_type="warning")
-epoch_slider = Slider(start=500, end=50000, value=500, step=1000, title="Adım Sayısı Belirle")
+epoch_slider = Slider(start=500, end=50000, value=500, step=500, title="Adım Sayısı Belirle")
 play_button = Button(label="Oynat", button_type="success")
-wait_info = Paragraph(text="")
+play_button_info = Paragraph(text="")
 widgets = widgetbox(learning_rate_select, activation_func_select,
                     add_layer_button, remove_layer_select, layer_select,
-                    add_node_button, remove_node_button, epoch_slider, play_button, wait_info, sizing_mode="stretch_both")
+                    add_node_button, remove_node_button, epoch_slider, play_button, play_button_info,
+                    sizing_mode="stretch_both")
 
 ANN = ANNData(learning_rate_select.value, activation_func_select.value, layers=[3, 10], epoch=500)
 layer_num = 2
@@ -30,20 +31,36 @@ current_layer = "1"
 
 circle_source = ColumnDataSource(data={'x': [], 'y': []})
 arrow_source = ColumnDataSource(data={"x_start": [], "x_end": [], "y_start": [], "y_end": [], "xs": [], "ys": []})
+loss_source = ColumnDataSource(data={'x': [], 'y': []})
+acc_source = ColumnDataSource(data={'x': [], 'y': []})
 
-p = figure(toolbar_location=None)
+p = figure(title="Accuracy: -", toolbar_location=None)
 p.outline_line_color = "white"
 p.axis.visible = False
 p.grid.grid_line_color = None
+
+loss_p = figure(toolbar_location=None)
+loss_p.xaxis.axis_label = "Adım Sayısı"
+loss_p.yaxis.axis_label = "Kayıp Miktarı"
+acc_p = figure(toolbar_location=None)
+acc_p.xaxis.axis_label = "Adım Sayısı"
+acc_p.yaxis.axis_label = "İsabet Miktarı"
+
 
 circles = p.circle("x", "y", radius=circle_radius, radius_units='screen', source=circle_source, name="circles",
          color="lightseagreen")
 p.multi_line(line_alpha=0.7, line_color="darkgray", name="multi_lines", xs="xs", ys="ys", source=arrow_source,
              color="lightseagreen")
+loss_p.line('x', 'y', line_width = 2, source = loss_source)
+acc_p.line('x', 'y', line_width = 2, source = acc_source)
+tab1 = Panel(child=p, title="Nöral Sinir Ağı")
+tab2 = Panel(child=loss_p, title="Kayıp Grafiği")
+tab3 = Panel(child=acc_p, title="İsabet Grafiği")
+tree_tab = Tabs(tabs=[tab1, tab2, tab3], width=p.plot_width)
 #p.rect(0.5, 5, 0.1, 10, color="lightgray")
 #p.add_layout(Arrow(end=NormalHead(fill_color="lightgray", line_color="lightgray"), line_color="lightgray", x_start=0.5, y_start=5, x_end=0.75, y_end=5, line_width=10))
 visual = layout([
-    [widgets, p],
+    [widgets, tree_tab]
 ])
 
 
@@ -190,17 +207,31 @@ remove_node_button.on_click(remove_node)
 
 def choose_epoch(_attr, _old, new):
     ANN.update(ANN.learning_rate, ANN.activation_func, ANN.layers, int(new))
-    print(new)
 
 
 epoch_slider.on_change("value", choose_epoch)
 
 
 def play():
-    wait_info.text = "Bekleyiniz..."
-    ann = Ann(ANN.learning_rate, ANN.activation_func, ANN.layers, ANN.epoch)
-    ann.run_model()
-    wait_info.text = "Bitti"
+    play_button_info.text = ""
+    loss_data = {'x': [], 'y': []}
+    acc_data = {'x': [], 'y': []}
+    layers = [50*x for x in ANN.layers]
+    ann_input = ann.Ann(float(ANN.learning_rate), ANN.activation_func, layers, ANN.epoch)
+    testing_acc, loss_arr, acc_arr = ann_input.run_model(play_button, circles)
+    play_button_info.text = "Bitti! Kayıp ve isabet grafiklerini inceleyin."
+    epoch_arr = []
+    for i in range(ANN.epoch):
+        epoch_arr.append(i)
+        loss_arr[i] = int(loss_arr[i])
+    loss_data['x'] = epoch_arr
+    loss_data['y'] = loss_arr
+    acc_data['x'] = epoch_arr
+    acc_data['y'] = acc_arr
+    loss_source.data = loss_data
+    acc_source.data = acc_data
+    p.title.text = "Accuracy: " + str(testing_acc)
+
 
 play_button.on_click(play)
 
