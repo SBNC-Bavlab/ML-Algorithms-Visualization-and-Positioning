@@ -67,19 +67,6 @@ Main Components
   font-weight: bold;
   font-size: 1.3rem;
   text-transform: uppercase;
-  color: #6a7083;
-}
-.cd-section:nth-of-type(2) > div {
-  background-color: #2e5367;
-}
-.cd-section:nth-of-type(3) > div {
-  background-color: #267481;
-}
-.cd-section:nth-of-type(4) > div {
-  background-color: #fcb052;
-}
-.cd-section:nth-of-type(5) > div {
-  background-color: #f06a59;
 }
 [data-animation="parallax"] .cd-section > div, [data-animation="fixed"] .cd-section > div, [data-animation="opacity"] .cd-section > div {
   background-position: center center;

@@ -206,7 +206,7 @@ next_button_group.append("rect")
     .attr("class", "next_button")
     .attr("x", 100)
     .attr("y", 400)
-    .attr("fill", "white")
+    .attr("fill", "orange")
     .attr("width", buttonWidth)
     .attr("height", buttonHeight);
 next_button_group
@@ -232,7 +232,7 @@ s3svg.append("foreignObject")
         .attr("y", innerHeight * 0.1)
         .append("xhtml:body")
         .attr("class", "text_itself")
-        .style("color", "white")
+        .style("color", "black")
         .style("font", "30px 'Arial'")
         .html("Karpuz kavun örneğini tamamladınız. <br><br>" +
             "Son zamanların popüler dizisi Game of Thrones'un kullanıldığı bir sonraki örneğe geçmek için butona tıklayınız.");

@@ -211,7 +211,19 @@ const remove_courier = () => {
             captainAmount--;
         }
     } else {
-        console.log("Kuryeler yerleştirilirken kurye silme silme yapılamaz")
+        console.log("Kuryeler yerleştirilirken kurye silme silme yapılamaz");
+        d3.select(".alert")
+            .transition()
+                .style("opacity", "1")
+            .transition()
+                .delay(3000)
+                .style("opacity", "0");
+        d3.select("#alert_text")
+            .transition()
+                .text("Bilgilendirme: Kuryeler yerleştirilirken kurye silme işlemi yapılamaz")
+            .transition()
+                .delay(3200)
+                .text("Bilgilendirme: ");
     }
 };
 const button_click_listener = () => {
