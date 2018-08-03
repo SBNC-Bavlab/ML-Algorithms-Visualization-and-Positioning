@@ -76,9 +76,9 @@ class Ann(object):
                 else:
                     layers.append(
                         tf.nn.relu(
-                            tf.add(tf.matmul(layers[-1], tf.Variable(tf.random_normal([self.layers[i+1],
-                                                                                       self.layers[i+2]]))),
-                                   tf.Variable(tf.random_normal([self.layers[i+2]])))
+                            tf.add(tf.matmul(layers[-1], tf.Variable(tf.random_normal([self.layers[i],
+                                                                                       self.layers[i+1]]))),
+                                   tf.Variable(tf.random_normal([self.layers[i+1]])))
                         )
                     )
 
@@ -128,9 +128,9 @@ class Ann(object):
                 else:
                     layers.append(
                         tf.nn.sigmoid(
-                            tf.add(tf.matmul(layers[-1], tf.Variable(tf.random_normal([self.layers[i+1],
-                                                                                       self.layers[i+2]]))),
-                                   tf.Variable(tf.random_normal([self.layers[i+2]])))
+                            tf.add(tf.matmul(layers[-1], tf.Variable(tf.random_normal([self.layers[i],
+                                                                                       self.layers[i+1]]))),
+                                   tf.Variable(tf.random_normal([self.layers[i+1]])))
                         )
                     )
         elif self.activation_function == "Tanh":
@@ -179,9 +179,9 @@ class Ann(object):
                 else:
                     layers.append(
                         tf.nn.tanh(
-                            tf.add(tf.matmul(layers[-1], tf.Variable(tf.random_normal([self.layers[i+1],
-                                                                                       self.layers[i+2]]))),
-                                   tf.Variable(tf.random_normal([self.layers[i+2]])))
+                            tf.add(tf.matmul(layers[-1], tf.Variable(tf.random_normal([self.layers[i],
+                                                                                       self.layers[i+1]]))),
+                                   tf.Variable(tf.random_normal([self.layers[i+1]])))
                         )
                     )
 
@@ -232,3 +232,7 @@ def graph_plot(num_epoch, _loss_arr):
     plt.plot(np.arange(num_epoch), _loss_arr, label='train')
     plt.legend(loc='upper right')
     plt.show()
+
+
+ann = Ann(0.001, "Tanh", [250, 300, 50, 100], 25000)
+ann.run_model()
