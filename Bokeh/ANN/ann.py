@@ -1,6 +1,5 @@
 import tensorflow as tf
-import matplotlib.pyplot as plt
-import numpy as np
+from bokeh.palettes import cividis
 
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
@@ -76,9 +75,9 @@ class Ann(object):
                 else:
                     layers.append(
                         tf.nn.relu(
-                            tf.add(tf.matmul(layers[-1], tf.Variable(tf.random_normal([self.layers[i+1],
-                                                                                       self.layers[i+2]]))),
-                                   tf.Variable(tf.random_normal([self.layers[i+2]])))
+                            tf.add(tf.matmul(layers[-1], tf.Variable(tf.random_normal([self.layers[i],
+                                                                                       self.layers[i+1]]))),
+                                   tf.Variable(tf.random_normal([self.layers[i+1]])))
                         )
                     )
 
@@ -128,9 +127,9 @@ class Ann(object):
                 else:
                     layers.append(
                         tf.nn.sigmoid(
-                            tf.add(tf.matmul(layers[-1], tf.Variable(tf.random_normal([self.layers[i+1],
-                                                                                       self.layers[i+2]]))),
-                                   tf.Variable(tf.random_normal([self.layers[i+2]])))
+                            tf.add(tf.matmul(layers[-1], tf.Variable(tf.random_normal([self.layers[i],
+                                                                                       self.layers[i+1]]))),
+                                   tf.Variable(tf.random_normal([self.layers[i+1]])))
                         )
                     )
         elif self.activation_function == "Tanh":
@@ -179,9 +178,9 @@ class Ann(object):
                 else:
                     layers.append(
                         tf.nn.tanh(
-                            tf.add(tf.matmul(layers[-1], tf.Variable(tf.random_normal([self.layers[i+1],
-                                                                                       self.layers[i+2]]))),
-                                   tf.Variable(tf.random_normal([self.layers[i+2]])))
+                            tf.add(tf.matmul(layers[-1], tf.Variable(tf.random_normal([self.layers[i],
+                                                                                       self.layers[i+1]]))),
+                                   tf.Variable(tf.random_normal([self.layers[i+1]])))
                         )
                     )
 
@@ -193,42 +192,39 @@ class Ann(object):
         self.correct_pred = tf.equal(tf.argmax(self.prediction, 1), tf.argmax(Y, 1))
         self.accuracy = tf.reduce_mean(tf.cast(self.correct_pred, tf.float32))
 
-    def run_model(self):
+    def run_model(self, play_button, circles):
         ''' generate and run the model '''
         batch_size = 128
-        display_step = 100
+        #display_step = 50
         loss_arr = []
         acc_arr = []
-
+        progress_bar_length=10
         self.neural_nets()
         self.set_optimizers()
-
+        cividis_colors = cividis(256)
         init = tf.global_variables_initializer()
-
         with tf.Session() as sess:
 
             sess.run(init)
-
             for step in range(1, self.epochs+1):
                 batch_x, batch_y = mnist.train.next_batch(batch_size)
                 sess.run(self.train_op, feed_dict={X: batch_x, Y: batch_y})
                 loss, acc = sess.run([self.loss_op, self.accuracy], feed_dict={X: batch_x, Y: batch_y})
+
+                '''
                 if step % display_step == 0 or step == 1:
                     print("Step " + str(step) + ", Minibatch Loss= " + \
                           "{:.4f}".format(loss) + ", Training Accuracy= " + \
                           "{:.3f}".format(acc))
+                '''
+                circles.glyph.fill_color = circles.glyph.line_color = cividis_colors[step%256]
+                text = "\r Bekleyiniz: [" + "+" * int(round(progress_bar_length * step/self.epochs))\
+                       + '-' * (progress_bar_length - int(round(progress_bar_length * step/self.epochs)))\
+                       + "] " + str(round(step/self.epochs * 100, 2)) + "%"
+                play_button.label = text
                 loss_arr.append(loss)
                 acc_arr.append(acc)
+            play_button.label = "Oynat"
             testing_acc = sess.run(self.accuracy, feed_dict={X: mnist.test.images, Y: mnist.test.labels})
-
-            print(testing_acc)
-        graph_plot(self.epochs, loss_arr)
-        graph_plot(self.epochs, acc_arr)
-
-
-def graph_plot(num_epoch, _loss_arr):
-    ''' plot loss or acc graph '''
-    # Plots the loss array
-    plt.plot(np.arange(num_epoch), _loss_arr, label='train')
-    plt.legend(loc='upper right')
-    plt.show()
+        circles.glyph.fill_color = circles.glyph.line_color = "lightseagreen"
+        return testing_acc, loss_arr, acc_arr
