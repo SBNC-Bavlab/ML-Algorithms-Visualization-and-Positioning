@@ -13,12 +13,13 @@ Y = tf.placeholder("float", [None, 10])
 
 class Ann(object):
     ''' class '''
-    def __init__(self, learning_rate, activation_function, layers):
+    def __init__(self, learning_rate, activation_function, layers, epochs):
         self.num_input = 784
         self.num_classes = 10
         self.learning_rate = learning_rate
         self.activation_function = activation_function
         self.layers = layers
+        self.epochs = epochs
         self.logits = None
         self.prediction = None
         self.loss_op = None
@@ -195,7 +196,6 @@ class Ann(object):
     def run_model(self):
         ''' generate and run the model '''
         batch_size = 128
-        epochs = 500
         display_step = 100
         loss_arr = []
         acc_arr = []
@@ -209,7 +209,7 @@ class Ann(object):
 
             sess.run(init)
 
-            for step in range(1, epochs+1):
+            for step in range(1, self.epochs+1):
                 batch_x, batch_y = mnist.train.next_batch(batch_size)
                 sess.run(self.train_op, feed_dict={X: batch_x, Y: batch_y})
                 loss, acc = sess.run([self.loss_op, self.accuracy], feed_dict={X: batch_x, Y: batch_y})
@@ -222,8 +222,8 @@ class Ann(object):
             testing_acc = sess.run(self.accuracy, feed_dict={X: mnist.test.images, Y: mnist.test.labels})
 
             print(testing_acc)
-        graph_plot(epochs, loss_arr)
-        graph_plot(epochs, acc_arr)
+        graph_plot(self.epochs, loss_arr)
+        graph_plot(self.epochs, acc_arr)
 
 
 def graph_plot(num_epoch, _loss_arr):
@@ -232,7 +232,3 @@ def graph_plot(num_epoch, _loss_arr):
     plt.plot(np.arange(num_epoch), _loss_arr, label='train')
     plt.legend(loc='upper right')
     plt.show()
-
-
-ann = Ann(0.001, "Sigmoid", [256, 256])
-ann.run_model()

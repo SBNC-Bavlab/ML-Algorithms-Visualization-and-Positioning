@@ -2,6 +2,7 @@ from bokeh.plotting import figure
 from bokeh.models.widgets import Select, Button, Slider, Paragraph
 from bokeh.layouts import layout, widgetbox
 from Plot.ann_data_instance import ANNData
+from ann import Ann
 from bokeh.io import curdoc
 from bokeh.models import ColumnDataSource
 
@@ -197,7 +198,9 @@ epoch_slider.on_change("value", choose_epoch)
 
 def play():
     wait_info.text = "Bekleyiniz..."
-
+    ann = Ann(ANN.learning_rate, ANN.activation_func, ANN.layers, ANN.epoch)
+    ann.run_model()
+    wait_info.text = "Bitti"
 
 play_button.on_click(play)
 
