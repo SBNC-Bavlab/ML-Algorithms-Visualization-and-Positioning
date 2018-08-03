@@ -1,7 +1,7 @@
 from os.path import dirname
 
 from random import randint, shuffle
-from Bokeh.Decision_Tree.Plot.tree_data_instance import tree_data_instance
+from Plot.tree_data_instance import tree_data_instance
 
 color = []
 
