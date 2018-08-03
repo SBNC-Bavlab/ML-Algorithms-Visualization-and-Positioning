@@ -1,96 +1,238 @@
-from __future__ import print_function
-
-# Import MNIST data
-from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("/tmp/data/", one_hot=False)
-
 import tensorflow as tf
+import matplotlib.pyplot as plt
+import numpy as np
 
-# Parameters
-learning_rate = 0.1
-num_steps = 1000
-batch_size = 128
-display_step = 100
-
-# Network Parameters
-n_hidden_1 = 15 # 1st layer number of neurons
-n_hidden_2 = 15 # 2nd layer number of neurons
-n_hidden_3 = 10 # 2nd layer number of neurons
-num_input = 784 # MNIST data input (img shape: 28*28)
-num_classes = 10 # MNIST total classes (0-9 digits)
+from tensorflow.examples.tutorials.mnist import input_data
+mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
 
 
-# Define the neural network
-def neural_net(x_dict):
-    # TF Estimator input is a dict, in case of multiple inputs
-    x = x_dict['images']
-    # Hidden fully connected layer with 256 neurons
-    layer_1 = tf.layers.dense(x, n_hidden_1)
-    # Hidden fully connected layer with 256 neurons
-    layer_2 = tf.layers.dense(layer_1, n_hidden_2)
-    # Hidden fully connected layer with 256 neurons
-    # layer_3 = tf.layers.dense(layer_2, n_hidden_3)
-    # Output fully connected layer with a neuron for each class
-    out_layer = tf.layers.dense(layer_2, num_classes)
-    return out_layer
+# tf placeholders
+X = tf.placeholder("float", [None, 784])
+Y = tf.placeholder("float", [None, 10])
 
 
-# Define the model function (following TF Estimator Template)
-def model_fn(features, labels, mode):
-    # Build the neural network
-    logits = neural_net(features)
+class Ann(object):
+    ''' class '''
+    def __init__(self, learning_rate, activation_function, layers):
+        self.num_input = 784
+        self.num_classes = 10
+        self.learning_rate = learning_rate
+        self.activation_function = activation_function
+        self.layers = layers
+        self.logits = None
+        self.prediction = None
+        self.loss_op = None
+        self.train_op = None
+        self.accuracy = None
+        self.correct_pred = None
 
-    # Predictions
-    pred_classes = tf.argmax(logits, axis=1)
-    pred_probas = tf.nn.softmax(logits)
+    def neural_nets(self):
+        ''' Set neural nets and connect them '''
+        layers = []
+        if self.activation_function == "ReLu":
+            for i, _ in enumerate(self.layers):
+                if i == 0:
+                    if i+1 != len(self.layers):
+                        layers.append(
+                            tf.nn.relu(
+                                tf.add(tf.matmul(X, tf.Variable(tf.random_normal([self.num_input,
+                                                                                  self.layers[i]]))),
+                                       tf.Variable(tf.random_normal([self.layers[i]])))
+                            )
+                        )
+                        layers.append(
+                            tf.nn.relu(
+                                tf.add(tf.matmul(layers[-1], tf.Variable(tf.random_normal([self.layers[i],
+                                                                                           self.layers[i+1]]))),
+                                       tf.Variable(tf.random_normal([self.layers[i+1]])))
+                            )
+                        )
+                    else:
+                        layers.append(
+                            tf.nn.relu(
+                                tf.add(tf.matmul(X, tf.Variable(tf.random_normal([self.num_input,
+                                                                                  self.layers[i]]))),
+                                       tf.Variable(tf.random_normal([self.layers[i]])))
+                            )
+                        )
+                        layers.append(
+                            tf.add(tf.matmul(layers[-1],
+                                             tf.Variable(tf.random_normal([self.layers[i],
+                                                                           self.num_classes]))),
+                                   tf.Variable(tf.random_normal([self.num_classes])))
+                        )
+                        self.logits = layers[-1]
+                        self.prediction = tf.nn.softmax(self.logits)
+                elif i+1 == len(self.layers):
+                    layers.append(
+                        tf.add(tf.matmul(layers[-1],
+                                         tf.Variable(tf.random_normal([self.layers[i],
+                                                                       self.num_classes]))),
+                               tf.Variable(tf.random_normal([self.num_classes])))
+                    )
+                    self.logits = layers[-1]
+                    self.prediction = tf.nn.softmax(self.logits)
+                else:
+                    layers.append(
+                        tf.nn.relu(
+                            tf.add(tf.matmul(layers[-1], tf.Variable(tf.random_normal([self.layers[i+1],
+                                                                                       self.layers[i+2]]))),
+                                   tf.Variable(tf.random_normal([self.layers[i+2]])))
+                        )
+                    )
 
-    # If prediction mode, early return
-    if mode == tf.estimator.ModeKeys.PREDICT:
-        return tf.estimator.EstimatorSpec(mode, predictions=pred_classes)
+        elif self.activation_function == "Sigmoid":
+            for i, _ in enumerate(self.layers):
+                if i == 0:
+                    if i+1 != len(self.layers):
+                        layers.append(
+                            tf.nn.sigmoid(
+                                tf.add(tf.matmul(X, tf.Variable(tf.random_normal([self.num_input,
+                                                                                  self.layers[i]]))),
+                                       tf.Variable(tf.random_normal([self.layers[i]])))
+                            )
+                        )
+                        layers.append(
+                            tf.nn.sigmoid(
+                                tf.add(tf.matmul(layers[-1], tf.Variable(tf.random_normal([self.layers[i],
+                                                                                           self.layers[i+1]]))),
+                                       tf.Variable(tf.random_normal([self.layers[i+1]])))
+                            )
+                        )
+                    else:
+                        layers.append(
+                            tf.nn.sigmoid(
+                                tf.add(tf.matmul(X, tf.Variable(tf.random_normal([self.num_input,
+                                                                                  self.layers[i]]))),
+                                       tf.Variable(tf.random_normal([self.layers[i]])))
+                            )
+                        )
+                        layers.append(
+                            tf.add(tf.matmul(layers[-1],
+                                             tf.Variable(tf.random_normal([self.layers[i],
+                                                                           self.num_classes]))),
+                                   tf.Variable(tf.random_normal([self.num_classes])))
+                        )
+                        self.logits = layers[-1]
+                        self.prediction = tf.nn.softmax(self.logits)
+                elif i+1 == len(self.layers):
+                    layers.append(
+                        tf.add(tf.matmul(layers[-1],
+                                         tf.Variable(tf.random_normal([self.layers[i],
+                                                                       self.num_classes]))),
+                               tf.Variable(tf.random_normal([self.num_classes])))
+                    )
+                    self.logits = layers[-1]
+                    self.prediction = tf.nn.softmax(self.logits)
+                else:
+                    layers.append(
+                        tf.nn.sigmoid(
+                            tf.add(tf.matmul(layers[-1], tf.Variable(tf.random_normal([self.layers[i+1],
+                                                                                       self.layers[i+2]]))),
+                                   tf.Variable(tf.random_normal([self.layers[i+2]])))
+                        )
+                    )
+        elif self.activation_function == "Tanh":
+            for i, _ in enumerate(self.layers):
+                if i == 0:
+                    if i+1 != len(self.layers):
+                        layers.append(
+                            tf.nn.tanh(
+                                tf.add(tf.matmul(X, tf.Variable(tf.random_normal([self.num_input,
+                                                                                  self.layers[i]]))),
+                                       tf.Variable(tf.random_normal([self.layers[i]])))
+                            )
+                        )
+                        layers.append(
+                            tf.nn.tanh(
+                                tf.add(tf.matmul(layers[-1], tf.Variable(tf.random_normal([self.layers[i],
+                                                                                           self.layers[i+1]]))),
+                                       tf.Variable(tf.random_normal([self.layers[i+1]])))
+                            )
+                        )
+                    else:
+                        layers.append(
+                            tf.nn.tanh(
+                                tf.add(tf.matmul(X, tf.Variable(tf.random_normal([self.num_input,
+                                                                                  self.layers[i]]))),
+                                       tf.Variable(tf.random_normal([self.layers[i]])))
+                            )
+                        )
+                        layers.append(
+                            tf.add(tf.matmul(layers[-1],
+                                             tf.Variable(tf.random_normal([self.layers[i],
+                                                                           self.num_classes]))),
+                                   tf.Variable(tf.random_normal([self.num_classes])))
+                        )
+                        self.logits = layers[-1]
+                        self.prediction = tf.nn.softmax(self.logits)
+                elif i+1 == len(self.layers):
+                    layers.append(
+                        tf.add(tf.matmul(layers[-1],
+                                         tf.Variable(tf.random_normal([self.layers[i],
+                                                                       self.num_classes]))),
+                               tf.Variable(tf.random_normal([self.num_classes])))
+                    )
+                    self.logits = layers[-1]
+                    self.prediction = tf.nn.softmax(self.logits)
+                else:
+                    layers.append(
+                        tf.nn.tanh(
+                            tf.add(tf.matmul(layers[-1], tf.Variable(tf.random_normal([self.layers[i+1],
+                                                                                       self.layers[i+2]]))),
+                                   tf.Variable(tf.random_normal([self.layers[i+2]])))
+                        )
+                    )
 
-    # Define loss and optimizer
-    loss_op = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(
-        logits=logits, labels=tf.cast(labels, dtype=tf.int32)))
-    optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
-    train_op = optimizer.minimize(loss_op,
-                                  global_step=tf.train.get_global_step())
+    def set_optimizers(self):
+        ''' Set optimizer and models variables'''
+        self.loss_op = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=self.logits, labels=Y))
+        optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
+        self.train_op = optimizer.minimize(self.loss_op)
+        self.correct_pred = tf.equal(tf.argmax(self.prediction, 1), tf.argmax(Y, 1))
+        self.accuracy = tf.reduce_mean(tf.cast(self.correct_pred, tf.float32))
 
-    # Evaluate the accuracy of the model
-    acc_op = tf.metrics.accuracy(labels=labels, predictions=pred_classes)
-    # Evaluate the precision of the model
-    prec_op = tf.metrics.precision(labels=labels, predictions=pred_classes)
-    # Evaluate the recall of the model
-    rec_op = tf.metrics.recall(labels=labels, predictions=pred_classes)
+    def run_model(self):
+        ''' generate and run the model '''
+        batch_size = 128
+        epochs = 500
+        display_step = 100
+        loss_arr = []
+        acc_arr = []
 
-    # TF Estimators requires to return a EstimatorSpec, that specify
-    # the different ops for training, evaluating, ...
-    estim_specs = tf.estimator.EstimatorSpec(
-        mode=mode,
-        predictions=pred_classes,
-        loss=loss_op,
-        train_op=train_op,
-        eval_metric_ops={'accuracy': acc_op, 'recall': rec_op, 'precision': prec_op})
+        self.neural_nets()
+        self.set_optimizers()
 
-    return estim_specs
+        init = tf.global_variables_initializer()
 
-# Build the Estimator
-model = tf.estimator.Estimator(model_fn)
+        with tf.Session() as sess:
 
-# Define the input function for training
-input_fn = tf.estimator.inputs.numpy_input_fn(
-    x={'images': mnist.train.images}, y=mnist.train.labels,
-    batch_size=batch_size, num_epochs=None, shuffle=True)
-# Train the Model
-model.train(input_fn, steps=num_steps)
+            sess.run(init)
 
-# Evaluate the Model
-# Define the input function for evaluating
-input_fn = tf.estimator.inputs.numpy_input_fn(
-    x={'images': mnist.test.images}, y=mnist.test.labels,
-    batch_size=batch_size, shuffle=False)
-# Use the Estimator 'evaluate' method
-e = model.evaluate(input_fn)
+            for step in range(1, epochs+1):
+                batch_x, batch_y = mnist.train.next_batch(batch_size)
+                sess.run(self.train_op, feed_dict={X: batch_x, Y: batch_y})
+                loss, acc = sess.run([self.loss_op, self.accuracy], feed_dict={X: batch_x, Y: batch_y})
+                if step % display_step == 0 or step == 1:
+                    print("Step " + str(step) + ", Minibatch Loss= " + \
+                          "{:.4f}".format(loss) + ", Training Accuracy= " + \
+                          "{:.3f}".format(acc))
+                loss_arr.append(loss)
+                acc_arr.append(acc)
+            testing_acc = sess.run(self.accuracy, feed_dict={X: mnist.test.images, Y: mnist.test.labels})
 
-print("Testing Accuracy:", e['accuracy'])
-print("Testing Precision:", e['precision'])
-print("Testing Recall:", e['recall'])
+            print(testing_acc)
+        graph_plot(epochs, loss_arr)
+        graph_plot(epochs, acc_arr)
+
+
+def graph_plot(num_epoch, _loss_arr):
+    ''' plot loss or acc graph '''
+    # Plots the loss array
+    plt.plot(np.arange(num_epoch), _loss_arr, label='train')
+    plt.legend(loc='upper right')
+    plt.show()
+
+
+ann = Ann(0.001, "Sigmoid", [256, 256])
+ann.run_model()
