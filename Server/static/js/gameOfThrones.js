@@ -34,6 +34,11 @@
               ["Wights", "Hayır", "Yok", "Hayır", "Beyaz", "Whıte Walker"],
               ["Eddard Stark", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
             ];
+    const got_char_imgs = [
+        trion_.png, cercei_.png, jamie_.png, tywin_.png, sansa_.png, jon_.png, eddard_.png, arya_.png, khalessi_.png,
+        visery_.png, nightKing_.png, lieu.png,wight_.png
+    ]
+
     const gotRowStroke = ['white',
               'white',
               'white',
