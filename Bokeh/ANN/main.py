@@ -41,7 +41,7 @@ p.grid.grid_line_color = None
 
 loss_p = figure(toolbar_location=None)
 loss_p.xaxis.axis_label = "Adım Sayısı"
-loss_p.yaxis.axis_label = "Kayıp Miktarı"
+loss_p.yaxis.axis_label = "Zarar Miktarı"
 acc_p = figure(toolbar_location=None)
 acc_p.xaxis.axis_label = "Adım Sayısı"
 acc_p.yaxis.axis_label = "İsabet Miktarı"
@@ -54,7 +54,7 @@ p.multi_line(line_alpha=0.7, line_color="darkgray", name="multi_lines", xs="xs",
 loss_p.line('x', 'y', line_width = 2, source = loss_source)
 acc_p.line('x', 'y', line_width = 2, source = acc_source)
 tab1 = Panel(child=p, title="Nöral Sinir Ağı")
-tab2 = Panel(child=loss_p, title="Kayıp Grafiği")
+tab2 = Panel(child=loss_p, title="Zarar Grafiği")
 tab3 = Panel(child=acc_p, title="İsabet Grafiği")
 tree_tab = Tabs(tabs=[tab1, tab2, tab3], width=p.plot_width)
 #p.rect(0.5, 5, 0.1, 10, color="lightgray")
@@ -219,7 +219,7 @@ def play():
     layers = [50*x for x in ANN.layers]
     ann_input = ann.Ann(float(ANN.learning_rate), ANN.activation_func, layers, ANN.epoch)
     testing_acc, loss_arr, acc_arr = ann_input.run_model(play_button, circles)
-    play_button_info.text = "Bitti! Kayıp ve isabet grafiklerini inceleyin."
+    play_button_info.text = "Bitti! Zarar ve isabet grafiklerini inceleyin."
     epoch_arr = []
     for i in range(ANN.epoch):
         epoch_arr.append(i)
