@@ -35,9 +35,8 @@
               ["Eddard Stark", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
             ];
     const got_char_imgs = [
-        trion_.png, cercei_.png, jamie_.png, tywin_.png, sansa_.png, jon_.png, eddard_.png, arya_.png, khalessi_.png,
-        visery_.png, nightKing_.png, lieu.png,wight_.png
-    ]
+        "trion_.png", "cercei_.png", "jamie_.png", "tywin_.png", "sansa_.png", "jon_.png", "eddard_.png", "arya_.png", "khalessi_.png",
+        "visery_.png", "nightKing_.png", "lieu.png", "wight_.png"];
 
     const gotRowStroke = ['white',
               'white',
@@ -163,7 +162,7 @@
                                 return 90 * i + 240;
                             })
                             .attr("cy", 50)
-                            .attr("r", 25)
+                            .attr("r", 29)
                             .attr("fill", (d, i)=>{
                                 return color[familyToColorIndex[d[d.length - 1]]];
                             });
@@ -174,7 +173,9 @@
                     .attr("y", 50 - 25)
                     .attr("width", 50)
                     .attr("height", 50)
-        .attr("xlink:href", "../static/icons/john.jpg");
+                    .attr("xlink:href", (d, i) =>{
+                        return "../static/icons/GoT_characters/" + got_char_imgs[i];
+                    });
 
     circleTextGroup.append("text")
                     .attr("x", (d , i) => {
@@ -434,6 +435,7 @@
             }).text(function(d){
                 return d.text.toLocaleUpperCase("tr-TR");
             });
+
     svg.selectAll("circle.house_color")
         .data(got)
         .enter()
@@ -453,6 +455,21 @@
            return color[familyToColorIndex[d[d.length - 1]]];
         });
 
+
+    svg.selectAll("image.heads")
+        .data(got_char_imgs)
+        .enter()
+        .append("svg:image")
+        .attr("x", circleX - 20)
+        .attr("class", "heads")
+        .attr("y", (d , i) => {
+            return 53 * i + 50;
+        })
+        .attr("width", 50)
+        .attr("height", 50)
+        .attr("xlink:href", (d, i) =>{
+            return "../static/icons/GoT_characters/" + d;
+        });
     svg.call(d3.liquidfillgauge, 50, {
       circleThickness: 0.15,
       circleColor: "hsla(193, 100%, 56%, 1)",
@@ -514,61 +531,61 @@
     function seperate(isYes, index){
         gotRowStroke[index] = (isYes) ? "green" : "red";
         svg.selectAll("circle.house_color")
-        .filter(function(d,i) {return i === index;})
-        .transition()
-        .duration(600)
-        .attr("transform", function(d, i){
-            let targetY;
-            let targetX;
-            if (isYes) {
-                targetX = s2Gauge0Width + s2ScaledRadius;
-                targetY = (s2Gauge0Height) + s2ScaledRadius;
-            } else {
-                targetX = s2Gauge1Width + s2ScaledRadius;
-                targetY = (s2Gauge1Height) + s2ScaledRadius;
-            }
-            const currentY = 53 * index + 40;
-            const currentX = circleX;
-            const dx = targetX - currentX;
-            const dy = targetY - currentY;
-            dxs.push(dx);
-            dys.push(dy);
-            return "translate(" + dx + "," + dy + ")"
-        })
-        .on('start', function(d){
-            if (isYes) {
-                left.push(d);
-            } else {
-                right.push(d);
-            }
-            console.log(left, right)
+            .filter(function(d,i) {return i === index;})
+            .transition()
+            .duration(600)
+            .attr("transform", function(d, i){
+                let targetY;
+                let targetX;
+                if (isYes) {
+                    targetX = s2Gauge0Width + s2ScaledRadius;
+                    targetY = (s2Gauge0Height) + s2ScaledRadius;
+                } else {
+                    targetX = s2Gauge1Width + s2ScaledRadius;
+                    targetY = (s2Gauge1Height) + s2ScaledRadius;
+                }
+                const currentY = 53 * index + 40;
+                const currentX = circleX;
+                const dx = targetX - currentX;
+                const dy = targetY - currentY;
+                dxs.push(dx);
+                dys.push(dy);
+                return "translate(" + dx + "," + dy + ")"
+            })
+            .on('start', function(d){
+                if (isYes) {
+                    left.push(d);
+                } else {
+                    right.push(d);
+                }
+                console.log(left, right)
 
-            const leftEntropy = calculateEntropy(left);
-            const rightEntropy = calculateEntropy(right);
-            svg.on("valueChanged0")(leftEntropy.toFixed(2));
-            svg.on("valueChanged1")(rightEntropy.toFixed(2));
+                const leftEntropy = calculateEntropy(left);
+                const rightEntropy = calculateEntropy(right);
+                svg.on("valueChanged0")(leftEntropy.toFixed(2));
+                svg.on("valueChanged1")(rightEntropy.toFixed(2));
 
-            svg.on("opacityChanged0")("hsla(193, 100%, " + (56 - 15 * leftEntropy) + "%, 1)");
-            svg.on("opacityChanged1")("hsla(193, 100%, " + (56 - 15 * rightEntropy) + "%, 1)");
+                svg.on("opacityChanged0")("hsla(193, 100%, " + (56 - 15 * leftEntropy) + "%, 1)");
+                svg.on("opacityChanged1")("hsla(193, 100%, " + (56 - 15 * rightEntropy) + "%, 1)");
 
-            let result = "";
-            if (isYes) {
-                const dx2 = 15 * (a2++ + 1) + 110;
-                const dy2 = 0;
-                result = "translate(" + (dxs[index] + dx2) + "," + (dys[index] + dy2) + ")"
-            } else {
-                const dx2 = 15 * (b2++ + 1) + 110;
-                const dy2 = 0;
-                result = "translate(" + (dxs[index] + dx2) + "," + (dys[index] + dy2) + ")"
-            }
+                let result = "";
+                if (isYes) {
+                    const dx2 = 15 * (a2++ + 1) + 110;
+                    const dy2 = 0;
+                    result = "translate(" + (dxs[index] + dx2) + "," + (dys[index] + dy2) + ")"
+                } else {
+                    const dx2 = 15 * (b2++ + 1) + 110;
+                    const dy2 = 0;
+                    result = "translate(" + (dxs[index] + dx2) + "," + (dys[index] + dy2) + ")"
+                }
 
-            if(createQuestionIndex === got.length - 1)
-                calculateScore();
-            createQuestionIndex++;
-            changeColorRect(createQuestionIndex);
-            d3.select(this).transition().duration(500).delay(500).attr('transform', result).attr('r', "5")
-        })
-        .delay(function(d,i){return 500 * i});
+                if(createQuestionIndex === got.length - 1)
+                    calculateScore();
+                createQuestionIndex++;
+                changeColorRect(createQuestionIndex);
+                d3.select(this).transition().duration(500).delay(500).attr('transform', result).attr('r', "5")
+            })
+            .delay(function(d,i){return 500 * i});
     }
     svg.append('text')
         .attr('x', (s2Gauge0Width + s2ScaledRadius) *0.97)
