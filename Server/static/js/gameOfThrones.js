@@ -86,7 +86,7 @@
         for(let j = 0; j < got[0].length; j++) {
             if (j === 1) {
                 gotPosArray.push({'x': 200 * j + 300, 'y': 53 * i + 75, 'text': got[i][j]})
-            } else if(j == 4){
+            } else if(j === 4){
                 gotPosArray.push({'x': 80 * j + 430, 'y': 53 * i + 75, 'text': got[i][j]})
             } else if(j > 1){
                 gotPosArray.push({'x': 80 * j + 420, 'y': 53 * i + 75, 'text': got[i][j]})
@@ -101,7 +101,7 @@
                         {x: innerWidth * 0.67, y: 200, text: "Renkleri bir suda karıştırdığımızda suyun koyuluk oranı elimizdeki verilerin entropi (karmaşıklık) miktarını göstermektedir"}];
 
     const generalEntropy = calculateEntropy(got);
-    let averageEntropy = 0
+    let averageEntropy = 0;
     const svgSection0 = d3.select("#section0")
                             .attr("width", innerWidth)
                             .attr("height", innerHeight);
@@ -159,29 +159,29 @@
                     .lower();
     circleTextGroup.append("circle")
                             .attr("cx", (d , i) => {
-                                return 90 * i + 240;
+                                return innerWidth * 0.07 * i + innerWidth * 0.09;
                             })
-                            .attr("cy", 50)
-                            .attr("r", 29)
+                            .attr("cy", innerHeight * 0.085)
+                            .attr("r", innerWidth * 0.028)
                             .attr("fill", (d, i)=>{
                                 return color[familyToColorIndex[d[d.length - 1]]];
                             });
     circleTextGroup.append("svg:image")
                     .attr("x", (d , i) => {
-                        return 90 * i + 240 - 25;
+                        return innerWidth * 0.07 * i + innerWidth * 0.040 + innerWidth * 0.05 / 2;
                     })
-                    .attr("y", 50 - 25)
-                    .attr("width", 50)
-                    .attr("height", 50)
+                    .attr("y", innerHeight * 0.035 + innerWidth * 0.004 / 2)
+                    .attr("width", innerWidth * 0.05)
+                    .attr("height", innerWidth * 0.05)
                     .attr("xlink:href", (d, i) =>{
                         return "../static/icons/GoT_characters/" + got_char_imgs[i];
                     });
 
     circleTextGroup.append("text")
                     .attr("x", (d , i) => {
-                        return 90 * i + 240;
+                        return innerWidth * 0.07 * i + innerWidth * 0.09;
                     })
-                    .attr("y", 88)
+                    .attr("y", innerHeight * 0.16)
                     .attr("fill", "white")
                     .text((d)=>{
                         let possibleName = d[0].split(" ")[0];
@@ -239,8 +239,8 @@
             .attr("transform", (d, i) => {
                 const targetX = s1Gauge0Width + s1ScaledRadius
                 const targetY = s1Gauge0Height + s1ScaledRadius
-                const currentX = 90 * i + 240;
-                const currentY = 50;
+                const currentX = innerWidth * 0.07 * i + innerWidth * 0.09;
+                const currentY = innerHeight * 0.085;
                 const dx = targetX - currentX;
                 const dy = targetY - currentY;
                 return "translate( " + dx + "," + dy + ")";
@@ -435,7 +435,7 @@
             }).text(function(d){
                 return d.text.toLocaleUpperCase("tr-TR");
             });
-
+    let initialCircleRadius = 27.2;
     svg.selectAll("circle.house_color")
         .data(got)
         .enter()
@@ -448,7 +448,7 @@
         .attr('cy', function(d, i){
             return 53 * i + 70;
         })
-        .attr('r', 20)
+        .attr('r', initialCircleRadius)
         .attr('stroke', 'black')
         .attr('fill', function(d,i){
 
@@ -460,16 +460,17 @@
         .data(got_char_imgs)
         .enter()
         .append("svg:image")
-        .attr("x", circleX - 20)
+        .attr("x", circleX - 25)
         .attr("class", "heads")
         .attr("y", (d , i) => {
-            return 53 * i + 50;
+            return 53 * i + 45;
         })
         .attr("width", 50)
         .attr("height", 50)
         .attr("xlink:href", (d, i) =>{
             return "../static/icons/GoT_characters/" + d;
         });
+
     svg.call(d3.liquidfillgauge, 50, {
       circleThickness: 0.15,
       circleColor: "hsla(193, 100%, 56%, 1)",
@@ -707,7 +708,7 @@
     function reset(){
         svg.selectAll("circle.house_color").transition()
             .duration(600)
-            .attr('transform', "translate(0,0)").attr('r', "20");
+            .attr('transform', "translate(0,0)").attr('r', initialCircleRadius);
         svg.on("opacityChanged0")("hsla(193, 100%, 56%, 1)");
         svg.on("opacityChanged1")("hsla(193, 100%, 56%, 1)");
         svg.on("valueChanged0")("0.00");

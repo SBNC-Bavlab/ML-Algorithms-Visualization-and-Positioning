@@ -20,7 +20,8 @@ const svgSection0 = d3_v4.select("#section0")
                 .style("background-color", "orange");
 const svgSection1 = d3_v4.select("#section1")
                 .attr("width", innerWidth)
-                .attr("height", innerHeight);
+                .attr("height", innerHeight)
+                .style("background-color", "orange");
 let indexOfFirstKnob = 0;
 let indexOfSecondKnob = 0;
 // Drawing knob
@@ -156,7 +157,7 @@ trainButtonGroup.append("rect")
                 .attr("y", 220)
                 .attr("width", buttonWidth)
                 .attr("height", buttonHeight)
-                .attr("fill", "orange");
+                .attr("fill", "blue");
 trainButtonGroup
     .append("text")
     .attr("x", 700 + buttonWidth / 2)
