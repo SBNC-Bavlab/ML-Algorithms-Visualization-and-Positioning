@@ -2,8 +2,7 @@
     font: 10px sans-serif;
 }
 .tick > text{
-    font-size: 25px;
-    color: orange;
+    font-size: 23px;
 }
 rect.button_rect{
     cursor: pointer;
