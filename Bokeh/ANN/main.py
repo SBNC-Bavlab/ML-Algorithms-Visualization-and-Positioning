@@ -34,7 +34,7 @@ arrow_source = ColumnDataSource(data={"x_start": [], "x_end": [], "y_start": [],
 loss_source = ColumnDataSource(data={'x': [], 'y': []})
 acc_source = ColumnDataSource(data={'x': [], 'y': []})
 
-p = figure(title="Accuracy: -", toolbar_location=None)
+p = figure(title="Tahmin Başarısı(%): -", tools=[], toolbar_location=None)
 p.outline_line_color = "white"
 p.axis.visible = False
 p.grid.grid_line_color = None
@@ -46,14 +46,12 @@ acc_p = figure(toolbar_location=None)
 acc_p.xaxis.axis_label = "Adım Sayısı"
 acc_p.yaxis.axis_label = "İsabet Miktarı"
 
-
+lines = p.multi_line(line_alpha=0.7, line_color="darkgray", name="multi_lines", xs="xs", ys="ys", source=arrow_source)
 circles = p.circle("x", "y", radius=circle_radius, radius_units='screen', source=circle_source, name="circles",
          color="lightseagreen")
-p.multi_line(line_alpha=0.7, line_color="darkgray", name="multi_lines", xs="xs", ys="ys", source=arrow_source,
-             color="lightseagreen")
 loss_p.line('x', 'y', line_width = 2, source = loss_source)
 acc_p.line('x', 'y', line_width = 2, source = acc_source)
-tab1 = Panel(child=p, title="Nöral Sinir Ağı")
+tab1 = Panel(child=p, title="Yapay Sinir Ağı")
 tab2 = Panel(child=loss_p, title="Zarar Grafiği")
 tab3 = Panel(child=acc_p, title="İsabet Grafiği")
 tree_tab = Tabs(tabs=[tab1, tab2, tab3], width=p.plot_width)
@@ -218,7 +216,7 @@ def play():
     acc_data = {'x': [], 'y': []}
     layers = [50*x for x in ANN.layers]
     ann_input = ann.Ann(float(ANN.learning_rate), ANN.activation_func, layers, ANN.epoch)
-    testing_acc, loss_arr, acc_arr = ann_input.run_model(play_button, circles)
+    testing_acc, loss_arr, acc_arr = ann_input.run_model(play_button, circles, lines)
     play_button_info.text = "Bitti! Zarar ve isabet grafiklerini inceleyin."
     epoch_arr = []
     for i in range(ANN.epoch):
@@ -230,7 +228,7 @@ def play():
     acc_data['y'] = acc_arr
     loss_source.data = loss_data
     acc_source.data = acc_data
-    p.title.text = "Accuracy: " + str(testing_acc)
+    p.title.text = "Tahmin Başarısı(%): " + str(round(testing_acc * 100))
 
 
 play_button.on_click(play)
