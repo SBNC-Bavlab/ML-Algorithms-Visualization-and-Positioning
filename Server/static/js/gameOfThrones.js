@@ -167,7 +167,7 @@
                     .attr("x", (d , i) => {
                         return innerWidth * 0.07 * i + innerWidth * 0.095;
                     })
-                    .attr("y", innerHeight * 0.1 + 60)
+                    .attr("y", innerHeight * 0.1 + 60 * innerWidth * 0.0006)
                     .attr("fill", "white")
                     .style("font-size", innerWidth * 0.012 + "px")
                     .text((d)=>{
@@ -194,7 +194,7 @@
         .attr("x", resetButtonPos[0] + buttonWidth / 2)
         .attr("y", resetButtonPos[1] + buttonHeight / 2)
         .attr("fill", "white")
-        .attr("font-size", "15px")
+        .attr("font-size", innerWidth * 0.01 + "px")
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "middle")
         .text("Animasyonu Tekrarla");
@@ -251,7 +251,7 @@
             .duration(1000);
     }
     //Below is for section 2
-    const scoreTextPos = [{x: innerWidth * 0.7, y: innerHeight / 2, text: "Ortalama Entropi: -"}];
+    const scoreTextPos = [{x: innerWidth * 0.72 + s2ScaledRadius, y: innerHeight / 2.12, text: "Ortalama Entropi: -"}];
     const buttonsPos = [{x: innerWidth * 0.04, y: innerHeight * 0.125, text: "Zengin mi?", click: () => {askQuestion(0)}},
                         {x: innerWidth * 0.04, y: innerHeight * 0.185, text: "Ejderhasi var mi?", click: () => {askQuestion(2)}},
                         {x: innerWidth * 0.04, y: innerHeight * 0.245, text: "Tahti istiyor mu?", click: () => {askQuestion(3)}},
@@ -280,7 +280,9 @@
         .enter()
         .append("text")
         .attr("class", "score_text")
-        .attr("font-size", "30px")
+        .attr("alignment-baseline", "middle")
+        .attr("text-anchor", "middle")
+        .attr("font-size", innerWidth * 0.02 + "px")
         .attr("x", (d)=>{return d.x})
         .attr("y", (d)=>{return d.y})
         .text((d)=>{return d.text});
@@ -528,10 +530,10 @@
                 let targetX;
                 if (isYes) {
                     targetX = s2Gauge0Width + s2ScaledRadius;
-                    targetY = (s2Gauge0Height) + s2ScaledRadius;
+                    targetY = s2Gauge0Height + s2ScaledRadius;
                 } else {
                     targetX = s2Gauge1Width + s2ScaledRadius;
-                    targetY = (s2Gauge1Height) + s2ScaledRadius;
+                    targetY = s2Gauge1Height + s2ScaledRadius;
                 }
                 const currentY = innerHeight * index * 0.07 + innerHeight * 0.1;
                 const currentX = circleX;
@@ -634,8 +636,8 @@
             .duration(600)
             .attr("transform", function(d,i){
                 const isLeft = d[questions[questionI].type] === questions[questionI].attribute;
-                var targetY;
-                var targetX;
+                let targetY;
+                let targetX;
                 if(isLeft) {
                     targetX = s2Gauge0Width + s2ScaledRadius;
                     targetY = s2Gauge0Height + s2ScaledRadius;
@@ -643,8 +645,8 @@
                     targetX = s2Gauge1Width + s2ScaledRadius;
                     targetY = s2Gauge1Height + s2ScaledRadius;
                 }
-                const currentY =  innerHeight * i * 0.07 + innerHeight * 0.1;
-                const currentX = circleX;
+                const currentY =  innerHeight * i * 0.07 + innerHeight * 0.1 - initialCircleRadius;
+                const currentX = circleX - initialCircleRadius;
                 const dx = targetX - currentX;
                 const dy = targetY - currentY;
 
@@ -667,7 +669,7 @@
 
                 let result = "";
                 if(isLeft) {
-                    const dx2 = 15 * (a2++ + 1) + 110;
+                    const dx2 = 15 * (a2++ + 1) + 80;
                     const dy2 = 0;
                     result = "translate(" + (dxs[i] + dx2) + "," + (dys[i] + dy2)+ ")"
                 } else {
@@ -822,41 +824,50 @@
     svgSection3.append("foreignObject")
         .attr("class", "info_text")
         .attr("width", innerWidth)
-        .attr("height", 500)
-        .attr("x", innerWidth * 0.05)
+        .attr("height", innerHeight * 0.01)
+        .attr("x", innerWidth * 0.02)
         .attr("y", innerHeight * 0.7)
         .append("xhtml:body")
         .attr("class", "text_itself")
         .style("color", "white")
-        .style("font", "30px 'Arial'")
+        .style("font", innerWidth * 0.02 + "px 'Arial'")
         .html(text);
     svgSection3.append("text")
         .attr("class","minus_sign")
-        .attr("x", innerWidth * 0.335)
-        .attr("y", innerHeight * 0.45)
+        .attr("alignment-baseline", "middle")
+        .attr("text-anchor", "middle")
+        .attr("x", innerWidth * 0.35)
+        .attr("y", innerHeight * 0.4)
         .attr("font-size", "200px")
         .attr("fill", "white")
         .text("-");
     svgSection3.append("text")
         .attr("class","paran_sign")
-        .attr("font-size", "300px")
+        .attr("font-size", innerWidth * 0.2 + "px")
+        .attr("alignment-baseline", "middle")
         .attr("text-anchor", "middle")
-        .attr("transform", "translate(" + innerWidth * 0.43 + ", " + s2Gauge0Height + ") rotate(90)")
+        .attr("transform", "translate(" + innerWidth * 0.51 + ", " + s2Gauge0Height + ") rotate(90)")
         .attr("fill", "white")
-        .text("(");svgSection3.append("text")
+        .text("(");
+    svgSection3.append("text")
         .attr("class","paran_sign")
-        .attr("font-size", "300px")
+        .attr("font-size", innerWidth * 0.2 + "px")
         .attr("text-anchor", "middle")
-        .attr("transform", "translate(" + innerWidth * 0.43 + ", " + innerHeight * 0.7 + ") rotate(90)")
+        .attr("alignment-baseline", "middle")
+        .attr("transform", "translate(" + innerWidth * 0.51 + ", " + innerHeight * 0.7 + ") rotate(90)")
         .attr("fill", "white")
         .text(")");
     svgSection3.append("text")
         .attr("class","equals_sign")
-        .attr("x", innerWidth * 0.55)
-        .attr("y", innerHeight * 0.47)
-        .attr("font-size", "200px")
+        .attr("alignment-baseline", "middle")
+        .attr("text-anchor", "middle")
+        .attr("x", innerWidth * 0.7)
+        .attr("y", innerHeight * 0.4)
+        .attr("font-size", innerWidth * 0.15 + "px")
         .attr("fill", "white")
         .text("= ?");
+    const radiusScale3 = innerWidth * 0.00038;
+    const s3GaugeRadius = radiusScale3 * 370;
     svgSection3.call(d3.liquidfillgauge, 50, {
       circleThickness: 0.15,
       circleColor: "hsla(193, 100%, 56%, 1)",
@@ -872,11 +883,12 @@
       waveOffset: 0.25,
       textSize: 0.75,
       waveCount: 3
-    }, innerWidth * 0.05, innerHeight * 0.12, 0, 0.48);
+    }, innerWidth * 0.16 - s3GaugeRadius, innerHeight * 0.37 - s3GaugeRadius, 0, radiusScale3);
 
     svgSection3.on('valueChanged0')(generalEntropy.toFixed(2));
     svgSection3.on('opacityChanged0')("hsla(193, 100%, " + (56 - 15 * generalEntropy) + "%, 1)");
-
+    const radiusScale4 = 0.2;
+    const radiusForTwo = radiusScale4 * 370;
     svgSection3.call(d3.liquidfillgauge, 50, {
       circleThickness: 0.15,
       circleColor: "hsla(193, 100%, 56%, 1)",
@@ -892,7 +904,7 @@
       waveOffset: 0.25,
       textSize: 0.75,
       waveCount: 3
-    }, innerWidth * 0.437, innerHeight * 0.10, 1, 0.2);
+    }, innerWidth * 0.51 - radiusForTwo, innerHeight * 0.10, 1, radiusScale4);
     const leftEntropy = calculateEntropy(left);
     const rightEntropy = calculateEntropy(right);
     svgSection3.on('valueChanged1')(leftEntropy.toFixed(2));
@@ -913,7 +925,7 @@
       waveOffset: 0.25,
       textSize: 0.75,
       waveCount: 3
-    }, innerWidth * 0.437, innerHeight * 0.48, 2, 0.2);
+    }, innerWidth * 0.51 - radiusForTwo, innerHeight * 0.48, 2, 0.2);
     svgSection3.on('valueChanged2')(rightEntropy.toFixed(2));
     svgSection3.on('opacityChanged2')("hsla(193, 100%, " + (56 - 15 * rightEntropy) + "%, 1)");
 
