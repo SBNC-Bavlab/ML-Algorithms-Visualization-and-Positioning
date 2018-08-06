@@ -34,7 +34,7 @@ const maxFrequency = 8;
 const rectWidth = innerWidth / 22;
 const rectHeight = 70;
 const maxDiameter = 14;
-const buttonX = innerWidth * 0.8;
+const buttonX = innerWidth * 0.7;
 const buttonY = innerHeight * 0.84;
 const radius_label = [4,6,7,10,12,13,16,18,21,23,24,27,30];
 
@@ -88,7 +88,7 @@ const s1svg = d3.select("#section1")
                 .attr("width", innerWidth)
                 .attr("height", innerHeight);
 const paletteHeight = innerHeight * 0.084;
-const infoTextPost = [{x : innerWidth / 8, y : 50, text: "Elimizde Mehmet ve Ahmet'in tezgahlarındaki karpuz ve kavunların çap bilgileri var." +
+const infoTextPost = [{x : innerWidth * 0.05, y : innerHeight * 0.15, text: "Elimizde Mehmet ve Ahmet'in tezgahlarındaki karpuz ve kavunların çap bilgileri var." +
     "<br><br>Amacımız karpuz ve kavunları birbirinden ayıran bir çap değeri bulmak." +
     "<br><br>Yani öyle bir çap değeri bulmalıyız ki onun üstündekilere karpuz altındakilere kavun diyebilelim"}] //'Faruk reistir'
 
@@ -97,7 +97,7 @@ s1svg.selectAll("text.infoText")
         .enter()
         .append("foreignObject")
         .attr("width", innerWidth / 1.5)
-        .attr("height", 500)
+        .attr("height", innerHeight * 0.5)
         .attr("x", (d)=>{
            return d.x;
         })
@@ -105,7 +105,7 @@ s1svg.selectAll("text.infoText")
             return d.y;
         })
         .append("xhtml:body")
-        .style("font", "50px 'Arial'")
+        .style("font", innerWidth * 0.03 + "px 'Arial'")
         .style("color", "white")
         .html((d)=>{
             return d.text;
@@ -175,7 +175,7 @@ s2svg.selectAll("text.label")
     .duration(1000)
     .attr('x', calculateXForText)
     .attr('y', function (d) {
-        return 55;
+        return innerHeight * 0.06;
     })
     .attr("fill", "black")
     .text(function (d) {
@@ -206,20 +206,20 @@ const s3svg = d3.select("#section3")
 const next_button_group = s3svg.append("g");
 next_button_group.append("rect")
     .attr("class", "next_button")
-    .attr("x", 100)
-    .attr("y", 400)
+    .attr("x", innerWidth * 0.1)
+    .attr("y", innerHeight * 0.5)
     .attr("fill", "orange")
     .attr("width", buttonWidth)
     .attr("height", buttonHeight);
 next_button_group
     .append("text")
     .attr("class", "next_button_text")
-    .attr("x", 100 + buttonWidth / 2)
-    .attr("y", 400 + buttonHeight / 2)
+    .attr("x", innerWidth * 0.1 + buttonWidth / 2)
+    .attr("y", innerHeight * 0.5 + buttonHeight / 2)
     .attr("text-anchor", "middle")
     .attr("alignment-baseline", "middle")
     .attr("color", "black")
-    .attr("font-size", "30")
+    .attr("font-size", innerWidth * 0.02)
     .text("İlerle");
 next_button_group
     .attr("cursor", "pointer")
@@ -232,13 +232,13 @@ s2svg.selectAll(".tick > text").attr("fill", "white");
 s3svg.append("foreignObject")
         .attr("class", "info_text")
         .attr("width", innerWidth * 0.7)
-        .attr("height", 300)
+        .attr("height", innerHeight * 0.3)
         .attr("x", innerWidth * 0.05)
         .attr("y", innerHeight * 0.1)
         .append("xhtml:body")
         .attr("class", "text_itself")
         .style("color", "black")
-        .style("font", "30px 'Arial'")
+        .style("font", innerWidth * 0.03 + "px 'Arial'")
         .html("Karpuz kavun örneğini tamamladınız. <br><br>" +
             "Son zamanların popüler dizisi Game of Thrones'un kullanıldığı bir sonraki örneğe geçmek için butona tıklayınız.");
 function calculateXForText(d, i){
@@ -371,7 +371,7 @@ function calculateTest(){
 
     s2svg.selectAll("text.accuracy")
         .data([accuracy])
-        .style("font-size", "30px")
+        .style("font-size", innerWidth * 0.025 + "px")
         .transition()
         .duration(3000)
                 .tween("text", function(d) {
@@ -425,10 +425,9 @@ function againTrain(){
                     .attr("alignment-baseline", "middle")
                     .attr("text-anchor", "middle")
                     .attr('x', calculateXForText)
-                    .attr('y', 55)
+                    .attr('y', innerHeight * 0.06)
                     .attr("fill", "black")
-                    .style("font-size", innerWidth / 52 + "px");
-
+                    .style("font-size", innerWidth / 62 + "px");
     s2svg.selectAll("image.fruit")
                 .data(fruitPlaces)
                 .attr('x', function(d){
@@ -458,7 +457,6 @@ function againTrain(){
                     });
 }
 //scroll
-
 d3.select("#scroll2").style("top", 2 * innerHeight * 0.95+ "px");
 d3.select("#scroll1").style("top", innerHeight * 0.9 + "px");
 d3.select("#scroll1").style("left", innerWidth * 0.68 + "px");

@@ -48,7 +48,7 @@ vol.axis().orient("out")
 svgSection1.append("g")
     .attr("class", "knob")
     .attr("transform", "scale(0.5)")
-    .attr("transform", "translate(300, 0)")
+    .attr("transform", "translate(" + innerWidth * 0.41 + ", " + innerHeight * 0.1 + " )")
     .call(vol);
 
 vol.onValueChanged(function(value){
@@ -84,16 +84,16 @@ vol_2.onValueChanged(function(value){
 svgSection1.append("g")
     .attr("class", "knob")
     .attr("transform", "scale(0.5)")
-    .attr("transform", "translate(300, 200)")
+    .attr("transform", "translate(" + innerWidth * 0.41 + ", " + innerHeight * 0.45 + ")")
     .call(vol_2);
 
 // Drawing Knob finished
-const imageWidth = 150;
-const imageHeight = 150;
-const animalX = 100;
-const animalY = 230;
-const initTextX = 600;
-const initTextY = 240 + imageHeight / 2;
+const imageWidth = innerWidth * 0.1;
+const imageHeight = innerWidth * 0.1;
+const animalX = innerWidth * 0.3;
+const animalY = innerHeight * 0.3;
+const initTextX = innerWidth * 0.6;
+const initTextY = innerHeight * 0.3 + imageHeight / 2;
 const decisions = ["Kedi", "Köpek"];
 const imagePosInitial = [{x: animalX, y: animalY, text: "Kedi", image: 'cat_1.png'},
                     {x: 0, y: 0, text: "Köpek", image: 'dog_1.png'},
@@ -108,19 +108,19 @@ function initImagePos() {
     }
 }
 initImagePos();
-const buttonWidth = 140;
-const buttonHeight = 50;
+const buttonWidth = innerWidth * 0.09;
+const buttonHeight = innerHeight * 0.05;
 const resetButtonGroup = svgSection1.append("g");
 resetButtonGroup.append("rect")
-    .attr("x", 850)
-    .attr("y", 220)
+    .attr("x", innerWidth * 0.45)
+    .attr("y", innerHeight * 0.8)
     .attr("width", buttonWidth)
     .attr("height", buttonHeight)
     .attr("fill", "red");
 resetButtonGroup
     .append("text")
-    .attr("x", 850 + buttonWidth / 2)
-    .attr("y", 220 + buttonHeight / 2)
+    .attr("x", innerWidth * 0.45 + buttonWidth / 2)
+    .attr("y", innerHeight * 0.8 + buttonHeight / 2)
     .attr("alignment-baseline", "middle")
     .attr("text-anchor", "middle")
     .attr("fill", "white")
@@ -153,15 +153,15 @@ function reset(){
 const trainButtonGroup = svgSection1.append("g");
 trainButtonGroup.append("rect")
                 .attr("class", "button")
-                .attr("x", 700)
-                .attr("y", 220)
+                .attr("x", innerWidth * 0.35)
+                .attr("y", innerHeight * 0.8)
                 .attr("width", buttonWidth)
                 .attr("height", buttonHeight)
                 .attr("fill", "blue");
 trainButtonGroup
     .append("text")
-    .attr("x", 700 + buttonWidth / 2)
-    .attr("y", 220 + buttonHeight / 2)
+    .attr("x", innerWidth * 0.35 + buttonWidth / 2)
+    .attr("y", innerHeight * 0.8 + buttonHeight / 2)
     .attr("alignment-baseline", "middle")
     .attr("text-anchor", "middle")
     .attr("fill", "white")
@@ -178,8 +178,8 @@ trainButtonGroup
                 imagePos[i + 1].x = imagePos[i].x;
                 imagePos[i + 1].y = imagePos[i].y;
             }
-            imagePos[animalIndex].x = 300 * animalIndex + 120;
-            imagePos[animalIndex].y = 500;
+            imagePos[animalIndex].x = 0.8 * innerWidth;
+            imagePos[animalIndex].y = 0.2 * innerHeight * animalIndex;
             svgSection1.selectAll("image.animal")
                 .data(imagePos)
                 .transition()
@@ -191,17 +191,17 @@ trainButtonGroup
                 });
 
             //Texts set
-            decisionText[decisionText.length - 1].x = 300 * animalIndex + 160;
-            decisionText[decisionText.length - 1].y = 490;
+            decisionText[decisionText.length - 1].x = 0.8 * innerWidth + innerWidth * 0.03 + imageWidth;
+            decisionText[decisionText.length - 1].y = 0.2 * innerHeight * animalIndex + imageHeight / 2;
             decisionText.push({x: initTextX, y: initTextY, text: decisions[0]});
-            const texts = svgSection1.selectAll("text.decision")
+            svgSection1.selectAll("text.decision")
                 .data(decisionText)
                 .enter()
                 .append("text")
                 .attr("class", "decision")
                 .attr("text-anchor", "middle")
                 .attr("alignment-baseline", "middle")
-                .attr("font-size", "30")
+                .attr("font-size", innerWidth * 0.02)
                 .text((d) => {
                     return d.text
                 });
@@ -239,7 +239,6 @@ trainButtonGroup
             svgSection1.select("text.accuracy")
                 .transition()
                 .attr("opacity", "1")
-                .attr("font-size", "23")
                 .text("Doğru bilme oranı: %" + accuracy);
         }
 });
@@ -263,13 +262,14 @@ svgSection1.selectAll("text.decision")
         .attr("class", "decision")
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "middle")
-        .attr("font-size", "30")
+        .attr("font-size", innerWidth * 0.02)
         .attr("x", (d) => {return d.x})
         .attr("y", (d) => {return d.y})
         .text((d) => {return d.text});
 svgSection1.append("text")
             .attr("class", "accuracy")
-            .attr("x", innerWidth * 0.78)
-            .attr("y", innerHeight * 0.76)
+            .attr("x", innerWidth * 0.7)
+            .attr("y", innerHeight * 0.85)
             .attr("opacity", "0")
+            .attr("font-size", innerWidth * 0.02)
             .text("Doğru bilme oranı: ");
