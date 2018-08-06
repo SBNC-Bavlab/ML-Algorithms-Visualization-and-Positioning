@@ -48,8 +48,14 @@ def charts():
 
 @app.route('/agac', methods=['GET'])
 def tree():
-    script = server_document("http://localhost:5006/Pure")
+    script = server_document("http://localhost:5006/Decision_Tree")
     return render_template("index.html", script=script)
+
+
+@app.route('/ag', methods=['GET'])
+def ag():
+    script = server_document("http://localhost:5007/ANN")
+    return render_template("index2.html", script=script)
 
 
 if __name__ == '__main__':

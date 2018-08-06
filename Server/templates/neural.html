@@ -51,6 +51,10 @@
 	</section>
     <section id = "section1_parent" class="cd-section visible">
 		<div>
+            <div class="alert" style="width: 50%; left: 25%; position: absolute; opacity: 0;">
+              <span class="closebtn" onclick="this.parentElement.style.opacity='0';">&times;</span>
+                <span id="alert_text">Bilgilendirme: </span>
+            </div>
     	    <svg id="section1"></svg>
 	    </div>
 	</section>
@@ -61,183 +65,10 @@
         <li><a href="#0" class="cd-next">Prev</a></li>
     </ul>
 	</nav> <!-- .cd-vertical-nav -->
+    <script src="../static/js/neural.js"></script>
     <script src="../static/js/jquery-2.1.4.js"></script>
     <script src="../static/js/velocity.min.js"></script>
     <script src="../static/js/velocity.ui.min.js"></script>
     <script src="../static/js/main.js"></script> <!-- Resource jQuery -->
-<script>
-    const combinations = [{0: ["Kedi", "Köpek", "Köpek", "Kedi"],
-                            1: ["Köpek", "Köpek", "Köpek", "Köpek"],
-                            2: ["Köpek", "Kedi", "Köpek", "Kedi"],
-                            3: ["Kedi", "Kedi", "Kedi", "Kedi"]},
-                            {0: ["Köpek", "Kedi", "Köpek", "Kedi"],
-                            1: ["Kedi", "Kedi", "Kedi", "Köpek"],
-                            2: ["Köpek", "Kedi", "Köpek", "Kedi"],
-                            3: ["Kedi", "Köpek", "Kedi", "Köpek"]},
-                            {0: ["Kedi", "Köpek", "Köpek", "Kedi"],
-                            1: ["Kedi", "Köpek", "Kedi", "Köpek"],
-                            2: ["Kedi", "Kedi", "Köpek", "Köpek"],
-                            3: ["Köpek", "Kedi", "Köpek", "Kedi"]},
-                            {0: ["Kedi", "Kedi", "Kedi", "Kedi"],
-                            1: ["Kedi", "Köpek", "Kedi", "Köpek"],
-                            2: ["Köpek", "Kedi", "Köpek", "Köpek"],
-                            3: ["Köpek", "Köpek", "Kedi", "Kedi"]}];
-    const svgSection0 = d3_v4.select("#section0")
-                    .attr("width", innerWidth)
-                    .attr("height", innerHeight)
-                    .style("background-color", "orange");
-    const svgSection1 = d3_v4.select("#section1")
-                    .attr("width", innerWidth)
-                    .attr("height", innerHeight);
-    let indexOfFirstKnob = 0;
-    let indexOfSecondKnob = 0;
-    // Drawing knob
-    function drawKnob(g, r) {
-        g.append("image")
-                .attr("x", -r)
-                .attr("y", -r)
-                .attr("width", 2 * r)
-                .attr("height", 2 * r)
-                .attr("xlink:href", "http://iop.io/demo/iopctrl/knob.png")
-    }
-
-    const vol = iopctrl.arcslider()
-                .radius(50)
-                .indicator(drawKnob)
-                .ease("cubic-in");
-    vol.axis().orient("out")
-            .normalize(true)
-            .tickSize(10)
-            .scale(d3.scale.ordinal()
-                    .domain(["1", "2", "3", "4"])
-                    .rangeBands([-Math.PI/2,  Math.PI/2]));
-
-    svgSection1.append("g")
-        .attr("class", "knob")
-        .attr("transform", "scale(0.5)")
-        .attr("transform", "translate(300, 0)")
-        .call(vol);
-
-    vol.onValueChanged(function(value){
-        indexOfFirstKnob = +value - 1;
-        const combination = combinations[indexOfFirstKnob][indexOfSecondKnob];
-        for(let i = 0; i <= animalIndex; i++){
-            decisionText[i].text = combination[i];
-        }
-        svgSection1.selectAll("text.decision")
-            .text((d) => {return d.text});
-    });
-
-    //Second knob drawn
-    const vol_2 = iopctrl.arcslider()
-                    .radius(50)
-                    .indicator(drawKnob)
-                    .ease("cubic-in");
-    vol_2.axis().orient("out")
-            .normalize(true)
-            .tickSize(10)
-            .scale(d3.scale.ordinal()
-                    .domain(["1", "2", "3", "4"])
-                    .rangeBands([-Math.PI/2, Math.PI/2]));
-    vol_2.onValueChanged(function(value){
-            indexOfSecondKnob = +value - 1;
-            const combination = combinations[indexOfFirstKnob][indexOfSecondKnob];
-            for(let i = 0; i <= animalIndex; i++){
-                decisionText[i].text = combination[i];
-            }
-            svgSection1.selectAll("text.decision")
-                .text((d) => {return d.text});
-        });
-    svgSection1.append("g")
-        .attr("class", "knob")
-        .attr("transform", "scale(0.5)")
-        .attr("transform", "translate(300, 200)")
-        .call(vol_2);
-
-    // Drawing Knob finished
-    const imageWidth = 150;
-    const imageHeight = 150;
-    const animalX = 100;
-    const animalY = 230;
-    const initTextX = 600;
-    const initTextY = 240 + imageHeight / 2;
-    const decisions = ["Kedi", "Köpek"];
-    const imagePos = [{x: animalX, y: animalY, text: "Arı", image: 'cat_1.png'},
-                        {x: 0, y: 0, text: "Aslan", image: 'dog_1.png'},
-                        {x: -300, y: 0, text: "Arı", image: 'cat_2.png'},
-                        {x: -300, y: 0, text: "Aslan", image: 'dog_2.png'}];
-    const decisionText = [{x: initTextX, y: initTextY, text: decisions[0]}];
-    const trainButton = svgSection1.append("rect")
-                            .attr("class", "button")
-                            .attr("x", 700)
-                            .attr("y", 220)
-                            .attr("width", 140)
-                            .attr("height", 50)
-                            .attr("fill", "orange");
-    let animalIndex = 0;
-    trainButton.on('click', () => {
-        //Image positions set
-        for(let i = imagePos.length - 2; i >= animalIndex; i--) {
-            imagePos[i + 1].x = imagePos[i].x;
-            imagePos[i + 1].y = imagePos[i].y;
-        }
-        imagePos[animalIndex].x = 300 * animalIndex + 120;
-        imagePos[animalIndex].y = 500;
-        svgSection1.selectAll("image.animal")
-            .data(imagePos)
-            .transition()
-            .attr("x", (d) => {return d.x})
-            .attr("y", (d) => {return d.y});
-
-        //Texts set
-        decisionText[decisionText.length - 1].x = 300 * animalIndex + 160;
-        decisionText[decisionText.length - 1].y = 490;
-        decisionText.push({x: initTextX, y: initTextY, text: decisions[0]});
-        const texts = svgSection1.selectAll("text.decision")
-            .data(decisionText)
-            .enter()
-            .append("text")
-            .attr("class", "decision")
-            .attr("text-anchor", "middle")
-            .attr("alignment-baseline", "middle")
-            .attr("font-size", "30")
-            .text((d) => {return d.text});
-        svgSection1.selectAll("text.decision")
-            .attr("x", (d) => {return d.x})
-            .attr("y", (d) => {return d.y});
-        animalIndex++;
-
-        const combination = combinations[indexOfFirstKnob][indexOfSecondKnob];
-        for(let i = 0; i <= animalIndex; i++){
-            decisionText[i].text = combination[i];
-        }
-        svgSection1.selectAll("text.decision")
-            .text((d) => {return d.text})
-    });
-    // Layout
-    svgSection1.selectAll("image.animal")
-        .data(imagePos)
-        .enter()
-            .append("svg:image")
-            .attr("class", "animal")
-            .attr("x", (d) => {return d.x})
-            .attr("y", (d) => {return d.y})
-            .attr("width", imageWidth)
-            .attr("height", imageHeight)
-            .attr("xlink:href", (d) => {return "../static/icons/" + d.image});
-
-    //Texts laid out
-    svgSection1.selectAll("text.decision")
-        .data(decisionText)
-        .enter()
-            .append("text")
-            .attr("class", "decision")
-            .attr("text-anchor", "middle")
-            .attr("alignment-baseline", "middle")
-            .attr("font-size", "30")
-            .attr("x", (d) => {return d.x})
-            .attr("y", (d) => {return d.y})
-            .text((d) => {return d.text});
-</script>
 </body>
 </html>

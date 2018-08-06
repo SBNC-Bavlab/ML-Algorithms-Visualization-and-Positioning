@@ -1,39 +1,43 @@
-
-
-    const s1ScaledRadius = 0.7 * 370;
-    const s2ScaledRadius = 0.3 * 370;
+    const radiusScale1 = innerWidth * 0.00045;
+    const radiusScale2 = 0.2;
+    const s1ScaledRadius = radiusScale1 * 370;
+    const s2ScaledRadius = radiusScale2 * 370;
 
     const s2Gauge0Width = innerWidth * 0.72;
     const s2Gauge0Height = innerHeight * 0.05 + 10;
     const s2Gauge1Width = innerWidth * 0.72;
     const s2Gauge1Height = innerHeight * 0.6 + 10;
 
-    const buttonWidth = 180;
-    const buttonHeight = 50;
+    const buttonWidth = innerWidth * 0.13;
+    const buttonHeight = innerHeight * 0.05;
 
     const s1Gauge0Width = innerWidth / 2 - s1ScaledRadius;
     const s1Gauge0Height = innerHeight / 2 - s1ScaledRadius + 50;
-    var circleX = 970;
+    const circleX = innerWidth * 0.61;
     const questions = [{name: "Zengin mi?", attribute: "Evet", type: 1},
         {name: "Beyaz saçlı mı?", attribute: "Beyaz", type: 4},
         {name: "Ejderhası var mı?", attribute: "Var", type: 2},
         {name: "Tahtı istiyor mu?", attribute: "Evet", type: 3}];
 
     const got = [
-              ["Trion Lannister", "Hayır", "Yok", "Hayır", "Sarı", "Lannıster"],
-              ["Daenerys Targaryen", "Evet", "Var", "Evet", "Beyaz", "Targaryen"],
+              ["Trion", "Hayır", "Yok", "Hayır", "Sarı", "Lannıster"],
+              ["Daenerys", "Evet", "Var", "Evet", "Beyaz", "Targaryen"],
               ["John Snow", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
-              ["Cercei Lannister", "Evet", "Yok", "Evet", "Sarı", "Lannıster"],
+              ["Cercei", "Evet", "Yok", "Evet", "Sarı", "Lannıster"],
               ["Night King", "Hayır", "Var", "Hayır", "Beyaz", "Whıte Walker"],
-              ["Jamie Lannister", "Evet", "Yok", "Hayır",  "Sarı", "Lannıster"],
-              ["Arya Stark", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
-              ["Tywin Lannister", "Evet", "Yok", "Evet",  "Sarı", "Lannıster"],
-              ["Sansa Stark", "Hayır", "Yok", "Hayır", "Kızıl", "Stark"],
-              ["Lieutenant W. Walker", "Hayır", "Var", "Hayır", "Beyaz", "Whıte Walker"],
-              ["Viserys Targaryen", "Hayır", "Yok",  "Evet", "Beyaz", "Targaryen"],
+              ["Jamie", "Evet", "Yok", "Hayır",  "Sarı", "Lannıster"],
+              ["Arya", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
+              ["Tywin", "Evet", "Yok", "Evet",  "Sarı", "Lannıster"],
+              ["Sansa", "Hayır", "Yok", "Hayır", "Kızıl", "Stark"],
+              ["Lieutenant", "Hayır", "Var", "Hayır", "Beyaz", "Whıte Walker"],
+              ["Viserys", "Hayır", "Yok",  "Evet", "Beyaz", "Targaryen"],
               ["Wights", "Hayır", "Yok", "Hayır", "Beyaz", "Whıte Walker"],
-              ["Eddard Stark", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
+              ["Eddard", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
             ];
+    const got_char_imgs = [
+        "trion_.png", "cercei_.png", "jamie_.png", "tywin_.png", "sansa_.png", "jon_.png", "eddard_.png", "arya_.png", "khalessi_.png",
+        "visery_.png", "nightKing_.png", "lieu.png", "wight_.png"];
+
     const gotRowStroke = ['white',
               'white',
               'white',
@@ -80,24 +84,16 @@
 
     for(let i = 0; i < got.length; i++){
         for(let j = 0; j < got[0].length; j++) {
-            if (j === 1) {
-                gotPosArray.push({'x': 200 * j + 300, 'y': 53 * i + 75, 'text': got[i][j]})
-            } else if(j == 4){
-                gotPosArray.push({'x': 80 * j + 430, 'y': 53 * i + 75, 'text': got[i][j]})
-            } else if(j > 1){
-                gotPosArray.push({'x': 80 * j + 420, 'y': 53 * i + 75, 'text': got[i][j]})
-            } else {
-                gotPosArray.push({'x': 100 * j + 330, 'y': 53 * i + 75, 'text': got[i][j]})
-            }
+            gotPosArray.push({'x': innerWidth * j * 0.06 + innerWidth * 0.23, 'y': innerHeight * i * 0.07 + innerHeight * 0.1, 'text': got[i][j]})
         }
     }
     //Below is for section 1
 
-    const infoTextPost = [{x: 30, y: 200, text: "Her bir daire Game of Thrones dizisindeki bir karakteri, her bir renk ise üyesi oldukları haneyi temsil etmektedir"},
-                        {x: innerWidth * 0.67, y: 200, text: "Renkleri bir suda karıştırdığımızda suyun koyuluk oranı elimizdeki verilerin entropi (karmaşıklık) miktarını göstermektedir"}];
+    const infoTextPost = [{x: innerWidth * 0.01, y: innerHeight * 0.4, text: "Her bir daire Game of Thrones dizisindeki bir karakteri, her bir renk ise üyesi oldukları haneyi temsil etmektedir"},
+                        {x: innerWidth * 0.67, y: innerHeight * 0.4, text: "Renkleri bir suda karıştırdığımızda suyun koyuluk oranı elimizdeki verilerin entropi (karmaşıklık) miktarını göstermektedir"}];
 
     const generalEntropy = calculateEntropy(got);
-    let averageEntropy = 0
+    let averageEntropy = 0;
     const svgSection0 = d3.select("#section0")
                             .attr("width", innerWidth)
                             .attr("height", innerHeight);
@@ -106,17 +102,11 @@
     const svgSection1 = d3.select("#section1")
                             .attr("width", innerWidth)
                             .attr("height", innerHeight);
-    /*svgSection1.append("svg:image")
-        .attr("width", innerWidth)
-        .attr("height", innerHeight)
-        .attr("xlink:href", "../icons/eagle.jpg")
-        .lower().lower();*/
-
     svgSection1.selectAll("text.infoText")
         .data(infoTextPost)
         .enter()
         .append("foreignObject")
-        .attr("width", 480)
+        .attr("width", innerWidth / 3.1)
         .attr("height", 500)
         .attr("x", (d)=>{
            return d.x;
@@ -125,7 +115,7 @@
             return d.y;
         })
         .append("xhtml:body")
-        .style("font", "30px 'Arial'")
+        .style("font",  innerWidth * 0.02 + "px 'Arial'")
         .html((d)=>{
             return d.text;
         });
@@ -145,7 +135,7 @@
         waveOffset: 0.25,
         textSize: 0.75,
         waveCount: 3
-    }, s1Gauge0Width, s1Gauge0Height, 0, 0.7);
+    }, s1Gauge0Width, s1Gauge0Height, 0, radiusScale1);
     svgSection1.on("opacityChanged0")("hsla(193, 100%, 56%, 1)");
     const circleTextGroup = svgSection1.selectAll("g.s1circle")
                 .data(got)
@@ -155,28 +145,31 @@
                     .lower();
     circleTextGroup.append("circle")
                             .attr("cx", (d , i) => {
-                                return 90 * i + 240;
+                                return innerWidth * 0.07 * i + innerWidth * 0.095;
                             })
-                            .attr("cy", 50)
-                            .attr("r", 25)
+                            .attr("cy", innerHeight * 0.1)
+                            .attr("r", innerWidth * 0.028)
                             .attr("fill", (d, i)=>{
                                 return color[familyToColorIndex[d[d.length - 1]]];
                             });
     circleTextGroup.append("svg:image")
                     .attr("x", (d , i) => {
-                        return 90 * i + 240 - 25;
+                        return innerWidth * 0.07 * i + innerWidth * 0.098 - innerWidth * 0.028;
                     })
-                    .attr("y", 50 - 25)
-                    .attr("width", 50)
-                    .attr("height", 50)
-        .attr("xlink:href", "../static/icons/john.jpg");
+                    .attr("y", innerHeight * 0.105 - innerWidth * 0.028)
+                    .attr("width", innerWidth * 0.05)
+                    .attr("height", innerWidth * 0.05)
+                    .attr("xlink:href", (d, i) =>{
+                        return "../static/icons/GoT_characters/" + got_char_imgs[i];
+                    });
 
     circleTextGroup.append("text")
                     .attr("x", (d , i) => {
-                        return 90 * i + 240;
+                        return innerWidth * 0.07 * i + innerWidth * 0.095;
                     })
-                    .attr("y", 88)
+                    .attr("y", innerHeight * 0.1 + 60)
                     .attr("fill", "white")
+                    .style("font-size", innerWidth * 0.012 + "px")
                     .text((d)=>{
                         let possibleName = d[0].split(" ")[0];
                         if(possibleName === "Night"){
@@ -233,8 +226,8 @@
             .attr("transform", (d, i) => {
                 const targetX = s1Gauge0Width + s1ScaledRadius
                 const targetY = s1Gauge0Height + s1ScaledRadius
-                const currentX = 90 * i + 240;
-                const currentY = 50;
+                const currentX = innerWidth * 0.07 * i + innerWidth * 0.09;
+                const currentY = innerHeight * 0.085;
                 const dx = targetX - currentX;
                 const dy = targetY - currentY;
                 return "translate( " + dx + "," + dy + ")";
@@ -259,11 +252,11 @@
     }
     //Below is for section 2
     const scoreTextPos = [{x: innerWidth * 0.7, y: innerHeight / 2, text: "Ortalama Entropi: -"}];
-    const buttonsPos = [{x: 60, y: 100, text: "Zengin mi?", click: () => {askQuestion(0)}},
-                        {x: 60, y: 170, text: "Ejderhasi var mi?", click: () => {askQuestion(2)}},
-                        {x: 60, y: 240, text: "Tahti istiyor mu?", click: () => {askQuestion(3)}},
-                        {x: 60, y: 500, text: "Kendi sorunu oluştur", click: () => {createQuestion()}},
-                        {x: 60, y: 570, text: "Reset", click: () => {reset()}}];
+    const buttonsPos = [{x: innerWidth * 0.04, y: innerHeight * 0.125, text: "Zengin mi?", click: () => {askQuestion(0)}},
+                        {x: innerWidth * 0.04, y: innerHeight * 0.185, text: "Ejderhasi var mi?", click: () => {askQuestion(2)}},
+                        {x: innerWidth * 0.04, y: innerHeight * 0.245, text: "Tahti istiyor mu?", click: () => {askQuestion(3)}},
+                        {x: innerWidth * 0.04, y: innerHeight * 0.655, text: "Kendi sorunu oluştur", click: () => {createQuestion()}},
+                        {x: innerWidth * 0.04, y: innerHeight * 0.715, text: "Reset", click: () => {reset()}}];
 
     const svg = d3.select("#section2")
                     .attr("width", innerWidth)
@@ -291,6 +284,7 @@
         .attr("x", (d)=>{return d.x})
         .attr("y", (d)=>{return d.y})
         .text((d)=>{return d.text});
+    /*
     svg.append("rect")
         .attr("class", "button_wrapper")
         .attr('x', 50)
@@ -307,17 +301,21 @@
         .attr("fill", "yellowgreen")
         .attr("width", buttonWidth + 22)
         .attr("height", buttonHeight * 2 + 45);
+        */
     svg.append("text")
         .attr("class", "button_header")
-        .attr('x', 95)
-        .attr("y", 80)
+        .attr("alignment-baseline", "middle")
+        .attr("text-anchor", "middle")
+        .attr('x', innerWidth * 0.04 + buttonWidth / 2)
+        .attr("y", innerHeight * 0.09)
         .attr("font-size", 30)
         .attr("fill", "white")
         .text("Sorular");
     svg.append("text")
-        .attr("class", "button_header")
-        .attr('x', 95)
-        .attr("y", 480)
+        .attr("alignment-baseline", "middle")
+        .attr("text-anchor", "middle")
+        .attr('x', innerWidth * 0.04 + buttonWidth / 2)
+        .attr("y", innerHeight * 0.62)
         .attr("fill", "white")
         .attr("font-size", 30)
         .text("Araçlar");
@@ -328,20 +326,11 @@
                         .enter()
                         .append('text')
                         .attr("class", "header")
+                        .attr("alignment-baseline", "middle")
+                        .attr("text-anchor", "middle")
+                        .style("font-size", innerWidth * 0.01 + "px")
                         .attr('x', function(d, i){
-                            if (i === 0){
-                                return 100 * i + 370;
-                            } else if (i === 1) {
-                                return 200 * i + 285;
-                            } else if(i === 3){
-                                return 80 * i + 402;
-                            } else if(i === 4){
-                                return 80 * i + 415;
-                            }  else if(i === 5){
-                                return 80 * i + 415;
-                            } else if(i > 1){
-                                return 80 * i + 410;
-                            }
+                            return innerWidth * i * 0.061 + innerWidth * 0.227;
                         })
                         .attr('y', function(d, i){
                             return 25;
@@ -349,8 +338,7 @@
                         .text(function (d) {
                             return d;
                         })
-                        .style("font-size", "14px")
-        .attr("fill", "#e6f598");
+                        .attr("fill", "#e6f598");
     svg.selectAll("rect.button_rect")
         .data(buttonsPos)
         .enter()
@@ -372,11 +360,13 @@
         .ease(d3.easeLinear)
         .duration(1000)
         .attr('fill', '#d7191c')
-        .attr('x', 320)
-        .attr('y', 0)
+        .attr('x', innerWidth * 0.195)
+        .attr('y', function(d, i){
+            return innerHeight * i * 0.07;
+        })
         .attr('rx', 15)
         .attr('ry', 15)
-        .attr('width', rectWidth)
+        .attr('width', innerWidth * 0.383)
         .attr('height', rectHeight);
     svg.selectAll("text.button_text")
         .data(buttonsPos)
@@ -387,13 +377,15 @@
         .attr("fill", "white")
         .attr("alignment-baseline", "middle")
         .attr("text-anchor", "middle")
+        .style('font-size', innerWidth * 0.01 + "px")
         .attr('class', "button_text")
         .text((d) => {return d.text})
         .on('click', (d)=>{
             d.click();
         });
 
-    svg.selectAll("rect.item").data(got)
+    svg.selectAll("rect.item")
+        .data(got)
         .enter()
         .append("rect")
         .attr("class", "item")
@@ -405,11 +397,11 @@
         .attr('ry', 15)
         .attr('fill', "#fc8d59")
         .attr('stroke', "white")
-        .attr('x', 320)
+        .attr('x', innerWidth * 0.195)
         .attr('y', function(d, i){
-            return 53 * i + 50;
+            return innerHeight * i * 0.07 + innerHeight * 0.07;
         })
-        .attr('width', rectWidth)
+        .attr('width', innerWidth * 0.383)
         .attr('height', rectHeight);
     svg.selectAll("text.table")
         .data(gotPosArray)
@@ -419,7 +411,9 @@
             .attr('class', 'table')
             .ease(d3.easeLinear)
             .duration(1000)
-            .style("font-size", "12px")
+        .attr("alignment-baseline", "middle")
+        .attr("text-anchor", "middle")
+            .style("font-size", innerWidth * 0.009 + "px")
             .attr("fill", "black")
             .attr('x', function(d){
                 return d.x;
@@ -429,6 +423,7 @@
             }).text(function(d){
                 return d.text.toLocaleUpperCase("tr-TR");
             });
+    let initialCircleRadius = innerWidth * 0.017;
     svg.selectAll("circle.house_color")
         .data(got)
         .enter()
@@ -439,13 +434,29 @@
         .ease(d3.easeLinear)
         .attr('cx', circleX)
         .attr('cy', function(d, i){
-            return 53 * i + 70;
+            return innerHeight * i * 0.07 + innerHeight * 0.1;
         })
-        .attr('r', 20)
+        .attr('r', initialCircleRadius)
         .attr('stroke', 'black')
         .attr('fill', function(d,i){
 
            return color[familyToColorIndex[d[d.length - 1]]];
+        });
+
+
+    svg.selectAll("image.heads")
+        .data(got_char_imgs)
+        .enter()
+        .append("svg:image")
+        .attr("x", circleX * 1.002 - initialCircleRadius)
+        .attr("class", "heads")
+        .attr("y", (d , i) => {
+            return innerHeight * i * 0.07 + innerHeight * 0.103 - initialCircleRadius;
+        })
+        .attr("width", innerWidth * 0.031)
+        .attr("height", innerWidth * 0.031)
+        .attr("xlink:href", (d, i) =>{
+            return "../static/icons/GoT_characters/" + d;
         });
 
     svg.call(d3.liquidfillgauge, 50, {
@@ -463,7 +474,7 @@
       waveOffset: 0.25,
       textSize: 0.75,
       waveCount: 3
-    }, s2Gauge0Width, s2Gauge0Height + 25, 0, 0.3);
+    }, s2Gauge0Width, s2Gauge0Height + 25, 0, radiusScale2);
 
     svg.call(d3.liquidfillgauge, 50, {
       circleThickness: 0.15,
@@ -480,7 +491,7 @@
       waveOffset: 0.25,
       textSize: 0.75,
       waveCount: 3
-    }, s2Gauge1Width, s2Gauge1Height + 25, 1, 0.3);
+    }, s2Gauge1Width, s2Gauge1Height + 25, 1, radiusScale2);
     //circleThickness : 0.15, circleColor : "#808015", textColor : "#555500", waveTextColor : "#FFFFAA", waveColor : "#AAAA39", textVertPosition : 0.8, waveAnimateTime : 1000, waveHeight : 0.05, waveAnimate : true, waveRise : false, waveHeightScaling : false, waveOffset : 0.25, textSize : 0.75, waveCount : 3,
     let createQuestionIndex = 0;
     function changeColorRect(index) {
@@ -499,7 +510,7 @@
             .attr("stroke-width", "1")
     }
     function createQuestion(){
-        reset()
+        reset();
         changeColorRect(createQuestionIndex);
     }
     const dxs = [];
@@ -509,65 +520,67 @@
     function seperate(isYes, index){
         gotRowStroke[index] = (isYes) ? "green" : "red";
         svg.selectAll("circle.house_color")
-        .filter(function(d,i) {return i === index;})
-        .transition()
-        .duration(600)
-        .attr("transform", function(d, i){
-            let targetY;
-            let targetX;
-            if (isYes) {
-                targetX = s2Gauge0Width + s2ScaledRadius;
-                targetY = (s2Gauge0Height) + s2ScaledRadius;
-            } else {
-                targetX = s2Gauge1Width + s2ScaledRadius;
-                targetY = (s2Gauge1Height) + s2ScaledRadius;
-            }
-            const currentY = 53 * index + 40;
-            const currentX = circleX;
-            const dx = targetX - currentX;
-            const dy = targetY - currentY;
-            dxs.push(dx);
-            dys.push(dy);
-            return "translate(" + dx + "," + dy + ")"
-        })
-        .on('start', function(d){
-            if (isYes) {
-                left.push(d);
-            } else {
-                right.push(d);
-            }
-            console.log(left, right)
+            .filter(function(d,i) {return i === index;})
+            .transition()
+            .duration(600)
+            .attr("transform", function(d, i){
+                let targetY;
+                let targetX;
+                if (isYes) {
+                    targetX = s2Gauge0Width + s2ScaledRadius;
+                    targetY = (s2Gauge0Height) + s2ScaledRadius;
+                } else {
+                    targetX = s2Gauge1Width + s2ScaledRadius;
+                    targetY = (s2Gauge1Height) + s2ScaledRadius;
+                }
+                const currentY = innerHeight * index * 0.07 + innerHeight * 0.1;
+                const currentX = circleX;
+                const dx = targetX - currentX;
+                const dy = targetY - currentY;
+                dxs.push(dx);
+                dys.push(dy);
+                return "translate(" + dx + "," + dy + ")"
+            })
+            .on('start', function(d){
+                if (isYes) {
+                    left.push(d);
+                } else {
+                    right.push(d);
+                }
+                console.log(left, right)
 
-            const leftEntropy = calculateEntropy(left);
-            const rightEntropy = calculateEntropy(right);
-            svg.on("valueChanged0")(leftEntropy.toFixed(2));
-            svg.on("valueChanged1")(rightEntropy.toFixed(2));
+                const leftEntropy = calculateEntropy(left);
+                const rightEntropy = calculateEntropy(right);
+                svg.on("valueChanged0")(leftEntropy.toFixed(2));
+                svg.on("valueChanged1")(rightEntropy.toFixed(2));
 
-            svg.on("opacityChanged0")("hsla(193, 100%, " + (56 - 15 * leftEntropy) + "%, 1)");
-            svg.on("opacityChanged1")("hsla(193, 100%, " + (56 - 15 * rightEntropy) + "%, 1)");
+                svg.on("opacityChanged0")("hsla(193, 100%, " + (56 - 15 * leftEntropy) + "%, 1)");
+                svg.on("opacityChanged1")("hsla(193, 100%, " + (56 - 15 * rightEntropy) + "%, 1)");
 
-            let result = "";
-            if (isYes) {
-                const dx2 = 15 * (a2++ + 1) + 110;
-                const dy2 = 0;
-                result = "translate(" + (dxs[index] + dx2) + "," + (dys[index] + dy2) + ")"
-            } else {
-                const dx2 = 15 * (b2++ + 1) + 110;
-                const dy2 = 0;
-                result = "translate(" + (dxs[index] + dx2) + "," + (dys[index] + dy2) + ")"
-            }
+                let result = "";
+                if (isYes) {
+                    const dx2 = 15 * (a2++ + 1) + 110;
+                    const dy2 = 0;
+                    result = "translate(" + (dxs[index] + dx2) + "," + (dys[index] + dy2) + ")"
+                } else {
+                    const dx2 = 15 * (b2++ + 1) + 110;
+                    const dy2 = 0;
+                    result = "translate(" + (dxs[index] + dx2) + "," + (dys[index] + dy2) + ")"
+                }
 
-            if(createQuestionIndex === got.length - 1)
-                calculateScore();
-            createQuestionIndex++;
-            changeColorRect(createQuestionIndex);
-            d3.select(this).transition().duration(500).delay(500).attr('transform', result).attr('r', "5")
-        })
-        .delay(function(d,i){return 500 * i});
+                if(createQuestionIndex === got.length - 1)
+                    calculateScore();
+                createQuestionIndex++;
+                changeColorRect(createQuestionIndex);
+                d3.select(this).transition().duration(500).delay(500).attr('transform', result).attr('r', "5")
+            })
+            .delay(function(d,i){return 500 * i});
     }
     svg.append('text')
-        .attr('x', (s2Gauge0Width + s2ScaledRadius) *0.97)
-        .attr('y', s2Gauge0Height * 1.2)
+        .attr('x', s2Gauge0Width + s2ScaledRadius)
+        .attr('y', s2Gauge0Height)
+        .attr("alignment-baseline", "middle")
+        .attr("text-anchor", "middle")
         .style("font-size", "40px")
         .on("click", function(d) {
             seperate(true, createQuestionIndex);
@@ -577,8 +590,10 @@
         .attr("cursor", 'pointer')
         .text("Evet");
     svg.append('text')
-        .attr('x', (s2Gauge1Width + s2ScaledRadius) *0.956)
-        .attr('y', s2Gauge1Height * 1.03)
+        .attr('x', s2Gauge1Width + s2ScaledRadius)
+        .attr('y', s2Gauge1Height)
+        .attr("alignment-baseline", "middle")
+        .attr("text-anchor", "middle")
         .style("font-size", "40px")
         .attr("fill", 'rgb(242, 247, 255)')
         .attr("stroke", 'black')
@@ -628,7 +643,7 @@
                     targetX = s2Gauge1Width + s2ScaledRadius;
                     targetY = s2Gauge1Height + s2ScaledRadius;
                 }
-                const currentY =  53 * i + 40;
+                const currentY =  innerHeight * i * 0.07 + innerHeight * 0.1;
                 const currentX = circleX;
                 const dx = targetX - currentX;
                 const dy = targetY - currentY;
@@ -650,14 +665,14 @@
                 const leftEntropy = calculateEntropy(left);
                 const rightEntropy = calculateEntropy(right);
 
-                var result = "";
+                let result = "";
                 if(isLeft) {
-                    var dx2 = 15 * (a2++ + 1) + 110;
-                    var dy2 = 0;
+                    const dx2 = 15 * (a2++ + 1) + 110;
+                    const dy2 = 0;
                     result = "translate(" + (dxs[i] + dx2) + "," + (dys[i] + dy2)+ ")"
                 } else {
-                    var dx2 = 15 * (b2++ + 1) + 110;
-                    var dy2 = 0;
+                    const dx2 = 15 * (b2++ + 1) + 110;
+                    const dy2 = 0;
                     result = "translate(" + (dxs[i] + dx2) + "," + (dys[i] + dy2)+ ")"
                 }
                 changeColorRect(createQuestionIndex);
@@ -685,7 +700,7 @@
     function reset(){
         svg.selectAll("circle.house_color").transition()
             .duration(600)
-            .attr('transform', "translate(0,0)").attr('r', "20");
+            .attr('transform', "translate(0,0)").attr('r', initialCircleRadius);
         svg.on("opacityChanged0")("hsla(193, 100%, 56%, 1)");
         svg.on("opacityChanged1")("hsla(193, 100%, 56%, 1)");
         svg.on("valueChanged0")("0.00");

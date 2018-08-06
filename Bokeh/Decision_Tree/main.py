@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import pandas as pd
 from os.path import join
 from os.path import dirname
@@ -8,9 +10,9 @@ from bokeh.transform import dodge, factor_cmap
 from bokeh.models import ColumnDataSource, LabelSet, HoverTool, WheelZoomTool, ResetTool, PanTool, Panel, Tabs, Toggle, CustomJS
 from bokeh.models.widgets import Button, Paragraph, Select, CheckboxGroup, Slider
 from bokeh.layouts import widgetbox, layout
-from Bokeh.Decision_Tree.ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
+from ID3_Decision_Tree.generate_bokeh_data import get_bokeh_data
 from math import atan, pi
-from Bokeh.Decision_Tree.Plot.get_data import get_all_colors, set_new_data_set
+from Plot.get_data import get_all_colors, set_new_data_set
 from bokeh.io import curdoc
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

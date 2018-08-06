@@ -1,12 +1,65 @@
 <!doctype html>
 
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="utf-8">
-  <title>K-Means: {{ framework }}</title>
+  <title>Yapay Sinir Ağları</title>
+
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Chela+One|Cormorant+Unicase&subset=latin,latin-ext" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/reset.css"> <!-- CSS reset -->
+	<link rel="stylesheet" href="../static/css/style.css"> <!-- Resource style -->
+	<script src="../static/js/modernizr.js"></script> <!-- Modernizr -->
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+        body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
+        .w3-bar,h1,button {font-family: "Montserrat", sans-serif}
+        .fa-anchor,.fa-coffee {font-size:200px}
+    </style>
 </head>
 
 <body>
-  {{ script|safe }}
+    <!-- Navbar -->
+    <div class="w3-top" style="position: absolute;">
+      <div class="w3-bar w3-red w3-card w3-left-align w3-large">
+        <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+        <a href="main.html" class="w3-bar-item w3-button w3-padding-large w3-hover-white">Ana Sayfa</a>
+        <a href="karpuzkavun.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Karar Ağacı</a>
+        <a href="kmeans.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">K-Means</a>
+        <a href="neural.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-white">Yapay Sinir Ağları</a>
+        <a href="about.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" style="background-color: orange;">Hakkında</a>
+      </div>
+
+      <!-- Navbar on small screens -->
+      <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium w3-large">
+        <a href="karpuzkavun.html" class="w3-bar-item w3-button w3-padding-large">Karar Ağacı</a>
+        <a href="kmeans.html" class="w3-bar-item w3-button w3-padding-large">K-Means</a>
+        <a href="neural.html" class="w3-bar-item w3-button w3-padding-large">Yapay Sinir Ağları</a>
+        <a href="about.html" class="w3-bar-item w3-button w3-padding-large" style="background-color: orange">Hakkında</a>
+      </div>
+    </div>
+
+    <!-- First Grid -->
+    <div class="w3-row-padding w3-padding-64 w3-center w3-container">
+      <div class="w3-content">
+        <h1>İnteraktif Yapay Sinir Ağları</h1>
+
+        <div style="margin-left: auto; margin-right: auto; width: 40em; font-family: Arial; text-align: left" >
+            <p>
+            Aşağıda bir ağaç görüyorsunuz.
+            </p>
+        </div>
+        {{ script|safe }}
+      </div>
+    </div>
+
+    <script src="../static/js/jquery-2.1.4.js"></script>
+    <script src="../static/js/velocity.min.js"></script>
+    <script src="../static/js/velocity.ui.min.js"></script>
+    <script src="../static/js/main.js"></script> <!-- Resource jQuery -->
 </body>
 </html>

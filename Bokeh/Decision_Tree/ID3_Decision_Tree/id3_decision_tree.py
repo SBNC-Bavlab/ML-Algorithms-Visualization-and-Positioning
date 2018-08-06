@@ -2,7 +2,7 @@ import copy
 from queue import Queue
 import random
 from math import log
-from Bokeh.Decision_Tree.Plot.get_data import set_active_attr, modify_new_values
+from Plot.get_data import set_active_attr, modify_new_values
 
 data_instance = None
 

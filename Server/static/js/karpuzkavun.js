@@ -31,10 +31,10 @@ const test_data = [["Sarı", 3, "Kavun"], ["Sarı", 4, "Kavun"], ["Sarı", 5, "K
 const buttonWidth = 180;
 const buttonHeight = 60;
 const maxFrequency = 8;
-const rectWidth = 70;
+const rectWidth = innerWidth / 22;
 const rectHeight = 70;
 const maxDiameter = 14;
-const buttonX = innerWidth * 0.65;
+const buttonX = innerWidth * 0.8;
 const buttonY = innerHeight * 0.84;
 const radius_label = [4,6,7,10,12,13,16,18,21,23,24,27,30];
 
@@ -54,7 +54,7 @@ function manipulateRectangleData(data){
         }
     });
     Object.keys(radiusDict).forEach(function(d, i){
-        rectangleData.push({'x': innerWidth * (i + 1) * 0.07 - innerWidth * 0.039, 'y': 10, 'label': d, 'text': radius_label[i], 'color': 'beige'})
+        rectangleData.push({'x': innerWidth * (i + 1) * 0.07 - innerWidth * 0.05, 'y': 10, 'label': d, 'text': radius_label[i], 'color': 'beige'})
     });
 }
 function calculateFruitPlaces(){
@@ -64,9 +64,9 @@ function calculateFruitPlaces(){
             if(j in radiusDict) {
                 if (i < radiusDict[j].length) {
                     if (radiusDict[j][i] === 'Karpuz') {
-                        fruitPlaces.push({'x': innerWidth * validDiameterIndex * 0.07 - innerWidth * 0.04, 'y': 68 * i + 95, 'fruit_img': 'watermelon.png'})
+                        fruitPlaces.push({'x': innerWidth * validDiameterIndex * 0.07 - innerWidth * 0.05, 'y': innerHeight * 0.086 * i + innerHeight * 0.1, 'fruit_img': 'watermelon.png'})
                     } else {
-                        fruitPlaces.push({'x': innerWidth * validDiameterIndex * 0.07 - innerWidth * 0.04, 'y': 68 * i + 95, 'fruit_img': 'melon.png'})
+                        fruitPlaces.push({'x': innerWidth * validDiameterIndex * 0.07 - innerWidth * 0.05, 'y': innerHeight * 0.086 * i + innerHeight * 0.1, 'fruit_img': 'melon.png'})
                     }
                 }
                 validDiameterIndex++;
@@ -87,6 +87,7 @@ const s1svg = d3.select("#section1")
                 .style("background-color", "blue")
                 .attr("width", innerWidth)
                 .attr("height", innerHeight);
+const paletteHeight = innerHeight * 0.084;
 const infoTextPost = [{x : innerWidth / 8, y : 50, text: "Elimizde Mehmet ve Ahmet'in tezgahlarındaki karpuz ve kavunların çap bilgileri var." +
     "<br><br>Amacımız karpuz ve kavunları birbirinden ayıran bir çap değeri bulmak." +
     "<br><br>Yani öyle bir çap değeri bulmalıyız ki onun üstündekilere karpuz altındakilere kavun diyebilelim"}] //'Faruk reistir'
@@ -147,6 +148,7 @@ s2svg.append("text")
     .attr("font-size", 18)
     .attr("class", "button_text")
     .attr("fill", "white")
+    .attr("cursor", "pointer")
     .on('click', () =>{ (isDatasetTraining)? calculateTest() : againTrain() })
     .text("Modeli Test Et");
 
@@ -160,8 +162,8 @@ var rectangles = s2svg.selectAll("rect.palette")
                             .attr("x", function (d) { return d.x; })
                             .attr("y", function (d) { return d.y; })
                             .attr("rx", 15)
-                            .attr("width", function (d) { return 73; })
-                            .attr("height", function (d, i) { return rectHeight * radiusDict[Object.keys(radiusDict)[i]].length + 80});
+                            .attr("width", rectWidth)
+                            .attr("height", function (d, i) { return paletteHeight * radiusDict[Object.keys(radiusDict)[i]].length + 80});
 s2svg.selectAll("text.label")
     .data(rectangleData)
     .enter()
@@ -179,7 +181,7 @@ s2svg.selectAll("text.label")
     .text(function (d) {
         return d.text + "cm";
     })
-    .style("font-size", "25px");
+    .style("font-size", innerWidth / 62 + "px");
 s2svg.selectAll("image")
     .data(fruitPlaces)
     .enter()
@@ -224,6 +226,9 @@ next_button_group
 next_button_group.on('click', () => {
    location.href = "gameOfThrones.html"
 });
+
+s2svg.selectAll(".tick > text").attr("fill", "white");
+
 s3svg.append("foreignObject")
         .attr("class", "info_text")
         .attr("width", innerWidth * 0.7)
@@ -237,7 +242,7 @@ s3svg.append("foreignObject")
         .html("Karpuz kavun örneğini tamamladınız. <br><br>" +
             "Son zamanların popüler dizisi Game of Thrones'un kullanıldığı bir sonraki örneğe geçmek için butona tıklayınız.");
 function calculateXForText(d, i){
-    return innerWidth * (i + 1) * 0.07 - innerWidth * 0.015;
+    return innerWidth * (i + 1) * 0.07 - innerWidth * 0.026;
 }
 
 function paintRectangles(){
@@ -281,7 +286,7 @@ function calculateAccuracy(){
                 invalid++;
                 resultImg = "error.png";
             }
-            checkImgsData.push({'x': 105 * i + 50,'y': 68 * j + 95, 'resultImg': resultImg})
+            checkImgsData.push({'x': innerWidth * (i + 1) * 0.07 - innerWidth * 0.05,'y': innerHeight * 0.086 * j + innerHeight * 0.1, 'resultImg': resultImg})
         });
     });
     const accuracy = valid / (valid + invalid) * 100;
@@ -302,7 +307,7 @@ function calculateTest(){
     d3.selectAll('.button__text').text("Yeni Model Kur")
     s2svg.selectAll("rect.palette")
                             .data(rectangleData)
-                            .attr("height", function (d, i) { return rectHeight * radiusDict[Object.keys(radiusDict)[i]].length + 80})
+                            .attr("height", function (d, i) { return paletteHeight * radiusDict[Object.keys(radiusDict)[i]].length + 80})
                             .attr('fill', function(d){return d.color})
                             .exit()
                                 .remove();
@@ -405,11 +410,11 @@ function againTrain(){
                                 .attr("class", "palette")
                                 .attr('width', rectWidth)
                                 .attr("rx", 15)
-                                .attr('height', rectHeight)
+                                .attr('height', paletteHeight)
                                 .attr('fill', function(d){return d.color});
     //Apply to both new-comers and old ones
     s2svg.selectAll("rect.palette").data(rectangleData)
-        .attr("height", function (d, i) { return rectHeight * radiusDict[Object.keys(radiusDict)[i]].length + 80})
+        .attr("height", function (d, i) { return paletteHeight * radiusDict[Object.keys(radiusDict)[i]].length + 80})
     //    .lower();
     s2svg.selectAll("text.label")
                 .data(rectangleData)
@@ -423,7 +428,7 @@ function againTrain(){
                     .attr('x', calculateXForText)
                     .attr('y', 55)
                     .attr("fill", "black")
-                    .style("font-size", "25px");
+                    .style("font-size", innerWidth / 52 + "px");
 
     s2svg.selectAll("image.fruit")
                 .data(fruitPlaces)
@@ -453,7 +458,6 @@ function againTrain(){
                         return "../static/icons/" + d.fruit_img;
                     });
 }
-
 //scroll
 
 d3.select("#scroll2").style("top", 2 * innerHeight * 0.95+ "px");

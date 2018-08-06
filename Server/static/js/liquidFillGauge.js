@@ -70,7 +70,6 @@
             var locationX = x;
             var locationY = y;
             var fillPercent = Math.max(config.get("minValue"), Math.min(config.get("maxValue"), value)) / config.get("maxValue");
-            console.log(radius)
             var waveHeightScale;
             if (config.get("waveHeightScaling")) {
               waveHeightScale = d3.scaleLinear()
@@ -270,7 +269,6 @@
                     text1.text((isFirst)? "0.00" : to);
                     text2.text((isFirst)? "0.00" : to);
                 }
-                console.log(text1.text(), ":", text2.text())
                 // Update the wave
                 toPercent = Math.max(config.get("minValue"), Math.min(config.get("maxValue"), textFinalValue)) / config.get("maxValue");
                 fromPercent = Math.max(config.get("minValue"), Math.min(config.get("maxValue"), textStartValue)) / config.get("maxValue");
