@@ -1,5 +1,5 @@
     const radiusScale1 = innerWidth * 0.00045;
-    const radiusScale2 = 0.2;
+    const radiusScale2 = innerWidth * 0.00015;
     const s1ScaledRadius = radiusScale1 * 370;
     const s2ScaledRadius = radiusScale2 * 370;
 
@@ -669,11 +669,11 @@
 
                 let result = "";
                 if(isLeft) {
-                    const dx2 = 15 * (a2++ + 1) + 80;
+                    const dx2 = 15 * (a2++ + 1) + innerWidth * 0.035;
                     const dy2 = 0;
                     result = "translate(" + (dxs[i] + dx2) + "," + (dys[i] + dy2)+ ")"
                 } else {
-                    const dx2 = 15 * (b2++ + 1) + 110;
+                    const dx2 = 15 * (b2++ + 1) + innerWidth * 0.035;
                     const dy2 = 0;
                     result = "translate(" + (dxs[i] + dx2) + "," + (dys[i] + dy2)+ ")"
                 }
@@ -861,9 +861,9 @@
         .attr("class","equals_sign")
         .attr("alignment-baseline", "middle")
         .attr("text-anchor", "middle")
-        .attr("x", innerWidth * 0.7)
+        .attr("x", innerWidth * 0.75)
         .attr("y", innerHeight * 0.4)
-        .attr("font-size", innerWidth * 0.15 + "px")
+        .attr("font-size", innerWidth * 0.14 + "px")
         .attr("fill", "white")
         .text("= ?");
     const radiusScale3 = innerWidth * 0.00038;

@@ -11,5 +11,5 @@ var slider = d3.sliderHorizontal()
 });
 
 d3.select("#section2").append("g").attr("class", "sliderAll").transition().duration(1000).delay(1400)
-    .attr("transform", "translate(" + innerWidth * 0.95 + ",100) rotate(90)")
+    .attr("transform", "translate(" + innerWidth * 0.95 + ", " + innerHeight * 0.16 + ") rotate(90) scale( " + innerHeight * 0.0013 + " )")
     .call(slider);

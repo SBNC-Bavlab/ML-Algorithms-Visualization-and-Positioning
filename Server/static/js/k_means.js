@@ -75,70 +75,53 @@ const svgSection5 = d3.select("#section4")
                 .attr("height", innerHeight);
 //captain 0: not a captain; 1: captain of team A; 2: captain of team B
 
-const childPos = [
-{x: 308, y: 140, image: "boy.png", captain: 0, team: 0},
-{x: 381, y: 70, image: "boy.png", captain: 0, team: 0},
-{x: 451, y: 91, image: "boy.png", captain: 0, team: 0},
-{x: 464, y: 163, image: "boy.png", captain: 0, team: 0},
-{x: 394, y: 248, image: "boy.png", captain: 0, team: 0},
-{x: 706, y: 143, image: "boy.png", captain: 0, team: 0},
-{x: 795, y: 112, image: "boy.png", captain: 0, team: 0},
-{x: 893, y: 90, image: "boy.png", captain: 0, team: 0},
-{x: 888, y: 150, image: "boy.png", captain: 0, team: 0},
-{x: 872, y: 199, image: "boy.png", captain: 0, team: 0},
-{x: 838, y: 567, image: "boy.png", captain: 0, team: 0},
-{x: 777, y: 521, image: "boy.png", captain: 0, team: 0},
-{x: 724, y: 616, image: "boy.png", captain: 0, team: 0},
-{x: 824, y: 657, image: "boy.png", captain: 0, team: 0},
-{x: 868, y: 639, image: "boy.png", captain: 0, team: 0},
-{x: 400, y: 515, image: "boy.png", captain: 0, team: 0},
-{x: 356, y: 565, image: "boy.png", captain: 0, team: 0},
-{x: 380, y: 649, image: "boy.png", captain: 0, team: 0},
-{x: 300, y: 537, image: "boy.png", captain: 0, team: 0},
-{x: 446, y: 503, image: "boy.png", captain: 0, team: 0},
-{x: 442, y: 590, image: "boy.png", captain: 0, team: 0},
-{x: 612, y: 432, image: "boy.png", captain: 0, team: 0},
-{x: 556, y: 381, image: "boy.png", captain: 0, team: 0},
-{x: 618, y: 279, image: "boy.png", captain: 0, team: 0},
-{x: 654, y: 291, image: "boy.png", captain: 0, team: 0},
-{x: 625, y: 371, image: "boy.png", captain: 0, team: 0},
-{x: 640, y: 419, image: "boy.png", captain: 0, team: 0},
-{x: 706, y: 399, image: "boy.png", captain: 0, team: 0}];
+const childPos = [];
+const numberOfCustomer = 45;
 
 let isPlacingCaptains = false;
 svgSection5.on('click', (event)=>{
     //childPos.push({x: d3.event.x, y: d3.event.y, image: "boy.png", captain: 0, team: 0})
     //console.log(childPos)
 });
-childPos.push({x: innerWidth * 0.79, y: innerHeight * 0.08, image: "courier_1.png", captain: 1, team: 1});
-childPos.push({x: innerWidth * 0.83, y: innerHeight * 0.08, image: "courier_2.png", captain: 1, team: 2});
+const barcaRatio = 1.60714286;
+const barcaWidth = innerWidth * 0.7;
+const barcaHeight = barcaWidth / barcaRatio;
+const pitchX = innerWidth * 0.01;
+const pitchY = innerHeight * 0.01;
+let captainAmount = 2;
+svgSection5.selectAll("image.pitch")
+    .data([{x: pitchX, y: pitchY, image: "barcelona4.png"}])
+    .enter()
+    .append("svg:image")
+    .attr("x", (d)=>{return d.x;})
+    .attr("y", (d)=>{return d.y;})
+    .attr("width", barcaWidth)
+    .attr("class", "pitch")
+    .attr("xlink:href", (d)=>{
+        return "../static/icons/" + d.image;
+    }).lower();
+const childrenWidthHeight = innerWidth * 0.05;
+for(let i = 0; i < numberOfCustomer; i++){
+    childPos.push({x: d3.randomUniform(pitchX, pitchX + barcaWidth - childrenWidthHeight)(),
+        y: d3.randomUniform(pitchY, pitchY + barcaHeight - childrenWidthHeight)(),
+        image: "boy.png", captain: 0, team: 0})
+}
+
+childPos.push({x: innerWidth * 0.71, y: innerHeight * 0.08, image: "courier_1.png", captain: 1, team: 1});
+childPos.push({x: innerWidth * 0.75, y: innerHeight * 0.08, image: "courier_2.png", captain: 1, team: 2});
 svgSection5.selectAll("image.children")
     .data(childPos)
     .enter()
     .append("svg:image")
     .attr("x", (d)=>{return d.x;})
     .attr("y", (d)=>{return d.y;})
-    .attr("width", 80)
-    .attr("height", 80)
+    .attr("width", childrenWidthHeight)
+    .attr("height", childrenWidthHeight)
     .attr("class", "children")
     .attr("xlink:href", (d)=>{
         return "../static/icons/" + d.image;
     });
-const barcaHeight = innerHeight * 1.01;
-const barcaWidth = innerWidth * 0.76;
-let captainAmount = 2;
-svgSection5.selectAll("image.pitch")
-    .data([{x: 40, y: 0, image: "barcelona4.png"}])
-    .enter()
-    .append("svg:image")
-    .attr("x", (d)=>{return d.x;})
-    .attr("y", (d)=>{return d.y;})
-    .attr("width", barcaWidth)
-    .attr("height", barcaHeight)
-    .attr("class", "pitch")
-    .attr("xlink:href", (d)=>{
-        return "../static/icons/" + d.image;
-    }).lower();
+
 const drag = d3.drag()
     .on("start", dragstarted)
     .on("drag", dragged)
@@ -148,15 +131,19 @@ svgSection5.selectAll("image.children")
     .filter((d, i) => {
         return i > childPos.length - 3 //last two elements are the captains
     })
-    .attr("width", 80)
-    .attr("height", 80)
+    .attr("width", childrenWidthHeight)
+    .attr("height", childrenWidthHeight)
     .call(drag);
 
 let isAssignment = true;
 const add_courier = () => {
     if(!isPlacingCaptains) {
+
+        if(captainAmount === 5) {
+            return;
+        }
         childPos.push({
-            x: innerWidth * (0.79 + captainAmount * 0.04),
+            x: innerWidth * (0.71 + captainAmount * 0.04),
             y: innerHeight * 0.08,
             image: "courier_" + (captainAmount + 1) + ".png",
             captain: 1,
@@ -172,8 +159,8 @@ const add_courier = () => {
             .attr("y", (d) => {
                 return d.y;
             })
-            .attr("width", 80)
-            .attr("height", 80)
+            .attr("width", childrenWidthHeight)
+            .attr("height", childrenWidthHeight)
             .attr("class", "children")
             .attr("xlink:href", (d) => {
                 return "../static/icons/" + d.image;
@@ -185,7 +172,6 @@ const add_courier = () => {
             .call(drag);
         captainAmount++;
     } else {
-        console.log("Kuryeler yerleştirilirken kurye ekleme işlemi yapılamaz")
         d3.select(".alert")
             .transition()
                 .style("opacity", "1")
@@ -211,7 +197,6 @@ const remove_courier = () => {
             captainAmount--;
         }
     } else {
-        console.log("Kuryeler yerleştirilirken kurye silme silme yapılamaz");
         d3.select(".alert")
             .transition()
                 .style("opacity", "1")
@@ -244,16 +229,17 @@ const button_click_listener = () => {
         .text((d) => {return d.text;});
 };
 
-const buttonTextPos = [{x: innerWidth * 0.8, y: innerHeight * 0.20, text: "Kurye Ata", click: button_click_listener},
-    {x: innerWidth * 0.8, y: innerHeight * 0.8, text: "Reset", click: reset},
-    {x: innerWidth * 0.8, y: innerHeight * 0.35, text: "Kurye Ekle", click: add_courier},
-    {x: innerWidth * 0.8, y: innerHeight * 0.46, text: "Kurye Çıkar", click: remove_courier}];
+const buttonWidth = innerWidth * 0.1;
+const buttonHeight = innerHeight * 0.05;
+
+const buttonTextPos = [{x: innerWidth * 0.72, y: innerHeight * 0.20, text: "Kurye Ata", click: button_click_listener},
+    {x: innerWidth * 0.72, y: pitchY + barcaHeight - buttonHeight, text: "Reset", click: reset},
+    {x: innerWidth * 0.72, y: innerHeight * 0.35, text: "Kurye Ekle", click: add_courier},
+    {x: innerWidth * 0.72, y: innerHeight * 0.46, text: "Kurye Çıkar", click: remove_courier}];
 const buttonGroup = svgSection5.selectAll("g.button_and_text")
                         .data(buttonTextPos)
                         .enter()
                         .append("g");
-const buttonWidth = 250;
-const buttonHeight = 80;
 buttonGroup
     .append("rect")
     .attr("class", "assign_button")
@@ -261,7 +247,7 @@ buttonGroup
     .attr("y", (d) => {return d.y})
     .attr("width", buttonWidth)
     .attr("height", buttonHeight)
-    .attr("fill", "red")
+    .attr("fill", "red");
 buttonGroup.append("text")
     .attr("class", "assign_button_text")
     .attr("alignment-baseline", "middle")
@@ -269,8 +255,8 @@ buttonGroup.append("text")
     .attr("x", (d) => {return d.x + buttonWidth / 2})
     .attr("y", (d) => {return d.y + buttonHeight / 2})
     .attr("fill", "white")
-    .attr("font-size", 30)
-    .text((d) => {return d.text})
+    .attr("font-size", innerWidth * 0.012)
+    .text((d) => {return d.text});
 buttonGroup
     .attr("cursor", "pointer")
     .on('click', (d) => {
@@ -278,10 +264,10 @@ buttonGroup
     });
 // Add title text 'Kuryeler'
 svgSection5.append("text")
-    .attr("x", innerWidth * 0.8)
+    .attr("x", innerWidth * 0.72)
     .attr("y", innerHeight * 0.06)
-    .style("fill", "white")
-    .attr("font-size", "30px")
+    .style("fill", "black")
+    .attr("font-size", innerWidth * 0.02)
     .text("Kuryeler");
 function calculateNewCenters(){
     for(let captainIndex = childPos.length - captainAmount; captainIndex < childPos.length; captainIndex++){
@@ -313,7 +299,6 @@ function calculateNewCenters(){
         });
 }
 function assignChildrenToTeam(){
-    console.log(childPos);
     //proced with center calculation
     for(let i = 0; i < childPos.length - captainAmount; i++){
         const player = childPos[i];
@@ -359,7 +344,7 @@ function reset(){
 
     for(let captainIndex = childPos.length - captainAmount; captainIndex < childPos.length; captainIndex++){
         const captain = childPos[captainIndex];
-        captain.x = innerWidth * (0.75 + captain.team * 0.04);
+        captain.x = innerWidth * ( 0.67 + captain.team * 0.04);
         captain.y = innerHeight * 0.08;
     }
 
@@ -382,7 +367,8 @@ function euclidianDistance(x1, y1, x2, y2){
     return Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
 }
 function dragstarted(d) {
-  d3.select(this).raise().classed("active", true);
+    isPlacingCaptains = true;
+    d3.select(this).raise().classed("active", true);
 }
 
 function dragged(d) {

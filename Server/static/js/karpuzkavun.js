@@ -28,8 +28,8 @@ const test_data = [["Sarı", 3, "Kavun"], ["Sarı", 4, "Kavun"], ["Sarı", 5, "K
   ["Yeşil", 9, "Karpuz"], ["Yeşil", 9, "Karpuz"], ["Yeşil", 11, "Karpuz"],
   ["Yeşil", 12, "Karpuz"], ["Yeşil", 12, "Karpuz"], ["Yeşil", 13, "Karpuz"]];
 
-const buttonWidth = 180;
-const buttonHeight = 60;
+const buttonWidth = innerWidth * 0.16;
+const buttonHeight = innerHeight * 0.07;
 const maxFrequency = 8;
 const rectWidth = innerWidth / 22;
 const rectHeight = 70;
@@ -123,7 +123,7 @@ s2svg.append("text")
     .attr("y", innerHeight * 0.9)
     .attr("baseline-alignment", "middle")
     .attr("text-anchor", "middle")
-    .attr("font-size", 50)
+    .attr("font-size", innerWidth * 0.04)
     .attr("class", "tezgah_name")
     .text("Mehmet'in Tezgahı");
 
@@ -145,7 +145,7 @@ s2svg.append("text")
     .attr("y", buttonY + buttonHeight / 2)
     .attr("alignment-baseline", "middle")
     .attr("text-anchor", "middle")
-    .attr("font-size", 18)
+    .attr("font-size", innerWidth * 0.018)
     .attr("class", "button_text")
     .attr("fill", "white")
     .attr("cursor", "pointer")
@@ -304,7 +304,6 @@ function calculateTest(){
     //DANGEROUS HERE ANY OTHER g would be affected by that
     d3.select('.sliderAll').style('opacity','0');
 
-    d3.selectAll('.button__text').text("Yeni Model Kur")
     s2svg.selectAll("rect.palette")
                             .data(rectangleData)
                             .attr("height", function (d, i) { return paletteHeight * radiusDict[Object.keys(radiusDict)[i]].length + 80})
