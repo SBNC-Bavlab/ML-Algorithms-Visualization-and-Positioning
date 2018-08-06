@@ -192,7 +192,7 @@ class Ann(object):
         self.correct_pred = tf.equal(tf.argmax(self.prediction, 1), tf.argmax(Y, 1))
         self.accuracy = tf.reduce_mean(tf.cast(self.correct_pred, tf.float32))
 
-    def run_model(self, play_button, circles):
+    def run_model(self, play_button, circles, lines):
         ''' generate and run the model '''
         batch_size = 128
         #display_step = 50
@@ -201,7 +201,8 @@ class Ann(object):
         progress_bar_length=10
         self.neural_nets()
         self.set_optimizers()
-        cividis_colors = cividis(256)
+        cividis_colors_circle = cividis(256)
+        cividis_colors_line = cividis(64)
         init = tf.global_variables_initializer()
         with tf.Session() as sess:
 
@@ -217,14 +218,16 @@ class Ann(object):
                           "{:.4f}".format(loss) + ", Training Accuracy= " + \
                           "{:.3f}".format(acc))
                 '''
-                circles.glyph.fill_color = circles.glyph.line_color = cividis_colors[step%256]
+                circles.glyph.fill_color = circles.glyph.line_color = cividis_colors_circle[step%256]
+                lines.glyph.line_color = cividis_colors_line[step%64]
                 text = "\r Bekleyiniz: [" + "+" * int(round(progress_bar_length * step/self.epochs))\
                        + '-' * (progress_bar_length - int(round(progress_bar_length * step/self.epochs)))\
-                       + "] " + str(round(step/self.epochs * 100, 2)) + "%"
+                       + "] " + str(round(step/self.epochs * 100, 1)) + "%"
                 play_button.label = text
                 loss_arr.append(loss)
                 acc_arr.append(acc)
             play_button.label = "Oynat"
             testing_acc = sess.run(self.accuracy, feed_dict={X: mnist.test.images, Y: mnist.test.labels})
         circles.glyph.fill_color = circles.glyph.line_color = "lightseagreen"
+        lines.glyph.line_color = "darkgray"
         return testing_acc, loss_arr, acc_arr
