@@ -3,14 +3,30 @@
 <title>Makine Öğrenimi</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="//d3js.org/d3.v4.0.0-alpha.35.min.js"></script>
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
-body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
-.w3-bar,h1,button {font-family: "Montserrat", sans-serif}
-.fa-anchor,.fa-coffee {font-size:200px}
+body,h1,h2,h3,h4,h5,h6 {
+    font-family: "Lato", sans-serif
+}
+.w3-bar,h1,button {
+    font-family: "Montserrat", sans-serif
+}
+.fa-anchor,.fa-coffee {
+    font-size:200px
+}
+body {
+  background: #333;
+}
+
+circle {
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
 </style>
 <body>
 
@@ -33,14 +49,50 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
     <a href="about.html" class="w3-bar-item w3-button w3-padding-large" style="background-color: orange">Hakkında</a>
   </div>
 </div>
-
 <!-- Header -->
 <header class="w3-container w3-red w3-center" style="padding:128px 16px">
-  <h1 class="w3-margin w3-jumbo">MAKİNE ÖĞRENİMİ</h1>
-  <button class="w3-button w3-black w3-padding-large w3-large w3-margin-top">Başla</button>
+    <h1 class="w3-margin w3-jumbo">MAKİNE ÖĞRENİMİ</h1>
+    <button class="w3-button w3-black w3-padding-large w3-large w3-margin-top">Başla</button>
+    <svg class="w3-margin w3-jumbo" width="960" height="960"><g transform="translate(480,480)"></g></svg>
 </header>
 
 <!-- First Grid -->
+<div class="w3-row-padding w3-padding-64 w3-container">
+  <div class="w3-content">
+    <div class="w3-twothird">
+      <h1>Makine Öğrenimi nedir?</h1>
+      <h5 class="w3-padding-32">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</h5>
+
+      <p class="w3-text-grey">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint
+        occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+        laboris nisi ut aliquip ex ea commodo consequat.</p>
+    </div>
+
+    <div class="w3-third w3-center">
+      <img class="w3-padding-64 w3-text-red w3-margin-right" style="width: 70%" src="../static/icons/ml.png">
+    </div>
+  </div>
+</div>
+
+<!-- Second Grid -->
+<div class="w3-row-padding w3-light-grey w3-padding-64 w3-container">
+  <div class="w3-content">
+    <div class="w3-third w3-center">
+      <img class="w3-padding-64 w3-text-red w3-margin-right" style="width: 70%" src="../static/icons/tree.png">
+    </div>
+
+    <div class="w3-twothird">
+      <h1>Karar Ağacı Nedir?</h1>
+      <h5 class="w3-padding-32">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</h5>
+
+      <p class="w3-text-grey">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint
+        occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+        laboris nisi ut aliquip ex ea commodo consequat.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Third Grid -->
 <div class="w3-row-padding w3-padding-64 w3-container">
   <div class="w3-content">
     <div class="w3-twothird">
@@ -58,11 +110,11 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
   </div>
 </div>
 
-<!-- Second Grid -->
+<!-- Fourth Grid -->
 <div class="w3-row-padding w3-light-grey w3-padding-64 w3-container">
   <div class="w3-content">
     <div class="w3-third w3-center">
-      <i class="fa fa-coffee w3-padding-64 w3-text-red w3-margin-right"></i>
+      <img class="w3-padding-64 w3-text-red w3-margin-right" style="width: 70%" src="../static/icons/ml.png">
     </div>
 
     <div class="w3-twothird">
@@ -99,6 +151,34 @@ function myFunction() {
         x.className = x.className.replace(" w3-show", "");
     }
 }
+const svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height"),
+    size = Math.max(width, height);
+
+const color = d3.scaleRainbow()
+    .domain([0, 2 * Math.PI]);
+
+const circles = d3.packSiblings(d3.range(2000)
+    .map(d3.randomUniform(8, 26))
+    .map(function(r) { return {r: r}; }))
+  .filter(function(d) { return -500 < d.x && d.x < 500 && -500 < d.y && d.y < 500; });
+
+svg
+  .select("g")
+  .selectAll("circle")
+  .data(circles)
+  .enter().append("circle")
+    .style("fill", function(d) { return color(d.angle = Math.atan2(d.y, d.x)); })
+    .attr("cx", function(d) { return Math.cos(d.angle) * (size / Math.SQRT2 + 30); })
+    .attr("cy", function(d) { return Math.sin(d.angle) * (size / Math.SQRT2 + 30); })
+    .attr("r", function(d) { return d.r - 0.25; })
+  .transition()
+    .ease(d3.easeCubicOut)
+    .delay(function(d) { return Math.sqrt(d.x * d.x + d.y * d.y) * 10; })
+    .duration(1000)
+    .attr("cx", function(d) { return d.x; })
+    .attr("cy", function(d) { return d.y; });
 </script>
 
 </body>
