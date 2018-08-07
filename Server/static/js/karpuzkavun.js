@@ -81,6 +81,27 @@ const s0svg = d3.select("#section0")
                 .style("background-color", "blue")
                 .attr("width", innerWidth)
                 .attr("height", innerHeight);
+const infotTextPosS0 = [{x : innerWidth * 0.05, y : innerHeight * 0.1, text: "<br><br><br>asgfadgsdfsad"}];
+s0svg.selectAll("text.infoText")
+        .data(infotTextPosS0)
+        .enter()
+            .append("foreignObject")
+            .attr("width", innerWidth / 1.5)
+            .attr("height", innerHeight * 0.5)
+            .attr("x", (d)=>{
+               return d.x;
+            })
+            .attr("y", (d)=>{
+                return d.y;
+            })
+            .append("xhtml:body")
+            .style("font", innerWidth * 0.03 + "px 'Arial'")
+            .style("color", "white")
+            .html((d)=>{
+                return d.text;
+            });
+
+
 //Section 1
 
 const s1svg = d3.select("#section1")

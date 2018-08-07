@@ -20,18 +20,18 @@
         {name: "Tahtı istiyor mu?", attribute: "Evet", type: 3}];
 
     const got = [
-              ["Trion", "Hayır", "Yok", "Hayır", "Sarı", "Lannıster"],
+              ["Trıon", "Hayır", "Yok", "Hayır", "Sarı", "Lannıster"],
               ["Daenerys", "Evet", "Var", "Evet", "Beyaz", "Targaryen"],
               ["John Snow", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
-              ["Cercei", "Evet", "Yok", "Evet", "Sarı", "Lannıster"],
-              ["Night King", "Hayır", "Var", "Hayır", "Beyaz", "Whıte Walker"],
-              ["Jamie", "Evet", "Yok", "Hayır",  "Sarı", "Lannıster"],
+              ["Cerceı", "Evet", "Yok", "Evet", "Sarı", "Lannıster"],
+              ["Nıght Kıng", "Hayır", "Var", "Hayır", "Beyaz", "Whıte Walker"],
+              ["Jamıe", "Evet", "Yok", "Hayır",  "Sarı", "Lannıster"],
               ["Arya", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
-              ["Tywin", "Evet", "Yok", "Evet",  "Sarı", "Lannıster"],
+              ["Tywın", "Evet", "Yok", "Evet",  "Sarı", "Lannıster"],
               ["Sansa", "Hayır", "Yok", "Hayır", "Kızıl", "Stark"],
-              ["Lieutenant", "Hayır", "Var", "Hayır", "Beyaz", "Whıte Walker"],
-              ["Viserys", "Hayır", "Yok",  "Evet", "Beyaz", "Targaryen"],
-              ["Wights", "Hayır", "Yok", "Hayır", "Beyaz", "Whıte Walker"],
+              ["Lıeutenant", "Hayır", "Var", "Hayır", "Beyaz", "Whıte Walker"],
+              ["Vıserys", "Hayır", "Yok",  "Evet", "Beyaz", "Targaryen"],
+              ["Wıghts", "Hayır", "Yok", "Hayır", "Beyaz", "Whıte Walker"],
               ["Eddard", "Hayır", "Yok", "Hayır", "Siyah", "Stark"],
             ];
     const got_char_imgs = [
@@ -514,6 +514,18 @@
     function createQuestion(){
         reset();
         changeColorRect(createQuestionIndex);
+        d3.select(".alert")
+            .transition()
+                .style("opacity", "1")
+            .transition()
+                .delay(5000)
+                .style("opacity", "0");
+        d3.select("#alert_text")
+            .transition()
+                .text("Bilgilendirme: Her bir karakter için sorduğunuz sorunun cevabına göre sağda bulunan Evet veya Hayır'a tıklayabilirisiniz.")
+            .transition()
+                .delay(5200)
+                .text("Bilgilendirme: ");
     }
     const dxs = [];
     const dys = [];
@@ -782,11 +794,11 @@
                 scoreTextPos[0].text = "Ortalama Entropi: " + averageEntropy.toFixed(2);
                 svg.selectAll("text.score_text")
                     .data(scoreTextPos)
-                    .text((d)=>{return d.text})
-                    const text = "Sistemin tüm entropisi " + generalEntropy.toFixed(2) + " idi.<br><br> Sorduğunuz soru sonunda 'Evet' ve 'Hayir' havuzlarinin agirlikli" +
-                                " ortalama entropisi " + averageEntropy.toFixed(2) + " oldu.<br><br> Sorunun karmaşıklığı azaltma miktarı yani skoru bu ikisinin farkıdır:   " + (generalEntropy - averageEntropy).toFixed(2);
+                    .text((d)=>{return d.text});
+                const text = "Sistemin tüm entropisi " + generalEntropy.toFixed(2) + " idi.<br><br> Sorduğunuz soru sonunda 'Evet' ve 'Hayir' havuzlarinin agirlikli" +
+                            " ortalama entropisi " + averageEntropy.toFixed(2) + " oldu.<br><br> Sorunun karmaşıklığı azaltma miktarı yani skoru bu ikisinin farkıdır:   " + (generalEntropy - averageEntropy).toFixed(2);
                 svgSection3.select(".text_itself")
-                            .html(text)
+                            .html(text);
                 svgSection3.select(".equals_sign")
                     .text("= " + gain.toFixed(2))
                 svgSection3.on('valueChanged1')(leftEntropy.toFixed(2));
@@ -800,14 +812,16 @@
                     .transition()
                         .style("opacity", "1")
                     .transition()
-                        .delay(3000)
+                        .delay(8000)
                         .style("opacity", "0");
                 d3.select("#alert_text")
                     .transition()
-                        .text("Bilgilendirme: Verilerinizi geçerli bir soruya veya ortak özelliğe göre bölmediniz bu yüzden ortalama hesaplanamadı.")
+                        .text("Bilgilendirme: Verilerinizi geçerli bir soruya veya ortak özelliğe göre bölmediniz bu yüzden ortalama hesaplanamadı. Örnek geçerli sorular sol tarafta bulunmaktadır üzerlerine tıklayarak inceleyebilirsiniz")
                     .transition()
-                        .delay(3200)
+                        .delay(8200)
                         .text("Bilgilendirme: ");
+                svgSection3.select(".text_itself")
+                            .html("<br><br>Geçerli bir ayırma yapılmadığı için ortalama entropi ve sorunun skoru hesaplanamadı.");
                 //$error.slideDown().delay(5000).slideUp();
             }
         } else {
@@ -819,8 +833,9 @@
     const svgSection3 = d3.select("#section3")
                             .attr("width", innerWidth)
                             .attr("height", innerHeight);
-    const text = "Sistemin tüm entropisi " + generalEntropy.toFixed(2) + " idi.<br><br> Sorduğunuz soru sonunda 'Evet' ve 'Hayir' havuzlarinin agirlikli" +
-        " ortalama entropisi " + averageEntropy.toFixed(2) + " oldu.<br><br>Sorunun karmaşıklığı azaltma miktarı yani skoru bu ikisinin farkıdır: " + (generalEntropy - averageEntropy).toFixed(2);
+    const text = "Sistemin tüm entropisi " + generalEntropy.toFixed(2) + " idi." +
+        "<br><br> Ortalama entropi iki havuzdaki koyuluk miktarlarinin agirlikli ortalamasidir. Verileri geçerli bir soruya göre ayırdığınızda ortalama entropi hesaplanacaktır." +
+        "<br><br>Sorunun karmaşıklığı azaltma miktarı yani skoru bu ikisinin farkı olacaktır";
     svgSection3.append("foreignObject")
         .attr("class", "info_text")
         .attr("width", innerWidth)
