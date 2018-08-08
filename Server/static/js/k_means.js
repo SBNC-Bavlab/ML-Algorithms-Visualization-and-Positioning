@@ -5,16 +5,17 @@ const svgSection1 = d3.select("#section0")
 svgSection1
     .append("foreignObject")
     .attr("width", innerWidth / 1.5)
-    .attr("height", 500)
-    .attr("x", 100)
-    .attr("y", 50)
+    .attr("height", innerHeight)
+    .attr("x", innerWidth * 0.06)
+    .attr("y", innerHeight * 0.2)
     .append("xhtml:body")
-    .style("font", "45px 'Arial'")
+    .style("font", innerWidth * 0.021 + "px 'Arial'")
     .style("color", "white")
-    .html("K-Means algoritması elinizdeki verileri ortak en uygun şekilde kümelemeye çalışan bir algoritmadır" +
-        "<br><br>K-Means'de boyut sınırlandırması yoktur ancak basit olsun diye burada size sadece iki boyuttaki" +
-        " uygulaması gösterilecektir" +
-        "<br><br>K-Means'deki K'nin anlamı oluşturmak istediğiniz küme sayısıdır");
+    .html("K-Means Algoritması kümeleme problemlerini çözmeyi amaçlamaktadır." +
+        "<br><br>Çevremizde görebileceğimiz kümeleme problemlerinden biri sipariş problemidir." +
+        "<br><br>Sipariş sayısı fazla olursa hangi kuryenin hangi siparişi götüreceği bir problem olabilmektedir." +
+        "<br><br>Aşağıda bulunan Barcelona'da geçen örnekte bu problemin K-Means ile kümeleme yaparak ne kadar hızlı bir şekilde çözülebildiğini göreceksiniz" +
+        "<br><br>Yapmanız gereken kuryeleri sürükleyip haritada istediğiniz yerlere bırakıp Kurye Ata ve Kurye Ortala butonlarına ardışık olarak tıklamak.");
 const svgSection5 = d3.select("#section4")
                 .attr("width", innerWidth)
                 .attr("height", innerHeight);
