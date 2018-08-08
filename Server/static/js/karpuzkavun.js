@@ -81,7 +81,7 @@ const s0svg = d3.select("#section0")
                 .style("background-color", "blue")
                 .attr("width", innerWidth)
                 .attr("height", innerHeight);
-const infotTextPosS0 = [{x : innerWidth * 0.05, y : innerHeight * 0.1, text: "<br><br><br>asgfadgsdfsad"}];
+const infotTextPosS0 = [{x : innerWidth * 0.05, y : innerHeight * 0.1, text: ""}];
 s0svg.selectAll("text.infoText")
         .data(infotTextPosS0)
         .enter()

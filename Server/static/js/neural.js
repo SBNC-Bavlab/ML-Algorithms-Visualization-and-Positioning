@@ -154,7 +154,7 @@ resetButtonGroup
     .attr("alignment-baseline", "middle")
     .attr("text-anchor", "middle")
     .attr("fill", "white")
-    .style("font-size", "20px")
+    .style("font-size", innerWidth * 0.014 + "px")
     .text("Reset")
     .raise();
 resetButtonGroup
@@ -197,7 +197,7 @@ trainButtonGroup
     .attr("alignment-baseline", "middle")
     .attr("text-anchor", "middle")
     .attr("fill", "white")
-    .style("font-size", "20px")
+    .style("font-size", innerWidth * 0.014 + "px")
     .text("Öğret")
     .raise();
 let animalIndex = 0;
@@ -366,3 +366,43 @@ svgSection1.selectAll("image.screw")
         .attr('width', screwSize)
         .attr('height', screwSize)
         .attr("xlink:href", "../static/icons/screw.png");
+const svgSection2 = d3_v4.select("#section2")
+                .attr("width", innerWidth)
+                .attr("height", innerHeight)
+                .style("background-color", "white");
+const next_button_group = svgSection2.append("g");
+next_button_group.append("rect")
+    .attr("class", "next_button")
+    .attr("x", innerWidth * 0.1)
+    .attr("y", innerHeight * 0.5)
+    .attr("fill", "orange")
+    .attr("width", innerWidth * 0.16)
+    .attr("height", innerHeight * 0.07);
+next_button_group
+    .append("text")
+    .attr("class", "next_button_text")
+    .attr("x", innerWidth * 0.1 + innerWidth * 0.16 / 2)
+    .attr("y", innerHeight * 0.5 + innerHeight * 0.07 / 2)
+    .attr("text-anchor", "middle")
+    .attr("alignment-baseline", "middle")
+    .attr("color", "black")
+    .attr("font-size", innerWidth * 0.02)
+    .text("İlerle");
+next_button_group
+    .attr("cursor", "pointer");
+next_button_group.on('click', () => {
+   location.href = "ag"
+});
+
+svgSection2.append("foreignObject")
+        .attr("class", "info_text")
+        .attr("width", innerWidth * 0.7)
+        .attr("height", innerHeight * 0.3)
+        .attr("x", innerWidth * 0.05)
+        .attr("y", innerHeight * 0.1)
+        .append("xhtml:body")
+        .attr("class", "text_itself")
+        .style("color", "black")
+        .style("font", innerWidth * 0.03 + "px 'Arial'")
+        .html("Yapay sinir ağları örneğini tamamladınız. <br><br>" +
+            "Hadi şimdi gerçek bir yapay sinir ağı nasıl görünür ona bakalım.");
