@@ -18,9 +18,6 @@ body,h1,h2,h3,h4,h5,h6 {
 .fa-anchor,.fa-coffee {
     font-size:200px
 }
-body {
-  background: #333;
-}
 
 circle {
   stroke: #000;
@@ -53,7 +50,6 @@ circle {
 <header class="w3-container w3-red w3-center" style="padding:128px 16px">
     <h1 class="w3-margin w3-jumbo">MAKİNE ÖĞRENİMİ</h1>
     <button class="w3-button w3-black w3-padding-large w3-large w3-margin-top">Başla</button>
-    <svg class="w3-margin w3-jumbo" width="960" height="960"><g transform="translate(480,480)"></g></svg>
 </header>
 
 <!-- First Grid -->
@@ -151,6 +147,7 @@ function myFunction() {
         x.className = x.className.replace(" w3-show", "");
     }
 }
+/*
 const svg = d3.select("svg"),
     width = +svg.attr("width"),
     height = +svg.attr("height"),
@@ -179,6 +176,7 @@ svg
     .duration(1000)
     .attr("cx", function(d) { return d.x; })
     .attr("cy", function(d) { return d.y; });
+*/
 </script>
 
 </body>
