@@ -113,9 +113,11 @@ const s0_1svg = d3.select("#section0_1")
                 .attr("height", innerHeight);
 var karar_ağacı_ikinci_yazı = "<p class='soru'>Karar ağacı bütün girdileri nasıl sınıflarına kadar ayırıyor?\n</p>" +
     "<br><br><p>Her düğümde girdinin bir niteliğine göre veriler birbirinden ayrılıyor. </p>" +
-    "<br><br><p>Amacımız sınıflandırmak</p>" +
-    "<br><br><p>Hangi eşikten ayırırsak kavunlarla karpuzları en yüksek doğrulukta ayırırız.</p>" +
-    "<br><br><p>Sınıflandırıcı rolünü siz üstlenin:</p>"
+    "<br><br><p>Şimdi sınıflandırıcı rolünü siz üstlenin</p>" +
+    "<br><br><p>Aşağıda, elemanları büyüklüklerine göre sıralanmış bir pazar tezgahı var</p>" +
+    "<br><br><p>Amacımız kavun ve karpuzları sadece boyutlarına bakarak sınıflandırmak</p>" +
+    "<br><br><p>Kavun ve karpuzları en başarılı şekilde ayırmak için bir eşik seçiniz</p>" +
+    "<br><br><p>Hangi eşikten ayırırsak kavunlarla karpuzları en yüksek doğrulukta ayırırız</p>"
 
 
 
@@ -140,36 +142,12 @@ s0_1svg.selectAll("text.infoText")
             });
 
 
-//Section 1
+//Section 1 !!!!!!!!!!!!!!!!!B    SİLİNDİİİ  !!!!!!!!!!!!!!
 
-const s1svg = d3.select("#section1")
-                .style("background-color", "orange")
-                .attr("width", innerWidth)
-                .attr("height", innerHeight);
-const paletteHeight = innerHeight * 0.084;
-const infoTextPost = [{x : innerWidth * 0.05, y : innerHeight * 0.15, text: "Elimizde Mehmet ve Ahmet'in tezgahlarındaki karpuz ve kavunların çap bilgileri var." +
-    "<br><br>Amacımız karpuz ve kavunları birbirinden ayıran bir çap değeri bulmak." +
-    "<br><br>Yani öyle bir çap değeri bulmalıyız ki onun üstündekilere karpuz altındakilere kavun diyebilelim"}] //'Faruk reistir'
 
-s1svg.selectAll("text.infoText")
-        .data(infoTextPost)
-        .enter()
-        .append("foreignObject")
-        .attr("width", innerWidth / 1.5)
-        .attr("height", innerHeight * 0.5)
-        .attr("x", (d)=>{
-           return d.x;
-        })
-        .attr("y", (d)=>{
-            return d.y;
-        })
-        .append("xhtml:body")
-        .style("font", innerWidth * 0.03 + "px 'Arial'")
-        .style("color", "white")
-        .html((d)=>{
-            return d.text;
-        });
 //Initial settings
+
+const paletteHeight = innerHeight * 0.084;
 manipulateRectangleData(train_data);
 calculateFruitPlaces();
 
