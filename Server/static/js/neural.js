@@ -19,6 +19,24 @@ const svgSection0 = d3_v4.select("#section0")
                 .attr("width", innerWidth)
                 .attr("height", innerHeight)
                 .style("background-color", "orange");
+
+
+svgSection0.append("foreignObject")
+        .attr("class", "info_text")
+        .attr("width", innerWidth * 0.7)
+        .attr("height", innerHeight * 0.3)
+        .attr("x", innerWidth * 0.05)
+        .attr("y", innerHeight * 0.3)
+        .append("xhtml:body")
+        .attr("class", "text_itself")
+        .style("color", "white")
+        .style("font", innerWidth * 0.02 + "px 'Arial'")
+        .html("Bu örnekte Yapay Sinir Ağlarının çalışma prensibini inceleyeceğiz. <br><br>" +
+            "Size sırasıyla kedi ve köpek resimleri gösterilecek yapmanız gereken anahtarı çevirerek isim ile resmi eşleştirmek" +
+            "<br><br>Unutmadan söyleyelim anahtarı çevirdikçe önceden ayarladığınız eşleşmelerde değişebilir buna da dikkat etmelisiniz." +
+            "<br><br>Bakalım yüzde kaçlık tahmin başarısı yakalayacaksınız." +
+            "<br><br>Bol şans!");
+
 const svgSection1 = d3_v4.select("#section1")
                 .attr("width", innerWidth)
                 .attr("height", innerHeight)
@@ -374,7 +392,7 @@ const next_button_group = svgSection2.append("g");
 next_button_group.append("rect")
     .attr("class", "next_button")
     .attr("x", innerWidth * 0.1)
-    .attr("y", innerHeight * 0.5)
+    .attr("y", innerHeight * 0.6)
     .attr("fill", "orange")
     .attr("width", innerWidth * 0.16)
     .attr("height", innerHeight * 0.07);
@@ -382,7 +400,7 @@ next_button_group
     .append("text")
     .attr("class", "next_button_text")
     .attr("x", innerWidth * 0.1 + innerWidth * 0.16 / 2)
-    .attr("y", innerHeight * 0.5 + innerHeight * 0.07 / 2)
+    .attr("y", innerHeight * 0.6 + innerHeight * 0.07 / 2)
     .attr("text-anchor", "middle")
     .attr("alignment-baseline", "middle")
     .attr("color", "black")
@@ -403,6 +421,8 @@ svgSection2.append("foreignObject")
         .append("xhtml:body")
         .attr("class", "text_itself")
         .style("color", "black")
-        .style("font", innerWidth * 0.03 + "px 'Arial'")
-        .html("Yapay sinir ağları örneğini tamamladınız. <br><br>" +
+        .style("font", innerWidth * 0.02 + "px 'Arial'")
+        .html("Gerçekten de Yapay Sinir Ağları bu şekilde çalışıyor. <br><br>Fotoğraf ile onun yazısı arasında karmaşık bir ağ yapısı var " +
+            "<br><br>Ağdaki her bir bağın bir sayısal değeri var ve o sayısal değerler her yeni fotoğraf geldikçe güncelleniyor böylece" +
+            " algoritma en doğru sayısal değerleri bularak yüksek tahmin başarısı yakalamaya çalışıyor.<br><br>" +
             "Hadi şimdi gerçek bir yapay sinir ağı nasıl görünür ona bakalım.");

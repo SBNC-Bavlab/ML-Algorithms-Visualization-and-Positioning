@@ -244,7 +244,7 @@ const next_button_group = s3svg.append("g");
 next_button_group.append("rect")
     .attr("class", "next_button")
     .attr("x", innerWidth * 0.1)
-    .attr("y", innerHeight * 0.5)
+    .attr("y", innerHeight * 0.6)
     .attr("fill", "orange")
     .attr("width", buttonWidth)
     .attr("height", buttonHeight);
@@ -252,14 +252,14 @@ next_button_group
     .append("text")
     .attr("class", "next_button_text")
     .attr("x", innerWidth * 0.1 + buttonWidth / 2)
-    .attr("y", innerHeight * 0.5 + buttonHeight / 2)
+    .attr("y", innerHeight * 0.6 + buttonHeight / 2)
     .attr("text-anchor", "middle")
     .attr("alignment-baseline", "middle")
     .attr("color", "black")
     .attr("font-size", innerWidth * 0.02)
     .text("İlerle");
 next_button_group
-    .attr("cursor", "pointer")
+    .attr("cursor", "pointer");
 next_button_group.on('click', () => {
    location.href = "gameOfThrones.html"
 });
@@ -268,16 +268,18 @@ s2svg.selectAll(".tick > text").attr("fill", "white");
 
 s3svg.append("foreignObject")
         .attr("class", "info_text")
-        .attr("width", innerWidth * 0.7)
+        .attr("width", innerWidth * 0.9)
         .attr("height", innerHeight * 0.3)
         .attr("x", innerWidth * 0.05)
         .attr("y", innerHeight * 0.1)
         .append("xhtml:body")
         .attr("class", "text_itself")
         .style("color", "black")
-        .style("font", innerWidth * 0.03 + "px 'Arial'")
-        .html("Karpuz kavun örneğini tamamladınız. <br><br>" +
-            "Son zamanların popüler dizisi Game of Thrones'un kullanıldığı bir sonraki örneğe geçmek için butona tıklayınız.");
+        .style("font", innerWidth * 0.02 + "px 'Arial'")
+        .html("Bu örnekte Mustafa'nın tezgahını kullanarak karpuz ve kavunlar için şu değerin üstü" +
+            "ndekiler karpuz diğerleri kavundur diyerek bir genelleme yaptınız. <br><br>Sonra bu genellemenizi Ahmet'in tezgahında test ettiniz." +
+            "<br><br>Test ettiğiniz veri ile öğrettiğiniz verinin farklı olması başarı oranını daha doğal kılacaktır.<br><br>" +
+            "Son zamanların popüler dizisi Game of Thrones'un kullanıldığı bir sonraki örneğe geçip Karar Ağacı'nın daha derinlerine inebilirsiniz.");
 function calculateXForText(d, i){
     return innerWidth * (i + 1) * 0.07 - innerWidth * 0.026;
 }
