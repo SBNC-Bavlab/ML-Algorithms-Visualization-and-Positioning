@@ -4,6 +4,9 @@
 .tick > text{
     font-size: 23px;
 }
+
+p.thick {font-weight:600;}
+p.soru {font-weight:600;}
 rect.button_rect{
     cursor: pointer;
 }

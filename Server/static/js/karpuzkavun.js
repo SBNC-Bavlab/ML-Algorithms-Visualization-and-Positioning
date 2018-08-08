@@ -78,15 +78,21 @@ function calculateFruitPlaces(){
 
 //Section 0
 const s0svg = d3.select("#section0")
-                .style("background-color", "blue")
+                .style("background-color", "#ffb833")
                 .attr("width", innerWidth)
                 .attr("height", innerHeight);
-const infotTextPosS0 = [{x : innerWidth * 0.05, y : innerHeight * 0.1, text: ""}];
+var karar_ağacı_ilk_yazı = " <p class='thick' id='karpuz_kavun_ilk'>Karar ağacı, önceki deneyimlerinden yararlanarak, yeni bir şey ile karşılaştığında onun ne olduğunu ayırt eden bir sınıflandırıcıdır.\n</p>" +
+    "<br><br><p class='thick' id='karpuz_kavun_ilk2'>Karar ağacı yaratmak için işe elimizdeki büyük miktardaki veriyi sisteme tanıtarak başlarız. Karar ağacı algoritması bu verilerden bir model oluşturur. Böylece elimizdeki modeli kullanarak artık yeni gelen bir verinin ne olduğunu belirli bir doğrulukla söyleyebiliriz.</p>" +
+    "<br><br><p>Makine öğrenme algoritmalarından biri olan karar ağacı, verileri niteliklerine göre her seferinde dallandırarak sonunda her bir sınıfı olabildiğince doğru ayırabilecek dallarda sonlanır." +
+    "Karar ağacın son dalları olan, ona verdiğimiz verilerin artık sınıflarının belirlendiği düğüme ağacın yaprakları denir.\n</p>"
+
+
+const infotTextPosS0 = [{x : innerWidth * 0.08, y : innerHeight * 0.2, text: karar_ağacı_ilk_yazı}];
 s0svg.selectAll("text.infoText")
         .data(infotTextPosS0)
         .enter()
             .append("foreignObject")
-            .attr("width", innerWidth / 1.5)
+            .attr("width", innerWidth / 1.3)
             .attr("height", innerHeight * 0.5)
             .attr("x", (d)=>{
                return d.x;
@@ -95,9 +101,41 @@ s0svg.selectAll("text.infoText")
                 return d.y;
             })
             .append("xhtml:body")
-            .style("font", innerWidth * 0.03 + "px 'Arial'")
-            .style("color", "white")
-            .html((d)=>{
+            .style("font", innerWidth * 0.018 + "px 'Arial'")
+            .style("color", "black")
+                .html((d)=>{
+                return d.text;
+            });
+//Section 0_1
+const s0_1svg = d3.select("#section0_1")
+                .style("background-color", "#ffaf1a")
+                .attr("width", innerWidth)
+                .attr("height", innerHeight);
+var karar_ağacı_ikinci_yazı = "<p class='soru'>Karar ağacı bütün girdileri nasıl sınıflarına kadar ayırıyor?\n</p>" +
+    "<br><br><p>Her düğümde girdinin bir niteliğine göre veriler birbirinden ayrılıyor. </p>" +
+    "<br><br><p>Amacımız sınıflandırmak</p>" +
+    "<br><br><p>Hangi eşikten ayırırsak kavunlarla karpuzları en yüksek doğrulukta ayırırız.</p>" +
+    "<br><br><p>Sınıflandırıcı rolünü siz üstlenin:</p>"
+
+
+
+const infotTextPosS0_1 = [{x : innerWidth * 0.08, y : innerHeight * 0.1, text: karar_ağacı_ikinci_yazı}];
+s0_1svg.selectAll("text.infoText")
+        .data(infotTextPosS0_1)
+        .enter()
+            .append("foreignObject")
+            .attr("width", innerWidth / 1.3)
+            .attr("height", innerHeight * 0.5)
+            .attr("x", (d)=>{
+               return d.x;
+            })
+            .attr("y", (d)=>{
+                return d.y;
+            })
+            .append("xhtml:body")
+            .style("font", innerWidth * 0.018 + "px 'Arial'")
+            .style("color", "black")
+                .html((d)=>{
                 return d.text;
             });
 
@@ -105,7 +143,7 @@ s0svg.selectAll("text.infoText")
 //Section 1
 
 const s1svg = d3.select("#section1")
-                .style("background-color", "blue")
+                .style("background-color", "orange")
                 .attr("width", innerWidth)
                 .attr("height", innerHeight);
 const paletteHeight = innerHeight * 0.084;
