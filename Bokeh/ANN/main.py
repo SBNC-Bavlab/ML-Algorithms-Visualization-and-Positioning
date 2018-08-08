@@ -22,11 +22,11 @@ widgets = widgetbox(learning_rate_select, activation_func_select,
                     add_node_button, remove_node_button, epoch_slider, play_button, play_button_info,
                     sizing_mode="stretch_both")
 
-ANN = ANNData(learning_rate_select.value, activation_func_select.value, layers=[3, 10], epoch=500)
+ANN = ANNData(learning_rate_select.value, activation_func_select.value, layers=[100, 3, 10], epoch=500)
 layer_num = 2
 circle_radius = 10
 
-current_layer = "1"
+current_layer = "2"
 
 
 circle_source = ColumnDataSource(data={'x': [], 'y': []})
@@ -76,6 +76,7 @@ def apply_changes(layers):
         x_offset += 1
     circle_source.data = circle_data
 
+
     if len(layers) > 1:
         x_offset = 1
         for i in range(len(layers)):
@@ -92,12 +93,14 @@ def apply_changes(layers):
                 y_offset += (10 / layers[i])
             x_offset += 1
 
+
     arrow_data["xs"] = [[x_start] for x_start in arrow_data["x_start"]]
     for i in range(len(arrow_data["x_end"])):
         arrow_data["xs"][i] += [arrow_data["x_end"][i]]
     arrow_data["ys"] = [[y_start] for y_start in arrow_data["y_start"]]
     for i in range(len(arrow_data["y_end"])):
         arrow_data["ys"][i] += [arrow_data["y_end"][i]]
+
 
     arrow_source.data = arrow_data
 
@@ -132,7 +135,7 @@ def add_layer():
     if not layer_select.options:
         add_node_button.disabled = False
         remove_node_button.disabled = False
-        current_layer = "1"
+        current_layer = "2"
 
     layer_select.options = layer_select.options + [str(layer_num)]
     remove_layer_select.options = remove_layer_select.options + [str(layer_num)]
@@ -151,7 +154,7 @@ def remove_layer(_attr, _old, new):
         remove_layer_select.value = "Seçiniz"
         return
     layer = ANN.layers
-    layer.pop(int(new)-1)
+    layer.pop(int(new))
     ANN.update(ANN.learning_rate, ANN.activation_func, layer, ANN.epoch)
     remove_layer_select.value = "Seçiniz"
     layer_num -= 1
@@ -173,7 +176,7 @@ remove_layer_select.on_change("value", remove_layer)
 
 def choose_layer(_attr, _old, new):
     global current_layer
-    current_layer = new
+    current_layer = str(int(new) + 1)
 
 
 layer_select.on_change("value", choose_layer)
@@ -215,7 +218,7 @@ def play():
     loss_data = {'x': [], 'y': []}
     acc_data = {'x': [], 'y': []}
     layers = [50*x for x in ANN.layers]
-    ann_input = ann.Ann(float(ANN.learning_rate), ANN.activation_func, layers, ANN.epoch)
+    ann_input = ann.Ann(float(ANN.learning_rate), ANN.activation_func, layers[1:], ANN.epoch)
     testing_acc, loss_arr, acc_arr = ann_input.run_model(play_button, circles, lines)
     play_button_info.text = "Bitti! Zarar ve isabet grafiklerini inceleyin."
     epoch_arr = []
