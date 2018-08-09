@@ -835,12 +835,12 @@ function calculateScore(){
             svg.selectAll("text.score_text")
                 .data(scoreTextPos)
                 .text((d)=>{return d.text});
-            const text = "Sistemin tüm entropisi " + generalEntropy.toFixed(2) + " idi.<br><br> Sorduğunuz soru sonunda 'Evet' ve 'Hayir' havuzlarinin agirlikli" +
+            const text = "Sistemin tüm entropisi " + generalEntropy.toFixed(2) + " idi.<br><br> Sorduğunuz soru sonunda Evet ve Hayir havuzlarinin agirlikli" +
                         " ortalama entropisi " + averageEntropy.toFixed(2) + " oldu.<br><br> Sorunun karmaşıklığı azaltma miktarı yani skoru bu ikisinin farkıdır:   " + (generalEntropy - averageEntropy).toFixed(2);
             svgSection3.select(".text_itself")
                         .html(text);
             svgSection3.select(".equals_sign")
-                .text("= " + gain.toFixed(2))
+                .text("=" + gain.toFixed(2))
             svgSection3.on('valueChanged1')(leftEntropy.toFixed(2));
             svgSection3.on('opacityChanged1')("hsla(193, 100%, " + (56 - 15 * leftEntropy) + "%, 1)");
 
@@ -915,12 +915,12 @@ svgSection3.append("text")
 svgSection3.append("text")
     .attr("class","equals_sign")
     .attr("alignment-baseline", "middle")
-    .attr("text-anchor", "middle")
-    .attr("x", innerWidth * 0.75)
+    .attr("text-anchor", "start")
+    .attr("x", innerWidth * 0.6)
     .attr("y", innerHeight * 0.4)
-    .attr("font-size", innerWidth * 0.14 + "px")
+    .attr("font-size", innerWidth * 0.13 + "px")
     .attr("fill", "white")
-    .text("= ?");
+    .text("=?");
 const radiusScale3 = innerWidth * 0.00038;
 const s3GaugeRadius = radiusScale3 * 370;
 svgSection3.call(d3.liquidfillgauge, 50, {

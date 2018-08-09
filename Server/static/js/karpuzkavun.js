@@ -160,7 +160,6 @@ calculateFruitPlaces();
 const s2svg = d3.select("#section2")
     .attr("width", innerWidth)
     .attr("height", innerHeight);
-
 s2svg.append("text")
     .attr("x", innerWidth / 2.1)
     .attr("y", innerHeight * 0.9)

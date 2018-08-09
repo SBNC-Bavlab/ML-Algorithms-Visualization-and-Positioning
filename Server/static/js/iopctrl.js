@@ -6,8 +6,10 @@ iopctrl = function() {
     function iopctrl_local_coordinate(element, x, y) {
         var svgRoot = element.ownerSVGElement;
         var p =  svgRoot.createSVGPoint();
+        console.log(navigator.userAgent + "2");
         //adjust for scroll offset on mobile devices
-        if (navigator.userAgent.match(/(iPod|iPhone|iPad|Android)/)) {
+        if (false && navigator.userAgent.match(/(iPod|iPhone|iPad|Android)/)) {
+            console.log(navigator.userAgent + "1");
             p.x = x + (window.pageXOffset ? window.pageXOffset : 0);
             p.y = y + (window.pageYOffset ? window.pageYOffset : 0);
         }
@@ -288,11 +290,13 @@ iopctrl = function() {
 
         function addEvents(g, start, end)
         {
+            console.log("here")
             g.on("selectstart", function() {
                     d3.event.stopPropagation();
                     d3.event.preventDefault();
                     return false;})
                 .on("pointerdown", function() {
+                    console.log("down1")
                     var x = d3.event.clientX, y = d3.event.clientY;
                     var coord = iopctrl_local_coordinate(this, x, y);
                     var pos = pointToPos(coord.x, coord.y);
@@ -359,7 +363,6 @@ iopctrl = function() {
                             _onValueChanged(_currentValue, step==1);
                             _lastEvent=now;
                         }
-
                         _pointerUpdate.attr("transform", "translate(" + (_vertical ? 0 : _currentPoint) + ", "+(_vertical ? _currentPoint : 0)+") rotate(" + (_vertical ? 90 : 0) + ")");
 
                         var l = _currentPoint - _range[0];
@@ -463,7 +466,7 @@ iopctrl = function() {
         var bands = [];
         var _range, _extent, _invert, _comp, _indicator, _cursorArc, _pointerUpdate, _cursorUpdate;
         var _slide, _currentValue, _currentRad, _lastEvent, _onValueChanged, _lastAngle, _delta = 0;
-        
+        console.log("here");
         function arcslider(g)
         {
             _range = iopctrl_scaleRange(axis.scale());
@@ -557,13 +560,16 @@ iopctrl = function() {
                 return false;
             })
             .on("pointerdown", function() {
+                console.log("down")
                 var x = d3.event.clientX, y = d3.event.clientY;
                 var coord = iopctrl_local_coordinate(this, x, y);
                 //alert("x="+x + ": y=" + y + " cx=" + coord.x + " cy=" + coord.y);
                 var rc = pointToRad(coord.x, coord.y, false);
                 var omega = rc.omega;
                 var iz = _invert ?  (omega < _range[0] + _comp / 8) && (omega > _range[1] - _comp / 8) : (omega > _range[0] - _comp / 8) && (omega < _range[1] + _comp / 8);
+                console.log(radToValue(omega))
                 if(rc.r > arcFactor*radius && iz) {
+                    console.log("asd", moveToTouch)
                     if(moveToTouch) redraw(radToValue(omega), transitionDuration);
                     _slide=true;
                 }

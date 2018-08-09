@@ -140,8 +140,26 @@ svgSection1.append("g")
     .attr("id", "knob2")
     .attr("transform", "translate(" + positionForFirstCase[0] + ", " + positionForFirstCase[1] + ") scale(" + innerWidth * 0.00064 + ")")
     .call(vol_2);
-const arrow_places = [{x: innerWidth * 0.1, y: innerHeight * 0.1, left:true},
-                    {x: innerWidth * 0.5, y: innerHeight * 0.1, left:false}]
+const arrow_places = [{x: innerWidth * 0.42, y: innerHeight * 0.31, left:true, rotate: -50},
+                    {x: innerWidth * 0.51, y: innerHeight * 0.26, left:false, rotate: 50}];
+svgSection1
+    .selectAll("image.arrow")
+    .data(arrow_places)
+    .enter()
+        .append("svg:image")
+        .attr("class", "arrow")
+        .attr("x", 0)
+        .attr("y", 0)
+    .attr("opacity", "0")
+        .attr("width", innerWidth * 0.06)
+        .attr("height", innerWidth * 0.06)
+    .attr("transform", (d) => {
+        return "translate(" + d.x + "," + d.y + ") rotate(" + d.rotate + ") scale( " + innerWidth * 0.00035 +  " )";
+    })
+        .attr("xlink:href", (d) => {return "../static/icons/" + ((d.left) ? "left.png" : "right.png")})
+    .on('click', function(){
+        vol_2.redraw(3, 500);
+    })
 // Drawing Knob finished
 const imageWidth = innerWidth * 0.1;
 const imageHeight = innerWidth * 0.1;
