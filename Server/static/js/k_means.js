@@ -5,71 +5,17 @@ const svgSection1 = d3.select("#section0")
 svgSection1
     .append("foreignObject")
     .attr("width", innerWidth / 1.5)
-    .attr("height", 500)
-    .attr("x", 100)
-    .attr("y", 50)
+    .attr("height", innerHeight)
+    .attr("x", innerWidth * 0.06)
+    .attr("y", innerHeight * 0.2)
     .append("xhtml:body")
-    .style("font", "45px 'Arial'")
+    .style("font", innerWidth * 0.021 + "px 'Arial'")
     .style("color", "white")
-    .html("K-Means algoritması elinizdeki verileri ortak en uygun şekilde kümelemeye çalışan bir algoritmadır" +
-        "<br><br>K-Means'de boyut sınırlandırması yoktur ancak basit olsun diye burada size sadece iki boyuttaki" +
-        " uygulaması gösterilecektir" +
-        "<br><br>K-Means'deki K'nin anlamı oluşturmak istediğiniz küme sayısıdır");
-
-const svgSection2 = d3.select("#section1")
-                .attr("width", innerWidth)
-                .attr("height", innerHeight)
-                .style("background-color", "orange");
-svgSection2
-    .append("foreignObject")
-    .attr("width", innerWidth / 1.5)
-    .attr("height", 500)
-    .attr("x", 100)
-    .attr("y", 50)
-    .append("xhtml:body")
-    .style("font", "45px 'Arial'")
-    .style("color", "white")
-    .html("Birazdan saha içinde dizilmiş ve futbol oynamak isteyen çocukları göreceksiniz" +
-        "<br><br>Çocukların maça başlayabilmeleri için onları iki takıma (kümeye) bölmeniz gerekecek" +
-        "<br><br>Bunun için önceden seçilmiş iki tane kaptan köşede bekliyorlar" +
-        "<br><br>İlk önce onları sahanın içine uygun gördüğünüz yere sürüklemeniz gerekecek");
-const svgSection3 = d3.select("#section2")
-                .attr("width", innerWidth)
-                .attr("height", innerHeight)
-                .style("background-color", "orange");
-svgSection3
-    .append("foreignObject")
-    .attr("width", innerWidth / 1.5)
-    .attr("height", 500)
-    .attr("x", 100)
-    .attr("y", 50)
-    .append("xhtml:body")
-    .style("font", "44px 'Arial'")
-    .style("color", "white")
-    .html("Sürükledikten sonra Kaptan Seç butonu her oyuncuyu kendisine en yakın kaptanın takımına dahil edecek" +
-        "<br><br>Her oyuncu bir takıma dahil olduktan sonra kaptanın o takımın ortasına geçmesi gerekiyor bunun için Kaptanı Ortala butonuna tıklayacaksınız" +
-        "<br><br>Böylece kaptanlar takım arkadaşlarına moral konuşması yapabilecek" +
-        "<br><br>Ancak kaptanlar takımın ortasına geçince diğer takımdaki oyunculara yaklaşabilir böylece karşı takımdan oyuncu alabilir");
-
-const svgSection4 = d3.select("#section3")
-                .attr("width", innerWidth)
-                .attr("height", innerHeight)
-                .style("background-color", "orange");
-svgSection4
-    .append("foreignObject")
-    .attr("width", innerWidth / 1.5)
-    .attr("height", 500)
-    .attr("x", 100)
-    .attr("y", 50)
-    .append("xhtml:body")
-    .style("font", "44px 'Arial'")
-    .style("color", "white")
-    .html("Bu işlem artık takımlarda bi değişiklik olmayana kadar butonlar yardımıyla devam ettirebilirsiniz" +
-        "<br><br>Aklınızda bulunsun: Kaptanları ilk koyduğunuz yer bir fark oluşturabilir mi acaba?" +
-        "<br><br>Takıldığınız yer olursa buraya geri dönebilirsiniz. " +
-        "<br><br>Hadi işe koyulun!"
-        );
-
+    .html("K-Means Algoritması kümeleme problemlerini çözmeyi amaçlamaktadır." +
+        "<br><br>Çevremizde görebileceğimiz kümeleme problemlerinden biri sipariş problemidir." +
+        "<br><br>Sipariş sayısı fazla olursa hangi kuryenin hangi siparişi götüreceği bir problem olabilmektedir." +
+        "<br><br>Aşağıda bulunan Barcelona'da geçen örnekte bu problemin K-Means ile kümeleme yaparak ne kadar hızlı bir şekilde çözülebildiğini göreceksiniz" +
+        "<br><br>Yapmanız gereken kuryeleri sürükleyip haritada istediğiniz yerlere bırakıp Kurye Ata ve Kurye Ortala butonlarına ardışık olarak tıklamak.");
 const svgSection5 = d3.select("#section4")
                 .attr("width", innerWidth)
                 .attr("height", innerHeight);
