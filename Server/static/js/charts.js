@@ -216,6 +216,13 @@ function afterGraphCompleted(){
 }
 //When the html document is loaded
 $( function() {
+    const initialInnerWidth = innerWidth;
+    const refreshOnResize = () => {
+        if(innerWidth !== initialInnerWidth) {
+            window.history.go(0)
+        }
+    };
+    window.addEventListener("resize", refreshOnResize);
     //read the data
     readTextFileAndPlot("../static/data/lens_charts.txt");
 

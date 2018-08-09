@@ -1,3 +1,10 @@
+const initialInnerWidth = innerWidth;
+const refreshOnResize = () => {
+    if(innerWidth !== initialInnerWidth) {
+        window.history.go(0)
+    }
+};
+window.addEventListener("resize", refreshOnResize);
 const svgSection1 = d3.select("#section0")
                 .attr("width", innerWidth)
                 .attr("height", innerHeight)
@@ -173,8 +180,7 @@ const button_click_listener = () => {
     d3.selectAll("text.assign_button_text")
         .data(buttonTextPos)
         .text((d) => {return d.text;});
-};
-
+}
 const buttonWidth = innerWidth * 0.1;
 const buttonHeight = innerHeight * 0.05;
 

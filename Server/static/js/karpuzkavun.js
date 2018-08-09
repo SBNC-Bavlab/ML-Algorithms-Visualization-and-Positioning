@@ -1,4 +1,10 @@
-
+const initialInnerWidth = innerWidth;
+const refreshOnResize = () => {
+    if(innerWidth !== initialInnerWidth) {
+        window.history.go(0)
+    }
+};
+window.addEventListener("resize", refreshOnResize);
 const train_data = [
   ["Sarı", 1, "Kavun"], ["Sarı", 1, "Kavun"], ["Sarı", 1, "Kavun"],  ["Sarı", 1, "Kavun"], ["Sarı", 1, "Kavun"],
   ["Sarı", 2, "Kavun"], ["Sarı", 2, "Kavun"], ["Sarı", 2, "Kavun"], ["Sarı", 2, "Kavun"], ["Sarı", 2, "Kavun"],

@@ -1,3 +1,10 @@
+const initialInnerWidth = innerWidth;
+const refreshOnResize = () => {
+    if(innerWidth !== initialInnerWidth) {
+        window.history.go(0)
+    }
+};
+window.addEventListener("resize", refreshOnResize);
 const combinations = [{0: ["Köpek", "Köpek", "Köpek", "Köpek"],
                         1: ["Kedi", "Köpek", "Köpek", "Kedi"],
                         2: ["Köpek", "Kedi", "Köpek", "Kedi"],
