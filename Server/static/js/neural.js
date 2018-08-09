@@ -140,7 +140,8 @@ svgSection1.append("g")
     .attr("id", "knob2")
     .attr("transform", "translate(" + positionForFirstCase[0] + ", " + positionForFirstCase[1] + ") scale(" + innerWidth * 0.00064 + ")")
     .call(vol_2);
-
+const arrow_places = [{x: innerWidth * 0.1, y: innerHeight * 0.1, left:true},
+                    {x: innerWidth * 0.5, y: innerHeight * 0.1, left:false}]
 // Drawing Knob finished
 const imageWidth = innerWidth * 0.1;
 const imageHeight = innerWidth * 0.1;

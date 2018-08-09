@@ -105,6 +105,39 @@ const svgSection0 = d3.select("#section0")
                         .attr("width", innerWidth)
                         .attr("height", innerHeight);
 
+svgSection0.append("foreignObject")
+        .attr("class", "info_text")
+        .attr("width", innerWidth * 0.7)
+        .attr("height", innerHeight * 0.3)
+        .attr("x", innerWidth * 0.05)
+        .attr("y", innerHeight * 0.2)
+        .append("xhtml:body")
+        .attr("class", "text_itself")
+        .style("color", "white")
+        .style("font", innerWidth * 0.02 + "px 'Arial'")
+        .html("Şimdi geldik Game of Thrones örneğine. <br><br>Burada Karar Ağacı algoritmasının temeli olan entropi (karmaşıklık) " +
+            " kavramını keşfedeceğiz. " +
+            "<br><br>Entropi aslında düzensizliği ifade eder. Diyelim elinizde bir sepet var. Bunların hepsi elmadan oluşuyor ise buna entropi düşük yani düzenli diyebiliriz" +
+            " ancak sepetinizde elma, armut ve portakaldan değişik sayılarda varsa entropisi yüksek yani düzensiz bir sepetiniz var gibi düşünlebilir.<br><br>" +
+            "Hadi gelin Game of Thrones karakterleri ile sizi tanıştıralım.");
+const svgSection1_5 = d3.select("#section1_5")
+                        .attr("width", innerWidth)
+                        .attr("height", innerHeight);
+
+svgSection1_5.append("foreignObject")
+        .attr("class", "info_text")
+        .attr("width", innerWidth * 0.7)
+        .attr("height", innerHeight * 0.3)
+        .attr("x", innerWidth * 0.05)
+        .attr("y", innerHeight * 0.2)
+        .append("xhtml:body")
+        .attr("class", "text_itself")
+        .style("color", "white")
+        .style("font", innerWidth * 0.02 + "px 'Arial'")
+        .html("Birazdan aşağıda tüm karakterleri özellikleri ile birlikte göreceksiniz. <br><br>" +
+            "Sol tarafta sorular gözünüze çarpacaktır. Bunlara sırayla taklayarak Evet ve Hayır havuzlarındaki entropi ve koyuluk miktarını gözlemleyin" +
+            "<br><br>Her bir sorudan sonra iki aşağıdaki sayfaya gidip sorulan sorunun karmaşıklığı ne kadar azalttığını görebilirsiniz." +
+            "<br><br>Kendi Sorunu Oluştur butonuna tıklayarak o soruların dışında geçerli sorular oluşturabilirsiniz.");
 
 const svgSection1 = d3.select("#section1")
                         .attr("width", innerWidth)
@@ -122,6 +155,7 @@ svgSection1.selectAll("text.infoText")
         return d.y;
     })
     .append("xhtml:body")
+    .style("color", "white")
     .style("font",  innerWidth * 0.02 + "px 'Arial'")
     .html((d)=>{
         return d.text;
@@ -268,7 +302,6 @@ const buttonsPos = [{x: innerWidth * 0.04, y: innerHeight * 0.125, text: "Zengin
 const svg = d3.select("#section2")
                 .attr("width", innerWidth)
                 .attr("height", innerHeight);
-
 /*
 svg.selectAll("rect.yes_no")
     .data([{x: 250, y: 495, text: "Evet", click: () => {reset()}},

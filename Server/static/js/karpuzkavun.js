@@ -110,7 +110,7 @@ s0svg.selectAll("text.infoText")
             })
             .append("xhtml:body")
             .style("font", innerWidth * 0.018 + "px 'Arial'")
-            .style("color", "black")
+            .style("color", "white")
                 .html((d)=>{
                 return d.text;
             });
@@ -142,7 +142,7 @@ s0_1svg.selectAll("text.infoText")
             })
             .append("xhtml:body")
             .style("font", innerWidth * 0.018 + "px 'Arial'")
-            .style("color", "black")
+            .style("color", "white")
                 .html((d)=>{
                 return d.text;
             });
