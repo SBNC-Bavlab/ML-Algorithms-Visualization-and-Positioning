@@ -84,10 +84,12 @@ const s0svg = d3.select("#section0")
 var karar_ağacı_ilk_yazı = " <p class='thick' id='karpuz_kavun_ilk'>Karar ağacı, önceki deneyimlerinden yararlanarak, yeni bir şey ile karşılaştığında onun ne olduğunu ayırt eden bir sınıflandırıcıdır.\n</p>" +
     "<br><br><p class='thick' id='karpuz_kavun_ilk2'>Karar ağacı yaratmak için işe elimizdeki büyük miktardaki veriyi sisteme tanıtarak başlarız. Karar ağacı algoritması bu verilerden bir model oluşturur. Böylece elimizdeki modeli kullanarak artık yeni gelen bir verinin ne olduğunu belirli bir doğrulukla söyleyebiliriz.</p>" +
     "<br><br><p>Makine öğrenme algoritmalarından biri olan karar ağacı, verileri niteliklerine göre her seferinde dallandırarak sonunda her bir sınıfı olabildiğince doğru ayırabilecek dallarda sonlanır." +
-    "Karar ağacın son dalları olan, ona verdiğimiz verilerin artık sınıflarının belirlendiği düğüme ağacın yaprakları denir.\n</p>"
+    "Karar ağacın son dalları olan, ona verdiğimiz verilerin artık sınıflarının belirlendiği düğüme ağacın yaprakları denir.\n</p>" +
+    "<br><p class='soru'>Karar ağacı bütün girdileri nasıl sınıflarına kadar ayırıyor?\n</p>" +
+    "<br><br><p>Her düğümde girdinin bir niteliğine göre veriler birbirinden ayrılıyor. </p>"
 
 
-const infotTextPosS0 = [{x : innerWidth * 0.08, y : innerHeight * 0.2, text: karar_ağacı_ilk_yazı}];
+const infotTextPosS0 = [{x : innerWidth * 0.08, y : innerHeight * 0.12, text: karar_ağacı_ilk_yazı}];
 s0svg.selectAll("text.infoText")
         .data(infotTextPosS0)
         .enter()
@@ -111,9 +113,7 @@ const s0_1svg = d3.select("#section0_1")
                 .style("background-color", "#ffaf1a")
                 .attr("width", innerWidth)
                 .attr("height", innerHeight);
-var karar_ağacı_ikinci_yazı = "<p class='soru'>Karar ağacı bütün girdileri nasıl sınıflarına kadar ayırıyor?\n</p>" +
-    "<br><br><p>Her düğümde girdinin bir niteliğine göre veriler birbirinden ayrılıyor. </p>" +
-    "<br><br><p>Şimdi sınıflandırıcı rolünü siz üstlenin</p>" +
+var karar_ağacı_ikinci_yazı = "<br><br><p>Şimdi sınıflandırıcı rolünü siz üstlenin</p>" +
     "<br><br><p>Aşağıda, elemanları büyüklüklerine göre sıralanmış bir pazar tezgahı var</p>" +
     "<br><br><p>Amacımız kavun ve karpuzları sadece boyutlarına bakarak sınıflandırmak</p>" +
     "<br><br><p>Kavun ve karpuzları en başarılı şekilde ayırmak için bir eşik seçiniz</p>" +
