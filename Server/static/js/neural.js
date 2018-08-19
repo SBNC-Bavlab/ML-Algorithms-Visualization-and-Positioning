@@ -111,7 +111,7 @@ vol_2.onValueChanged(function(value){
         svgSection1.selectAll("text.decision")
             .text((d) => {return d.text});
         //Check trials to warn
-        if(animalIndex === 2 && helpWarning){
+        if((animalIndex === 3 || animalIndex === 2) && helpWarning){
             trials[indexOfSecondKnob] = true;
             let allExhausted = true;
             for(let i = 0; i < trials.length && allExhausted; i++){
